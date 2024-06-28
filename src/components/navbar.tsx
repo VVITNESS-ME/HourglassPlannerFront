@@ -7,15 +7,15 @@ const Navbar = () => {
         <div className="w-full h-50 sticky top-5">
             <div className="container mx-auto px-4 h-full">
                 <div className="flex justify-between items-center h-full">
-                    <div>
+                    <div className="flex flex-row">
                         <Link href="/">
                             <Image src="/img/logo_binary.png" alt="Hourglass Logo" width={50} height={50}></Image>
-                            <span className="ml-2 text-xl">모래시계 플래너</span>
                         </Link>
+                        <Link href="/" className="py-2 ml-2 text-xl">모래시계 플래너</Link>
                     </div>
                     <div>
-                        <Link href="/login"> <button className="px-4 py-2 bg-orange-300 rounded">log in</button> </Link>
-                        <Link href="/signup"> <button className="px-4 py-2 bg-gray-400 rounded">signup</button> </Link>
+                        <Link href="/login"> <button className="px-4 py-2 bg-sandy-3 rounded hover:bg-sandy-1">log in</button> </Link>
+                        <Link href="/signup"> <button className="px-4 py-2 bg-mono-2 rounded hover:bg-mono-3">signup</button> </Link>
                     </div>
                 </div>
             </div>
