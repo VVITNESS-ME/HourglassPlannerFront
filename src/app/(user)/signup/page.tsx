@@ -24,7 +24,7 @@ const SignUp = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,12 +43,14 @@ const SignUp = () => {
       setPassword('');
       setVerifyPassword('');
     } catch (error) {
-      setError(error.message || 'Sign up failed');
+      if (error instanceof Error) {
+        setError(error.message || 'Sign up failed');
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setIsLoading(false);
     }
-  };
-
   return (
     <div className="flex flex-col items-center justify-center min-h-20 pt-28">
       <div className="flex flex-col items-center w-full max-w-md p-8 space-y-8 bg-mono-1 border border-gray-200 shadow-md rounded-xl">
