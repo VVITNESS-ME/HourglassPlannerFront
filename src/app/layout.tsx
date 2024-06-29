@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Navbar from "../components/navbar";
+import localFont from "next/font/local";
 
+const mango = localFont({
+  src: "../../public/fonts/MangoDdobak-B.ttf",
+  display: "swap",
+  variable: "--font-mango",
+});
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -15,8 +22,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="ko">
+      <body className={mango.className}>
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
