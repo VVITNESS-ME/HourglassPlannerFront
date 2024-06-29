@@ -2,9 +2,14 @@
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 import useAuthStore from '../../../../store/authStore';
+import Cookies from "js-cookie";
+import { redirect } from "next/navigation";
 
 export default function Login() {
-  const { login, error, initialize } = useAuthStore();
+  const token = Cookies.get("token");
+  if (token) redirect('/');
+
+  const {login, error, initialize } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
