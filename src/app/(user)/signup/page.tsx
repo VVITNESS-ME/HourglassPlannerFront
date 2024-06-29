@@ -47,6 +47,7 @@ const SignUp = () => {
       setName('');
       setPassword('');
       setVerifyPassword('');
+      redirect('/');
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message || 'Sign up failed');

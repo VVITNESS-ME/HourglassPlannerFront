@@ -24,22 +24,22 @@ const useAuthStore = create<AuthState>((set) => ({
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
-      }
-
       const data = await response.json();
-      Cookies.set("token", data.token, { expires: 1 }); // 1일 후 만료
-      set({ email, token: data.token, error: null });
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+      console.log(data);
+      console.log(data.data.authToken);
+      Cookies.set("token", data.data.authToken, { expires: 1 }); // 1일 후 만료
+      set({ email, token: data.data.authToken, error: null });
+
     } catch (error) {
       if (error instanceof Error) {
         set({ error: error.message || "Login failed" });
       } else {
         set({ error: "An unknown error occurred" });
       }
-    } finally {
-      set({ email: "", token: null, error: null });
     }
   },
   logout: () => {

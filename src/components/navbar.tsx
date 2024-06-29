@@ -7,9 +7,8 @@ import LoginMenu from "./loginmenu";
 import UserMenu from "./usermenu";
 const Navbar = () => {
     const {email}  = useAuthStore(email => email);
-
     return (
-        <div className="w-full mt-8 h-50 sticky top-5">
+        <div className="w-full mt-8 h-50 absolute top-5">
             <div className="container mx-auto px-4 h-full">
                 <div className="flex justify-between items-center h-full">
                     <div className="flex flex-row">
