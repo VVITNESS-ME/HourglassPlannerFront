@@ -1,4 +1,5 @@
 import create from "zustand";
+import Cookies from "js-cookie";
 
 type AuthState = {
   email: string;
@@ -6,6 +7,7 @@ type AuthState = {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  initialize: () => void;
 };
 
 const useAuthStore = create<AuthState>((set) => ({
@@ -28,12 +30,22 @@ const useAuthStore = create<AuthState>((set) => ({
       }
 
       const data = await response.json();
+      Cookies.set("token", data.token, { expires: 1 }); // 1일 후 만료
       set({ email, token: data.token, error: null });
     } catch (error) {
       set({ error: error.message || "Login failed" });
     }
   },
-  logout: () => set({ email: "", token: null, error: null }),
+  logout: () => {
+    Cookies.remove("token");
+    set({ email: "", token: null, error: null });
+  },
+  initialize: () => {
+    const token = Cookies.get("token");
+    if (token) {
+      set({ token, email: "", error: null });
+    }
+  },
 }));
 
 export default useAuthStore;

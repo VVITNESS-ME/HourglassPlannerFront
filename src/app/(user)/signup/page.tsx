@@ -1,4 +1,3 @@
-// pages/signup.tsx
 'use client';
 
 import Image from 'next/image';
@@ -9,16 +8,45 @@ const SignUp = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 회원가입 로직 처리
-    console.log({
-      email,
-      name,
-      password,
-      verifyPassword,
-    });
+    setError(null);
+    setSuccess(null);
+
+    if (password !== verifyPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, name, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Sign up failed');
+      }
+
+      setSuccess('Sign up successful!');
+      setEmail('');
+      setName('');
+      setPassword('');
+      setVerifyPassword('');
+    } catch (error) {
+      setError(error.message || 'Sign up failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -55,11 +83,14 @@ const SignUp = () => {
             onChange={(e) => setVerifyPassword(e.target.value)}
             className="p-2 text-sm border rounded-md bg-sandy-1"
           />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {success && <p className="text-green-500 text-sm">{success}</p>}
           <button
             type="submit"
+            disabled={isLoading}
             className="p-2 text-white bg-black rounded-md hover:bg-mono-4"
           >
-            Change your life
+            {isLoading ? 'Signing up...' : 'Change your life'}
           </button>
         </form>
       </div>
