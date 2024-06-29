@@ -19,6 +19,27 @@ const saveStateToCookies = (state: TimeState) => {
   Cookies.set('timerState', JSON.stringify(state), { expires: 7 });
 };
 
+const removeStateFromCookies = () => {
+  Cookies.remove('timerState');
+};
+
+const sendTimeDataToServer = (data: {
+  startTime: string | undefined;
+  duration: number;
+  endTime: string | undefined;
+}) => {
+  fetch('/api/timer', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log('Success:', data))
+    .catch((error) => console.error('Error:', error));
+};
+
 export const useHourglassStore = create<TimeState>((set, get) => ({
   startTime: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).startTime) : null,
   duration: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).duration : 0,
@@ -57,8 +78,14 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
   },
   stopTimer: () => set((state) => {
-    const newState = { ...state, isRunning: false };
+    const newState = { ...state, isRunning: false, endTime: new Date() };
     saveStateToCookies(newState);
+    removeStateFromCookies();
+    sendTimeDataToServer({
+      startTime: state.startTime?.toISOString(),
+      duration: state.duration,
+      endTime: new Date().toISOString(),
+    });
     return newState;
   }),
 }));
