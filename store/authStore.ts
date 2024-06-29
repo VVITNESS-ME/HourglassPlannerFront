@@ -33,7 +33,13 @@ const useAuthStore = create<AuthState>((set) => ({
       Cookies.set("token", data.token, { expires: 1 }); // 1일 후 만료
       set({ email, token: data.token, error: null });
     } catch (error) {
-      set({ error: error.message || "Login failed" });
+      if (error instanceof Error) {
+        set({ error: error.message || "Login failed" });
+      } else {
+        set({ error: "An unknown error occurred" });
+      }
+    } finally {
+      set({ email: "", token: null, error: null });
     }
   },
   logout: () => {
