@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHourglassStore } from '../../store/hourglassStore';
 import Cookies from 'js-cookie';
+import HourglassAni from './hourglassAni';
 
 const Hourglass: React.FC = () => {
   const startTime = useHourglassStore((state) => state.startTime);
@@ -56,7 +57,9 @@ const Hourglass: React.FC = () => {
   }, [isRunning, duration, startTime, setEndTime, stopTimer]);
 
   return (
-    <div>
+    <div className='flex flex-col w-max justify-center items-center'>
+      <HourglassAni />
+      <br />
       <h1>Time Tracker</h1>
       <div>
         <button onClick={toggleRunning}>
