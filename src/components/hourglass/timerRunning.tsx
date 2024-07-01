@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
 
-const HourglassFunction: React.FC = () => {
+const TimerRunning: React.FC = () => {
   const timeStart = useHourglassStore((state) => state.timeStart);
   const timeBurst = useHourglassStore((state) => state.timeBurst);
   const timeGoal = useHourglassStore((state) => state.timeGoal);
@@ -55,9 +55,6 @@ const HourglassFunction: React.FC = () => {
       <br />
       <h1>Time Tracker</h1>
       <div>
-        <button onClick={toggleRunning}>
-          {isRunning ? 'Pause' : 'Start'}
-        </button>
         <button onClick={stopTimer}>Stop</button>
       </div>
       <div>
@@ -69,4 +66,4 @@ const HourglassFunction: React.FC = () => {
   );
 };
 
-export default HourglassFunction;
+export default TimerRunning;

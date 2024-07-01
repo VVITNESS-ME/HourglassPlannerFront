@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import TimerSelector from './TimerSelector';
-import CustomInput from './CustomInput';
+import TimerSelector from './timerSelector';
 import HourglassAni from './hourglassAni';
-import HourglassFunction from './hourglassFunction';
+import HourglassFunction from './timerRunning';
+import { useHourglassStore } from '../../../store/hourglassStore';
 
 const Hourglass: React.FC = () => {
+  const isRunning = useHourglassStore((state) => state.isRunning);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
 
   const handleTimeSelect = (time: number) => {
@@ -18,10 +19,9 @@ const Hourglass: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <HourglassAni/>
-      <TimerSelector/>
-      <HourglassFunction />
+      {isRunning ? <HourglassFunction /> : <TimerSelector />}
     </div>
   );
 };

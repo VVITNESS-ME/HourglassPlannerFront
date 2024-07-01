@@ -1,4 +1,4 @@
-import Hourglass from "@/components/hourglass/Hourglass";
+import Hourglass from "@/components/hourglass/hourglass";
 
 export default function HomeLayout({ children }: Readonly<{ children: React.ReactNode;}>) {
   return (
