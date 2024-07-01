@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
-import HourglassAni from './hourglassAni';
 
 const HourglassFunction: React.FC = () => {
   const timeStart = useHourglassStore((state) => state.timeStart);
@@ -16,8 +15,6 @@ const HourglassFunction: React.FC = () => {
   const stopTimer = useHourglassStore((state) => state.stopTimer);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
 
-  const [remainingTime, setRemainingTime] = useState<number>(timeGoal !== null ? timeGoal : 0);
-
   useEffect(() => {
     const savedState = Cookies.get('timerState');
     if (savedState) {
@@ -25,14 +22,14 @@ const HourglassFunction: React.FC = () => {
       const now = new Date().getTime();
       const endTime = new Date(timeStart).getTime() + timeGoal;
       if (isRunning && now < endTime) {
-        setRemainingTime(endTime - now);
+        incrementTimeBurst();
       } else if (isRunning && now >= endTime) {
         setTimeEnd(new Date());
         stopTimer();
         alert('Time is up!');
       }
     }
-  }, [setTimeEnd, stopTimer]);
+  }, [setTimeEnd, stopTimer, incrementTimeBurst]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -40,25 +37,18 @@ const HourglassFunction: React.FC = () => {
     if (isRunning) {
       timer = setInterval(() => {
         incrementTimeBurst();
-        const now = new Date().getTime();
-        const endTime = (timeStart?.getTime() || 0) + (timeGoal || 0);
-        const timeLeft = endTime - now;
 
-        if (timeGoal !== null && timeLeft <= 0) {
+        if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
           clearInterval(timer);
           setTimeEnd(new Date());
           stopTimer();
           alert('Time is up!');
-        } else if (timeGoal !== null) {
-          setRemainingTime(timeLeft);
-        } else {
-          setRemainingTime((timeBurst || 0) + 1000);
         }
       }, 1000);
     }
 
     return () => clearInterval(timer);
-  }, [isRunning, timeStart, timeGoal, timeBurst, setTimeEnd, stopTimer, incrementTimeBurst]);
+  }, [isRunning, timeBurst, timeGoal, setTimeEnd, stopTimer, incrementTimeBurst]);
 
   return (
     <div className='flex flex-col w-max justify-center items-center'>
@@ -72,7 +62,8 @@ const HourglassFunction: React.FC = () => {
       </div>
       <div>
         <p>Start Time: {timeStart ? timeStart.toString() : 'Not set'}</p>
-        <p>Remaining Time: {Math.ceil(remainingTime / 1000)} seconds</p>
+        <p>Elapsed Time: {Math.ceil((timeBurst || 0) / 1000)} seconds</p>
+        <p>Remaining Time: {timeGoal !== null ? Math.ceil((timeGoal - (timeBurst || 0)) / 1000) : 'N/A'} seconds</p>
       </div>
     </div>
   );
