@@ -1,4 +1,3 @@
-// components/hourglass.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -7,54 +6,59 @@ import Cookies from 'js-cookie';
 import HourglassAni from './hourglassAni';
 
 const Hourglass: React.FC = () => {
-  const startTime = useHourglassStore((state) => state.startTime);
-  const duration = useHourglassStore((state) => state.duration);
-  const endTime = useHourglassStore((state) => state.endTime);
+  const timeStart = useHourglassStore((state) => state.timeStart);
+  const timeBurst = useHourglassStore((state) => state.timeBurst);
+  const timeGoal = useHourglassStore((state) => state.timeGoal);
+  const timeEnd = useHourglassStore((state) => state.timeEnd);
   const isRunning = useHourglassStore((state) => state.isRunning);
-  const setEndTime = useHourglassStore((state) => state.setEndTime);
+  const setTimeEnd = useHourglassStore((state) => state.setTimeEnd);
   const toggleRunning = useHourglassStore((state) => state.toggleRunning);
   const stopTimer = useHourglassStore((state) => state.stopTimer);
+  const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
 
-  const [remainingTime, setRemainingTime] = useState<number>(duration);
+  const [remainingTime, setRemainingTime] = useState<number>(timeGoal !== null ? timeGoal : 0);
 
   useEffect(() => {
     const savedState = Cookies.get('timerState');
     if (savedState) {
-      const { startTime, duration, isRunning } = JSON.parse(savedState);
+      const { timeStart, timeBurst, timeGoal, isRunning } = JSON.parse(savedState);
       const now = new Date().getTime();
-      const endTime = new Date(startTime).getTime() + duration;
+      const endTime = new Date(timeStart).getTime() + timeGoal;
       if (isRunning && now < endTime) {
         setRemainingTime(endTime - now);
       } else if (isRunning && now >= endTime) {
-        setEndTime(new Date());
+        setTimeEnd(new Date());
         stopTimer();
         alert('Time is up!');
       }
     }
-  }, [setEndTime, stopTimer]);
+  }, [setTimeEnd, stopTimer]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
-    if (isRunning && duration > 0) {
+    if (isRunning) {
       timer = setInterval(() => {
+        incrementTimeBurst();
         const now = new Date().getTime();
-        const endTime = (startTime?.getTime() || 0) + duration;
+        const endTime = (timeStart?.getTime() || 0) + (timeGoal || 0);
         const timeLeft = endTime - now;
 
-        if (timeLeft <= 0) {
+        if (timeGoal !== null && timeLeft <= 0) {
           clearInterval(timer);
-          setEndTime(new Date());
+          setTimeEnd(new Date());
           stopTimer();
           alert('Time is up!');
-        } else {
+        } else if (timeGoal !== null) {
           setRemainingTime(timeLeft);
+        } else {
+          setRemainingTime((timeBurst || 0) + 1000);
         }
       }, 1000);
     }
 
     return () => clearInterval(timer);
-  }, [isRunning, duration, startTime, setEndTime, stopTimer]);
+  }, [isRunning, timeStart, timeGoal, timeBurst, setTimeEnd, stopTimer, incrementTimeBurst]);
 
   return (
     <div className='flex flex-col w-max justify-center items-center'>
@@ -68,7 +72,7 @@ const Hourglass: React.FC = () => {
         <button onClick={stopTimer}>Stop</button>
       </div>
       <div>
-        <p>Start Time: {startTime ? startTime.toString() : 'Not set'}</p>
+        <p>Start Time: {timeStart ? timeStart.toString() : 'Not set'}</p>
         <p>Remaining Time: {Math.ceil(remainingTime / 1000)} seconds</p>
       </div>
     </div>
