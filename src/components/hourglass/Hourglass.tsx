@@ -1,12 +1,12 @@
-// pages/index.tsx
 'use client';
 
 import React, { useState } from 'react';
 import TimerSelector from './TimerSelector';
 import CustomInput from './CustomInput';
-import Hourglasss from './Hourglasss';
+import HourglassAni from './hourglassAni';
+import HourglassFunction from './hourglassFunction';
 
-const Home: React.FC = () => {
+const Hourglass: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
 
   const handleTimeSelect = (time: number) => {
@@ -19,16 +19,11 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <Hourglasss />
-      <TimerSelector onSelect={handleTimeSelect} />
-      <CustomInput onStart={handleStart} />
-      {selectedTime !== null && (
-        <div className="mt-4">
-          <h2>Selected Time: {selectedTime === Infinity ? '∞' : `${selectedTime / 60}분`}</h2>
-        </div>
-      )}
+      <HourglassAni/>
+      <TimerSelector/>
+      <HourglassFunction />
     </div>
   );
 };
 
-export default Home;
+export default Hourglass;

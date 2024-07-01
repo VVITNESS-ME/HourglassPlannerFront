@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useHourglassStore } from '../../store/hourglassStore';
+import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
 import HourglassAni from './hourglassAni';
 
-const Hourglass: React.FC = () => {
+const HourglassFunction: React.FC = () => {
   const timeStart = useHourglassStore((state) => state.timeStart);
   const timeBurst = useHourglassStore((state) => state.timeBurst);
   const timeGoal = useHourglassStore((state) => state.timeGoal);
@@ -62,7 +62,6 @@ const Hourglass: React.FC = () => {
 
   return (
     <div className='flex flex-col w-max justify-center items-center'>
-      <HourglassAni />
       <br />
       <h1>Time Tracker</h1>
       <div>
@@ -79,4 +78,4 @@ const Hourglass: React.FC = () => {
   );
 };
 
-export default Hourglass;
+export default HourglassFunction;

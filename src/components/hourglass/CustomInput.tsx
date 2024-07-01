@@ -1,16 +1,13 @@
-// components/CustomInput.tsx
 'use client';
 
 import React, { useState } from 'react';
+import { useHourglassStore } from '../../../store/hourglassStore';
 import Button from './Button';
-import { isAscii } from 'buffer';
 
-interface CustomInputProps {
-  onStart: (time: number) => void;
-}
-
-const CustomInput: React.FC<CustomInputProps> = ({ onStart }) => {
+const CustomInput: React.FC= () => {
   const [inputValue, setInputValue] = useState('');
+  const handleSetTime = useHourglassStore((state) => state.handleSetTime);
+  const toggleRunning = useHourglassStore((state) => state.toggleRunning);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -19,7 +16,11 @@ const CustomInput: React.FC<CustomInputProps> = ({ onStart }) => {
   const handleStartClick = () => {
     const time = parseInt(inputValue, 10) * 60;
     if (!isNaN(time)) {
-      onStart(time);
+      const hours = Math.floor(time / 3600);
+      const minutes = Math.floor((time % 3600) / 60);
+      const remainingSeconds = time % 60;
+      handleSetTime(hours, minutes, remainingSeconds);
+      toggleRunning(); // 타이머 시작
     }
   };
 
