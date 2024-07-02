@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import TimerSelector from './timerSelector';
+import TimerSelector from './TimerSelector';
 import HourglassAni from './hourglassAni';
-import HourglassFunction from './timerRunning';
+import HourglassRunning from './timerRunning';
 import { useHourglassStore } from '../../../store/hourglassStore';
 
 const Hourglass: React.FC = () => {
@@ -19,9 +19,10 @@ const Hourglass: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center">
       <HourglassAni/>
-      {isRunning ? <HourglassFunction /> : <TimerSelector />}
+      <div className='mt-10' />
+      {isRunning ? <HourglassRunning /> : <TimerSelector />}
     </div>
   );
 };
