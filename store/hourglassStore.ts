@@ -88,7 +88,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   timeBurst: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeBurst : 0,
   timeGoal: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeGoal : null,
   timeEnd: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeEnd) : null,
-  isRunning: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).isRunning : false,
+  isRunning: Cookies.get('timerState') ? JSON.parse(LKJlKJCookies.get('timerState')!).isRunning : false,
   bbMode: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).bbMode : false,
   pause: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).pause : false,
   hId: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hId : null,
