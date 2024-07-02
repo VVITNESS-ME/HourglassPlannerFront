@@ -37,9 +37,9 @@ const useAuthStore = create<AuthState>((set) => ({
       }
 
       // 환경변수에서 만료일을 가져와 설정 (기본값은 1일)
-      const expires = parseInt(process.env.NEXT_ACCESS_TOKEN_EXPIRES);
+      const expires = parseInt(process.env.NEXT_ACCESS_TOKEN_EXPIRES || '1');
 
-      Cookies.set(`${process.env.NEXT_ACCESS_TOKEN_KEY}`, token, { expires }); // 만료일을 설정하여 쿠키 저장
+      Cookies.set(process.env.NEXT_ACCESS_TOKEN_KEY || 'token', token, { expires }); // 만료일을 설정하여 쿠키 저장
       set({ email, token, error: null });
     } catch (error) {
       if (error instanceof Error) {
@@ -50,11 +50,11 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
   logout: () => {
-    Cookies.remove(`${process.env.NEXT_ACCESS_TOKEN_KEY}`);
+    Cookies.remove(process.env.NEXT_ACCESS_TOKEN_KEY);
     set({ email: "", token: null, error: null });
   },
   initialize: () => {
-    const token = Cookies.get(`${process.env.NEXT_ACCESS_TOKEN_KEY}`);
+    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY);
     if (token) {
       set({ token, email: "", error: null });
     }

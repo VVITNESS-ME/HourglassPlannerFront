@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
-import Button from "@/components/hourglass/Button";
+import Button from "@/components/hourglass/button";
 
 const TimerRunning: React.FC = () => {
   const timeStart = useHourglassStore((state) => state.timeStart);

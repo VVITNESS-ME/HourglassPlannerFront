@@ -31,6 +31,10 @@ const removeStateFromCookies = () => {
   Cookies.remove('timerState');
 };
 
+const getTokenFromCookies = (): string | undefined => {
+  return Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY);
+}
+
 const sendTimeDataToServer = async (data: {
   timeStart: string | undefined;
   timeBurst: number | null;
@@ -38,10 +42,12 @@ const sendTimeDataToServer = async (data: {
   hId: bigint | null;
 }) => {
   try {
+    const token = getTokenFromCookies();
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(data),
     });
@@ -61,10 +67,12 @@ const sendPauseSignalToServer = async (data: {
   hId: bigint | null;
   timeBurst: number | null;
 })=> {
+  const token = getTokenFromCookies();
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify(data),
   });
