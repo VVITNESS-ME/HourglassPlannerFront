@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import style from 'styled-jsx/style';
 
 const styles = {
     container: {
@@ -12,7 +11,7 @@ const styles = {
       width: '50px',
       height: '25px',
       borderRadius: '25px',
-      backgroundColor: '#ccc',
+      backgroundColor: 'EEEEEE',
       display: 'flex',
       alignItems: 'center',
       padding: '3px',
@@ -20,10 +19,10 @@ const styles = {
       transition: 'background-color 0.3s',
     },
     switchOn: {
-      backgroundColor: '#4caf50',
+      backgroundColor: '#F2CD88',
     },
     switchOff: {
-      backgroundColor: '#ccc',
+      backgroundColor: '#BFBFBF',
     },
     circle: {
       width: '19px',
@@ -39,13 +38,12 @@ const styles = {
       transform: 'translateX(0px)',
     },
   };
-function ToggleSwitch(isOn:boolean) {
-  isOn = useState(false);
-  const handleToggle = () => {setIsOn(!isOn);}
+function ToggleSwitch({hideTimer, toggleTimer}) {
+  const handleToggle = () => {toggleTimer(!hideTimer);};
   return (
     <div style={styles.container} onClick={handleToggle}>
-      <div style={{ styles.switch, (isOn ? styles.switchOn : styles.switchOff) }}>
-        <div style={{ styles.circle, (isOn ? styles.circleOn : styles.circleOff) }} />
+      <div style={{ ...styles.switch, ...(hideTimer ? styles.switchOn : styles.switchOff) }}>
+        <div style={{ ...styles.circle, ...(hideTimer ? styles.circleOn : styles.circleOff) }} />
       </div>
     </div>
   );
