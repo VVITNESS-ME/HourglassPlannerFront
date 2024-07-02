@@ -30,24 +30,31 @@ const useAuthStore = create<AuthState>((set) => ({
       }
 
       const data = await response.json();
-      Cookies.set("token", data.token, { expires: 1 }); // 1일 후 만료
-      set({ email, token: data.token, error: null });
+      let token = data.token;
+
+      if (token.startsWith('Bearer ')) {
+        token = token.slice(7);
+      }
+
+      // 환경변수에서 만료일을 가져와 설정 (기본값은 1일)
+      const expires = parseInt(process.env.NEXT_ACCESS_TOKEN_EXPIRES);
+
+      Cookies.set(`${process.env.NEXT_ACCESS_TOKEN_KEY}`, token, { expires }); // 만료일을 설정하여 쿠키 저장
+      set({ email, token, error: null });
     } catch (error) {
       if (error instanceof Error) {
         set({ error: error.message || "Login failed" });
       } else {
         set({ error: "An unknown error occurred" });
       }
-    } finally {
-      set({ email: "", token: null, error: null });
     }
   },
   logout: () => {
-    Cookies.remove("token");
+    Cookies.remove(`${process.env.NEXT_ACCESS_TOKEN_KEY}`);
     set({ email: "", token: null, error: null });
   },
   initialize: () => {
-    const token = Cookies.get("token");
+    const token = Cookies.get(`${process.env.NEXT_ACCESS_TOKEN_KEY}`);
     if (token) {
       set({ token, email: "", error: null });
     }

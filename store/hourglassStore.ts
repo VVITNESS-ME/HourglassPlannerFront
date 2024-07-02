@@ -57,6 +57,18 @@ const sendTimeDataToServer = async (data: {
     return null;
   }
 };
+const sendPauseSignalToServer = async (data: {
+  hId: bigint | null;
+  timeBurst: number | null;
+})=> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+};
 
 const sendStartDataToServer = async (data: {
   timeStart: string | undefined;
@@ -88,7 +100,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   timeBurst: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeBurst : 0,
   timeGoal: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeGoal : null,
   timeEnd: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeEnd) : null,
-  isRunning: Cookies.get('timerState') ? JSON.parse(LKJlKJCookies.get('timerState')!).isRunning : false,
+  isRunning: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).isRunning : false,
   bbMode: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).bbMode : false,
   pause: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).pause : false,
   hId: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hId : null,
