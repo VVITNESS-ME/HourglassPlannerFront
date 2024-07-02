@@ -31,8 +31,8 @@ const removeStateFromCookies = () => {
   Cookies.remove('timerState');
 };
 
-const getTokenFromCookies = (): string | undefined => {
-  return Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY);
+const getToken = (): string | undefined => {
+  return Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
 }
 
 const sendTimeDataToServer = async (data: {
@@ -42,7 +42,7 @@ const sendTimeDataToServer = async (data: {
   hId: bigint | null;
 }) => {
   try {
-    const token = getTokenFromCookies();
+    const token = getToken();
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
       method: 'POST',
       headers: {
@@ -63,19 +63,59 @@ const sendTimeDataToServer = async (data: {
     return null;
   }
 };
+
 const sendPauseSignalToServer = async (data: {
   hId: bigint | null;
   timeBurst: number | null;
-})=> {
-  const token = getTokenFromCookies();
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(data),
-  });
+}) => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to pause timer');
+    }
+
+    return responseData.hId;
+  } catch (error) {
+    console.error('Error', error);
+    return null;
+  }
+};
+
+const sendResumeSignalToServer = async (data: {
+  hId: bigint | null;
+  timeBurst: number | null;
+}) => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/resume`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to resume timer');
+    }
+
+    return responseData.hId;
+  } catch (error) {
+    console.error('Error', error);
+    return null;
+  }
 };
 
 const sendStartDataToServer = async (data: {
@@ -83,10 +123,12 @@ const sendStartDataToServer = async (data: {
   timeGoal: number | null;
 }) => {
   try {
+    const token = getToken();
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(data),
     });
@@ -142,9 +184,14 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
     return newState;
   }),
-  togglePause: () => set((state) => {
+  togglePause: () => set(async (state) => {
     const newState = { ...state, pause: !state.pause };
     saveStateToCookies(newState);
+    if (!state.pause) {
+      await sendPauseSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+    } else {
+      await sendResumeSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+    }
     return newState;
   }),
   handleSetTime: async (hours: number, minutes: number, seconds: number) => {
