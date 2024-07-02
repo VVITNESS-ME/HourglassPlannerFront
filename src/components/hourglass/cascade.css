@@ -1,0 +1,51 @@
+@keyframes waterfall {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+  
+  .waterfall-container {
+    position: absolute;
+    left: 49%;
+    width: 2%;
+    height: 249px;
+    overflow: hidden;
+    background-color: #F2CD88;
+  }
+  
+  .waterfall {
+    position: absolute;
+    left: 5%;
+    width: 10%;
+    height: 50%;
+    background-color: rgb(172, 134, 57);
+    animation: waterfall 0.37s linear infinite;
+  }
+  
+  .waterfall:nth-child(2) {
+    left: 20%;
+    animation-delay: 0.2s;
+  }
+  
+  .waterfall:nth-child(3) {
+    left: 8%;
+    animation-delay: -1s;
+  }
+  
+  .waterfall:nth-child(4) {
+    left: 60%;
+    animation-delay: -1.5s;
+  }
+  
+  .waterfall:nth-child(5) {
+    left: 80%;
+    animation-delay: -2s;
+  }
