@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
-import Button from "@/components/hourglass/button";
+import Button from './button';
+import ToggleSwitch from './toggleSwitch';
 
 const TimerRunning: React.FC = () => {
   const timeStart = useHourglassStore((state) => state.timeStart);
@@ -11,12 +12,16 @@ const TimerRunning: React.FC = () => {
   const timeGoal = useHourglassStore((state) => state.timeGoal);
   const timeEnd = useHourglassStore((state) => state.timeEnd);
   const isRunning = useHourglassStore((state) => state.isRunning);
+  const pause = useHourglassStore((state) => state.pause);
   const setTimeEnd = useHourglassStore((state) => state.setTimeEnd);
-  const toggleRunning = useHourglassStore((state) => state.toggleRunning);
+  const togglePause = useHourglassStore((state) => state.togglePause);
   const stopTimer = useHourglassStore((state) => state.stopTimer);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
 
-  const formatRemainingTime = (milliseconds) => {
+  const [hideTimer, toggleTimer] = useState(false);
+  const hideToggle = () => {toggleTimer(!hideTimer);};
+
+  const formatRemainingTime = (milliseconds:number) => {
     if (milliseconds <= 0) return '0 seconds';
 
     const totalSeconds = Math.ceil(milliseconds / 1000);
@@ -46,7 +51,7 @@ const TimerRunning: React.FC = () => {
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
-    if (isRunning) {
+    if (isRunning && !pause) {
       timer = setInterval(() => {
         incrementTimeBurst();
 
@@ -60,14 +65,14 @@ const TimerRunning: React.FC = () => {
     }
 
     return () => clearInterval(timer);
-  }, [isRunning, timeBurst, timeGoal, setTimeEnd, stopTimer, incrementTimeBurst]);
+  }, [isRunning, pause, timeBurst, timeGoal, setTimeEnd, stopTimer, incrementTimeBurst]);
 
   return (
-    <div className='flex flex-col w-max justify-center items-center'>
-      <br/>
-      <h1>Time Tracker</h1>
-      <div>
-        <p>남은시간: {timeGoal !== null ? formatRemainingTime(timeGoal - (timeBurst || 0)) : 'N/A'}</p>
+    <div className='flex flex-col w-max justify-center items-center text-2xl'>
+      <ToggleSwitch hideTimer={hideTimer} toggleTimer={toggleTimer} />
+      <div {...hideTimer? {className:"flex flex-col items-center"} : {className: "hidden"}}>
+        <div className='mt-6'><p>남은시간: {timeGoal !== null ? formatRemainingTime(timeGoal - (timeBurst || 0)) : 'N/A'}</p></div>
+        <button className='mt-2' onClick={togglePause}>pause/restart</button>
       </div>
       <div>
         <Button label="종료" onClick={stopTimer} isActive={false}/>

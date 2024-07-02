@@ -13,7 +13,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ label, onClick, isActive, disabled }) => {
   return (
     <button
-      className={`w-24 h-12 p-2 m-2 text-black rounded ${isActive ? 'bg-sandy-3' : 'bg-sandy-1'} ${disabled ? 'bg-gray-400' : 'hover:bg-sandy-2'}`}
+      className={`w-24 h-12 p-2 m-2 text-black rounded ${disabled ? 'bg-mono-2' : 'hover:bg-sandy-2'} ${isActive ? 'bg-sandy-3' : 'bg-sandy-1'}`}
       onClick={onClick}
       disabled={disabled}
     >

@@ -39,7 +39,11 @@ const TimerSelector: React.FC = () => {
           value={inputValue}
           onChange={handleInputChange}
         />
-        <Button label="시작" onClick={() => {handleClick('시작', parseInt(inputValue) * 60)}} isActive={false} />
+        {
+          (inputValue==='0' || inputValue==='') ? <button disabled className={`w-24 h-12 p-2 m-2 text-black rounded bg-mono-2`}>시작</button>
+          : <Button label="시작" onClick={() => {handleClick('시작', parseInt(inputValue) * 60)}} isActive={false} />
+        }
+        {/* <Button label="시작" disabled onClick={() => {handleClick('시작', parseInt(inputValue) * 60)}} isActive={false} /> */}
       </div>
     </div>
   );

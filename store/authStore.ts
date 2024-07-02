@@ -50,11 +50,11 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
   logout: () => {
-    Cookies.remove(process.env.NEXT_ACCESS_TOKEN_KEY);
+    Cookies.remove(process.env.NEXT_ACCESS_TOKEN_KEY || 'token'); // 기본값 'token' 설정
     set({ email: "", token: null, error: null });
   },
   initialize: () => {
-    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY);
+    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token'); // 기본값 'token' 설정
     if (token) {
       set({ token, email: "", error: null });
     }
