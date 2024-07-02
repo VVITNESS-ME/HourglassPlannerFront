@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
-import Button from './Button';
+import Button from './button';
 import ToggleSwitch from './toggleSwitch';
 
 const TimerRunning: React.FC = () => {

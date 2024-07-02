@@ -184,13 +184,16 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
     return newState;
   }),
-  togglePause: () => set(async (state) => {
+
+  // HOT FIXXX !!!! //
+  // async await 했더니 pause 작동 안됨.
+  togglePause: () => set((state) => {
     const newState = { ...state, pause: !state.pause };
     saveStateToCookies(newState);
     if (!state.pause) {
-      await sendPauseSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+      sendPauseSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
     } else {
-      await sendResumeSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+      sendResumeSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
     }
     return newState;
   }),
