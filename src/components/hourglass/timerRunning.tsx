@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
+import Button from "@/components/hourglass/button";
 
 const TimerRunning: React.FC = () => {
   const timeStart = useHourglassStore((state) => state.timeStart);
@@ -14,6 +15,17 @@ const TimerRunning: React.FC = () => {
   const toggleRunning = useHourglassStore((state) => state.toggleRunning);
   const stopTimer = useHourglassStore((state) => state.stopTimer);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
+
+  const formatRemainingTime = (milliseconds) => {
+    if (milliseconds <= 0) return '0 seconds';
+
+    const totalSeconds = Math.ceil(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${hours} 시간 ${minutes} 분 ${seconds} 초`;
+  }
 
   useEffect(() => {
     const savedState = Cookies.get('timerState');
@@ -52,15 +64,13 @@ const TimerRunning: React.FC = () => {
 
   return (
     <div className='flex flex-col w-max justify-center items-center'>
-      <br />
+      <br/>
       <h1>Time Tracker</h1>
       <div>
-        <button onClick={stopTimer}>Stop</button>
+        <p>남은시간: {timeGoal !== null ? formatRemainingTime(timeGoal - (timeBurst || 0)) : 'N/A'}</p>
       </div>
       <div>
-        <p>Start Time: {timeStart ? timeStart.toString() : 'Not set'}</p>
-        <p>Elapsed Time: {Math.ceil((timeBurst || 0) / 1000)} seconds</p>
-        <p>Remaining Time: {timeGoal !== null ? Math.ceil((timeGoal - (timeBurst || 0)) / 1000) : 'N/A'} seconds</p>
+        <Button label="종료" onClick={stopTimer} isActive={false}/>
       </div>
     </div>
   );

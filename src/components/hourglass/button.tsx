@@ -1,4 +1,4 @@
-// components/Button.tsx
+// components/button.tsx
 'use client';
 
 import React from 'react';
