@@ -2,8 +2,13 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import Cookies from "js-cookie";
+import { redirect } from "next/navigation";
 
 const SignUp = () => {
+  const token = Cookies.get("token");
+  if (token) redirect('/');
+
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -42,6 +47,7 @@ const SignUp = () => {
       setName('');
       setPassword('');
       setVerifyPassword('');
+      redirect('/');
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message || 'Sign up failed');
