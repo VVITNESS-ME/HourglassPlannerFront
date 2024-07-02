@@ -1,4 +1,4 @@
-import {create} from "zustand";
+import create from "zustand";
 import Cookies from "js-cookie";
 
 type AuthState = {
@@ -24,8 +24,12 @@ const useAuthStore = create<AuthState>((set) => ({
         body: JSON.stringify({ email, password }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+
       const data = await response.json();
-<<<<<<< HEAD
       let token = data.token;
 
       if (token.startsWith('Bearer ')) {
@@ -37,17 +41,6 @@ const useAuthStore = create<AuthState>((set) => ({
 
       Cookies.set(process.env.NEXT_ACCESS_TOKEN_KEY || 'token', token, { expires }); // 만료일을 설정하여 쿠키 저장
       set({ email, token, error: null });
-=======
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-      console.log(data);
-      console.log(data.data.authToken);
-      Cookies.set("token", data.data.authToken, { expires: 1 }); // 1일 후 만료
-      set({ email, token: data.data.authToken, error: null });
-
->>>>>>> main
     } catch (error) {
       if (error instanceof Error) {
         set({ error: error.message || "Login failed" });
@@ -57,11 +50,11 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
   logout: () => {
-    Cookies.remove(process.env.NEXT_ACCESS_TOKEN_KEY);
+    Cookies.remove(process.env.NEXT_ACCESS_TOKEN_KEY || 'token'); // 기본값 'token' 설정
     set({ email: "", token: null, error: null });
   },
   initialize: () => {
-    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY);
+    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token'); // 기본값 'token' 설정
     if (token) {
       set({ token, email: "", error: null });
     }

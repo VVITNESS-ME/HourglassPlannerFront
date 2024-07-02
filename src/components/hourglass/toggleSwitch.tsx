@@ -1,45 +1,53 @@
+import React from 'react';
 
-import React, { useState } from 'react';
+interface ToggleSwitchProps {
+  hideTimer: boolean;
+  toggleTimer: (value: boolean) => void;
+}
 
-const styles = {
-    container: {
-      display: 'inline-block',
-      cursor: 'pointer',
-      userSelect: 'none',
-    },
-    switch: {
-      width: '50px',
-      height: '25px',
-      borderRadius: '25px',
-      backgroundColor: 'EEEEEE',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '3px',
-      boxSizing: 'border-box',
-      transition: 'background-color 0.3s',
-    },
-    switchOn: {
-      backgroundColor: '#F2CD88',
-    },
-    switchOff: {
-      backgroundColor: '#BFBFBF',
-    },
-    circle: {
-      width: '19px',
-      height: '19px',
-      borderRadius: '50%',
-      backgroundColor: '#fff',
-      transition: 'transform 0.3s',
-    },
-    circleOn: {
-      transform: 'translateX(25px)',
-    },
-    circleOff: {
-      transform: 'translateX(0px)',
-    },
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: 'inline-block',
+    cursor: 'pointer',
+    userSelect: 'none' as 'none', // userSelect 속성을 명확하게 지정
+  },
+  switch: {
+    width: '50px',
+    height: '25px',
+    borderRadius: '25px',
+    backgroundColor: '#EEEEEE', // 배경 색상 추가
+    display: 'flex',
+    alignItems: 'center',
+    padding: '3px',
+    boxSizing: 'border-box',
+    transition: 'background-color 0.3s',
+  },
+  switchOn: {
+    backgroundColor: '#F2CD88',
+  },
+  switchOff: {
+    backgroundColor: '#BFBFBF',
+  },
+  circle: {
+    width: '19px',
+    height: '19px',
+    borderRadius: '50%',
+    backgroundColor: '#fff',
+    transition: 'transform 0.3s',
+  },
+  circleOn: {
+    transform: 'translateX(25px)',
+  },
+  circleOff: {
+    transform: 'translateX(0px)',
+  },
+};
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ hideTimer, toggleTimer }) => {
+  const handleToggle = () => {
+    toggleTimer(!hideTimer);
   };
-function ToggleSwitch({hideTimer, toggleTimer}) {
-  const handleToggle = () => {toggleTimer(!hideTimer);};
+
   return (
     <div style={styles.container} onClick={handleToggle}>
       <div style={{ ...styles.switch, ...(hideTimer ? styles.switchOn : styles.switchOff) }}>
@@ -47,6 +55,6 @@ function ToggleSwitch({hideTimer, toggleTimer}) {
       </div>
     </div>
   );
-}
+};
 
 export default ToggleSwitch;
