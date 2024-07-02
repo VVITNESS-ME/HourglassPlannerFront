@@ -33,7 +33,34 @@ const removeStateFromCookies = () => {
 
 const getToken = (): string | undefined => {
   return Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
-}
+};
+
+const sendStartDataToServer = async (data: {
+  timeStart: string | undefined;
+  timeGoal: number | null;
+}): Promise<bigint | null> => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to start timer');
+    }
+
+    return responseData.hId;
+  } catch (error) {
+    console.error('Error:', error);
+    return null;
+  }
+};
 
 const sendTimeDataToServer = async (data: {
   timeStart: string | undefined;
@@ -47,7 +74,7 @@ const sendTimeDataToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -76,7 +103,7 @@ const sendPauseSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -85,7 +112,6 @@ const sendPauseSignalToServer = async (data: {
     if (!response.ok) {
       throw new Error(responseData.message || 'Failed to pause timer');
     }
-
     return responseData.hId;
   } catch (error) {
     console.error('Error', error);
@@ -105,7 +131,7 @@ const sendResumeSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -122,32 +148,6 @@ const sendResumeSignalToServer = async (data: {
   }
 };
 
-const sendStartDataToServer = async (data: {
-  timeStart: string | undefined;
-  timeGoal: number | null;
-}) => {
-  try {
-    const token = getToken();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(data),
-    });
-
-    const responseData = await response.json();
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Failed to start timer');
-    }
-
-    return responseData.hId; // 서버로부터 hId를 반환
-  } catch (error) {
-    console.error('Error:', error);
-    return null;
-  }
-};
 export const useHourglassStore = create<TimeState>((set, get) => ({
   timeStart: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeStart) : null,
   timeBurst: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeBurst : 0,
@@ -157,12 +157,6 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   bbMode: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).bbMode : false,
   pause: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).pause : false,
   hId: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hId : null,
-  hideTimer: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hideTimer : null,
-  toggleTimer: (value: boolean) => set((state) => {
-    const newState = { ...state, hideTimer: value };
-    saveStateToCookies(newState);
-    return newState;
-  }),
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -223,6 +217,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         }
       }
     } else {
+      // 토큰이 없는 경우의 처리
       const newState = { ...state, pause: !state.pause };
       set(newState);
       saveStateToCookies(newState);
@@ -233,13 +228,13 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     const totalDuration = (hours * 3600 + minutes * 60 + seconds) * 1000;
     const initialState = {
       timeStart: currentTime,
-      timeBurst: 0,
+      timeBurst: 0, // 초기에는 0으로 설정
       timeGoal: totalDuration,
       timeEnd: null,
       isRunning: true,
       bbMode: get().bbMode,
       pause: get().pause,
-      hId: null,
+      hId: null, // 초기에는 null로 설정
     };
     set(initialState);
     saveStateToCookies(initialState);
@@ -260,7 +255,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     const newTimeBurst = state.timeBurst !== null ? state.timeBurst + 1000 : 1000;
     const newState = { ...state, timeBurst: newTimeBurst };
     saveStateToCookies(newState);
-    get().checkAndStopTimer();
+    get().checkAndStopTimer(); // 타이머가 완료되었는지 확인
     return newState;
   }),
   stopTimer: () => set((state) => {

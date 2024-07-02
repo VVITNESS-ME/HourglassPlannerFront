@@ -9,13 +9,13 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: 'inline-block',
     cursor: 'pointer',
-    userSelect: 'none' as 'none', // userSelect 속성을 명확하게 지정
+    userSelect: 'none' as 'none',
   },
   switch: {
     width: '50px',
     height: '25px',
     borderRadius: '25px',
-    backgroundColor: '#EEEEEE', // 배경 색상 추가
+    backgroundColor: '#EEEEEE',
     display: 'flex',
     alignItems: 'center',
     padding: '3px',
