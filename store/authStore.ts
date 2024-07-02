@@ -1,5 +1,5 @@
-import create from "zustand";
-import Cookies from "js-cookie";
+import { create } from 'zustand';
+import Cookies from 'js-cookie';
 
 type AuthState = {
   email: string;

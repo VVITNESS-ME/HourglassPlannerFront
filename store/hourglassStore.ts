@@ -65,6 +65,8 @@ const sendTimeDataToServer = async (data: {
 };
 
 const sendPauseSignalToServer = async (data: {
+  timeStart: string | undefined;
+  timeGoal: number | null;
   hId: bigint | null;
   timeBurst: number | null;
 }) => {
@@ -92,6 +94,8 @@ const sendPauseSignalToServer = async (data: {
 };
 
 const sendResumeSignalToServer = async (data: {
+  timeStart: string | undefined;
+  timeGoal: number | null;
   hId: bigint | null;
   timeBurst: number | null;
 }) => {
@@ -144,7 +148,6 @@ const sendStartDataToServer = async (data: {
     return null;
   }
 };
-
 export const useHourglassStore = create<TimeState>((set, get) => ({
   timeStart: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeStart) : null,
   timeBurst: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeBurst : 0,
@@ -154,6 +157,12 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   bbMode: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).bbMode : false,
   pause: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).pause : false,
   hId: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hId : null,
+  hideTimer: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hideTimer : null,
+  toggleTimer: (value: boolean) => set((state) => {
+    const newState = { ...state, hideTimer: value };
+    saveStateToCookies(newState);
+    return newState;
+  }),
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -184,62 +193,88 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
     return newState;
   }),
-
-  // HOT FIXXX !!!! //
-  // async await 했더니 pause 작동 안됨.
-  togglePause: () => set((state) => {
-    const newState = { ...state, pause: !state.pause };
-    saveStateToCookies(newState);
-    if (!state.pause) {
-      sendPauseSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+  togglePause: async () => {
+    const token = getToken();
+    const state = get();
+    if (token) {
+      if (!state.pause) {
+        const hId = await sendPauseSignalToServer({
+          timeStart: state.timeStart?.toISOString(),
+          timeGoal: state.timeGoal,
+          hId: state.hId,
+          timeBurst: state.timeBurst
+        });
+        if (hId) {
+          const newState = { ...state, hId, pause: true };
+          set(newState);
+          saveStateToCookies(newState);
+        }
+      } else {
+        const hId = await sendResumeSignalToServer({
+          timeStart: state.timeStart?.toISOString(),
+          timeGoal: state.timeGoal,
+          hId: state.hId,
+          timeBurst: state.timeBurst
+        });
+        if (hId) {
+          const newState = { ...state, hId, pause: false };
+          set(newState);
+          saveStateToCookies(newState);
+        }
+      }
     } else {
-      sendResumeSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+      const newState = { ...state, pause: !state.pause };
+      set(newState);
+      saveStateToCookies(newState);
     }
-    return newState;
-  }),
+  },
   handleSetTime: async (hours: number, minutes: number, seconds: number) => {
     const currentTime = new Date();
     const totalDuration = (hours * 3600 + minutes * 60 + seconds) * 1000;
     const initialState = {
       timeStart: currentTime,
-      timeBurst: 0, // 초기에는 0으로 설정
+      timeBurst: 0,
       timeGoal: totalDuration,
       timeEnd: null,
       isRunning: true,
       bbMode: get().bbMode,
       pause: get().pause,
-      hId: null, // 초기에는 null로 설정
+      hId: null,
     };
     set(initialState);
     saveStateToCookies(initialState);
-
-    const hId = await sendStartDataToServer({
-      timeStart: currentTime.toISOString(),
-      timeGoal: initialState.timeGoal,
-    });
-
-    if (hId) {
-      const newState = { ...get(), hId };
-      set(newState);
-      saveStateToCookies(newState);
+    const token = getToken();
+    if (token) {
+      const hId = await sendStartDataToServer({
+        timeStart: currentTime.toISOString(),
+        timeGoal: initialState.timeGoal,
+      });
+      if (hId) {
+        const newState = { ...get(), hId };
+        set(newState);
+        saveStateToCookies(newState);
+      }
     }
   },
   incrementTimeBurst: () => set((state) => {
     const newTimeBurst = state.timeBurst !== null ? state.timeBurst + 1000 : 1000;
     const newState = { ...state, timeBurst: newTimeBurst };
     saveStateToCookies(newState);
-    get().checkAndStopTimer(); // 타이머가 완료되었는지 확인
+    get().checkAndStopTimer();
     return newState;
   }),
   stopTimer: () => set((state) => {
     const newState = { ...state, isRunning: false, timeEnd: new Date() };
     removeStateFromCookies();
-    sendTimeDataToServer({
-      timeStart: state.timeStart?.toISOString(),
-      timeBurst: state.timeBurst,
-      timeEnd: newState.timeEnd?.toISOString(),
-      hId: state.hId,
-    });
+    const token = getToken();
+    if (token) {
+      sendTimeDataToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeBurst: state.timeBurst,
+        timeEnd: newState.timeEnd?.toISOString(),
+        hId: state.hId,
+      });
+    }
     return newState;
   }),
   checkAndStopTimer: () => {
@@ -249,12 +284,15 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         const newState = { ...state, isRunning: false, timeEnd: new Date() };
         saveStateToCookies(newState);
         removeStateFromCookies();
-        sendTimeDataToServer({
-          timeStart: state.timeStart?.toISOString(),
-          timeBurst: state.timeBurst,
-          timeEnd: newState.timeEnd?.toISOString(),
-          hId: state.hId,
-        });
+        const token = getToken();
+        if (token) {
+          sendTimeDataToServer({
+            timeStart: state.timeStart?.toISOString(),
+            timeBurst: state.timeBurst,
+            timeEnd: newState.timeEnd?.toISOString(),
+            hId: state.hId,
+          });
+        }
         return newState;
       });
     }

@@ -17,7 +17,6 @@ const TimerRunning: React.FC = () => {
   const togglePause = useHourglassStore((state) => state.togglePause);
   const stopTimer = useHourglassStore((state) => state.stopTimer);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
-
   const [hideTimer, toggleTimer] = useState(false);
   const hideToggle = () => {toggleTimer(!hideTimer);};
 
