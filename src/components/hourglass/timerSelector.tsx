@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
-import Button from './button';
+import Button from './Button';
 
 const TimerSelector: React.FC = () => {
   const [activeButton, setActiveButton] = useState<string | null>(null);

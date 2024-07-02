@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import TimerSelector from './timerSelector';
+import TimerSelector from './TimerSelector';
 import HourglassAni from './hourglassAni';
 import HourglassRunning from './timerRunning';
 import { useHourglassStore } from '../../../store/hourglassStore';
