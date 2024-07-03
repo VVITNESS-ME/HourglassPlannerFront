@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
-
+import {decodeJwt} from './jwtDecode'
 type AuthState = {
-  email: string;
+  username: string;
   token: string | null;
   error: string | null;
   isInitialized: boolean;
@@ -12,7 +12,7 @@ type AuthState = {
 };
 
 const useAuthStore = create<AuthState>((set, get) => ({
-  email: "",
+  username: "",
   token: null,
   error: null,
   isInitialized: false,  // 초기화 상태 추가
@@ -32,14 +32,14 @@ const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       const data = await response.json();
-      let token = data.data.authToken;
-      console.log(data);
-      console.log(token);
+      const token = data.data.authToken;
+      const decoded = decodeJwt(token);
+      const username = decoded.sub;
 
       const expires = parseInt(process.env.NEXT_ACCESS_TOKEN_EXPIRES || '1', 10);
 
       Cookies.set(process.env.NEXT_ACCESS_TOKEN_KEY || 'token', token, { expires }); // 만료일을 설정하여 쿠키 저장
-      set({ email, token, error: null });
+      set({ username: username, token, error: null });
       const state = get();
       Cookies.set('authState', JSON.stringify(state), { expires });
     } catch (error) {
@@ -52,7 +52,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   },
   logout: () => {
     Cookies.remove(process.env.NEXT_ACCESS_TOKEN_KEY || 'token'); // 기본값 'token' 설정
-    set({ email: "", token: null, error: null });
+    set({ username: "", token: null, error: null });
     Cookies.remove('authState');
   },
   initialize: () => {
@@ -60,14 +60,14 @@ const useAuthStore = create<AuthState>((set, get) => ({
     if (authState) {
       const parsedState = JSON.parse(authState);
       set({
-        email: parsedState.email || "",
+        username: parsedState.username || "",
         token: parsedState.token || null,
         error: parsedState.error || null,
         isInitialized: true,  // 초기화 완료
       });
     } else {
       set({
-        email: "",
+        username: "",
         token: null,
         error: null,
         isInitialized: true,  // 초기화 완료
