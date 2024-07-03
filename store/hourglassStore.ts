@@ -232,8 +232,8 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       timeGoal: totalDuration,
       timeEnd: null,
       isRunning: true,
-      bbMode: get().bbMode,
-      pause: get().pause,
+      bbMode: false,
+      pause: false,
       hId: null, // 초기에는 null로 설정
     };
     set(initialState);
