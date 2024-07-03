@@ -212,6 +212,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     const token = getToken();
     const state = get();
     if (token) {
+      const newState = { ...state, pause: !state.pause};
+      set(newState);
+      saveStateToCookies(newState);
       if (!state.pause) {
         const hId = await sendPauseSignalToServer({
           timeStart: state.timeStart?.toISOString(),
@@ -220,7 +223,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId, pause: true };
+          const newState = { ...state, hId};
           set(newState);
           saveStateToCookies(newState);
         }
@@ -232,15 +235,11 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId, pause: false };
+          const newState = { ...state, hId};
           set(newState);
           saveStateToCookies(newState);
         }
       }
-    } else {
-      const newState = { ...state, pause: !state.pause };
-      set(newState);
-      saveStateToCookies(newState);
     }
   },
   handleSetTime: async (hours: number, minutes: number, seconds: number) => {
