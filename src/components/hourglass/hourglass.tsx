@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import TimerSelector from './timerSelector';
 import HourglassAni from './hourglassAni';
-import HourglassFunction from './timerRunning';
+import TimerRunning from './timerRunning';
 import { useHourglassStore } from '../../../store/hourglassStore';
 
 const Hourglass: React.FC = () => {
@@ -21,7 +21,7 @@ const Hourglass: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <HourglassAni/>
-      {isRunning ? <HourglassFunction /> : <TimerSelector />}
+      {isRunning ? <TimerRunning /> : <TimerSelector />}
     </div>
   );
 };
