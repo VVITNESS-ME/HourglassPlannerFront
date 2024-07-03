@@ -2,13 +2,13 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import useAuthStore from "../../store/authStore";
+import useAuthStore from "../../store/(auth)/authStore"; // 경로를 올바르게 수정
 import LoginMenu from "./loginmenu";
 import UserMenu from "./usermenu";
 
 const Navbar = () => {
-    const { email, isInitialized, initialize } = useAuthStore(state => ({
-        email: state.email,
+    const { username, isInitialized, initialize } = useAuthStore(state => ({
+        username: state.username,
         isInitialized: state.isInitialized,
         initialize: state.initialize,
     }));
@@ -16,6 +16,8 @@ const Navbar = () => {
     useEffect(() => {
         initialize();
     }, [initialize]);
+
+    if (!isInitialized) return null;
 
     return (
       <div className="w-full mt-8 h-50 absolute top-5">
@@ -27,7 +29,7 @@ const Navbar = () => {
                       </Link>
                       <Link href="/" className="py-2 ml-2 text-xl hidden sm:block">모래시계 플래너</Link>
                   </div>
-                  {isInitialized ? (email === "" ? <LoginMenu /> : <UserMenu />) : null}
+                  {username === "" ? <LoginMenu /> : <UserMenu username={username} />}
               </div>
           </div>
       </div>

@@ -1,1 +1,1 @@
-import useAuthStore from "../../store/authStore";
+import useAuthStore from "../../store/(auth)/authStore";
