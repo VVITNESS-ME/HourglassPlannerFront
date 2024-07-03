@@ -10,6 +10,7 @@ interface TimeState {
   bbMode: boolean;
   pause: boolean;
   hId: bigint | null;
+  isInitialized: boolean;
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
@@ -21,6 +22,7 @@ interface TimeState {
   incrementTimeBurst: () => void;
   stopTimer: () => void;
   checkAndStopTimer: () => void;
+  initialize: () => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -45,8 +47,9 @@ const sendStartDataToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        // 'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -74,8 +77,9 @@ const sendTimeDataToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        // 'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -103,8 +107,9 @@ const sendPauseSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        // 'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -131,8 +136,9 @@ const sendResumeSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        // 'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -149,14 +155,15 @@ const sendResumeSignalToServer = async (data: {
 };
 
 export const useHourglassStore = create<TimeState>((set, get) => ({
-  timeStart: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeStart) : null,
-  timeBurst: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeBurst : 0,
-  timeGoal: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeGoal : null,
-  timeEnd: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeEnd) : null,
-  isRunning: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).isRunning : false,
-  bbMode: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).bbMode : false,
-  pause: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).pause : false,
-  hId: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hId : null,
+  timeStart: null,
+  timeBurst: null,
+  timeGoal: null,
+  timeEnd: null,
+  isRunning: false,
+  bbMode: false,
+  pause: false,
+  hId: null,
+  isInitialized: false, // 초기화 상태 추가
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -217,7 +224,6 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         }
       }
     } else {
-      // 토큰이 없는 경우의 처리
       const newState = { ...state, pause: !state.pause };
       set(newState);
       saveStateToCookies(newState);
@@ -228,13 +234,13 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     const totalDuration = (hours * 3600 + minutes * 60 + seconds) * 1000;
     const initialState = {
       timeStart: currentTime,
-      timeBurst: 0, // 초기에는 0으로 설정
+      timeBurst: 0,
       timeGoal: totalDuration,
       timeEnd: null,
       isRunning: true,
-      bbMode: false,
-      pause: false,
-      hId: null, // 초기에는 null로 설정
+      bbMode: get().bbMode,
+      pause: get().pause,
+      hId: null,
     };
     set(initialState);
     saveStateToCookies(initialState);
@@ -255,7 +261,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     const newTimeBurst = state.timeBurst !== null ? state.timeBurst + 1000 : 1000;
     const newState = { ...state, timeBurst: newTimeBurst };
     saveStateToCookies(newState);
-    get().checkAndStopTimer(); // 타이머가 완료되었는지 확인
+    get().checkAndStopTimer();
     return newState;
   }),
   stopTimer: () => set((state) => {
@@ -289,6 +295,35 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           });
         }
         return newState;
+      });
+    }
+  },
+  initialize: () => {
+    const timerState = Cookies.get('timerState');
+    if (timerState) {
+      const parsedState = JSON.parse(timerState);
+      set({
+        timeStart: parsedState.timeStart ? new Date(parsedState.timeStart) : null,
+        timeBurst: parsedState.timeBurst || 0,
+        timeGoal: parsedState.timeGoal || null,
+        timeEnd: parsedState.timeEnd ? new Date(parsedState.timeEnd) : null,
+        isRunning: parsedState.isRunning || false,
+        bbMode: parsedState.bbMode || false,
+        pause: parsedState.pause || false,
+        hId: parsedState.hId || null,
+        isInitialized: true,
+      });
+    } else {
+      set({
+        timeStart: null,
+        timeBurst: null,
+        timeGoal: null,
+        timeEnd: null,
+        isRunning: false,
+        bbMode: false,
+        pause: false,
+        hId: null,
+        isInitialized: true,
       });
     }
   },
