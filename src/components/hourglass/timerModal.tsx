@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import Button from './button';
+import { useHourglassStore } from '../../../store/hourglassStore';
 
 interface ModalProps {
   isOpen: boolean;
@@ -13,7 +14,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [selectedActivity, setSelectedActivity] = useState('');
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
-
+  const closeModal = useHourglassStore((state) => state.closeModal);
   const handleActivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedActivity(e.target.value);
   };
@@ -73,6 +74,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="flex justify-center">
             <Button label="확인" onClick={onClose} isActive={false} />
+            <Button label="닫기" onClick={closeModal} isActive={false} />
           </div>
         </div>
       </div>

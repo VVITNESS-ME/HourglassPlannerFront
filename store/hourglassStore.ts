@@ -11,9 +11,12 @@ interface TimeState {
   pause: boolean;
   hId: bigint | null;
   isInitialized: boolean;
+  modalOpen: boolean;
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
+  popUpModal: () => void;
+  closeModal: () => void;
   toggleRunning: () => void;
   toggleBBMode: () => void;
   togglePause: () => void;
@@ -162,8 +165,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   isRunning: false,
   bbMode: false,
   pause: false,
+  modalOpen: false,
   hId: null,
-  isInitialized: false, // 초기화 상태 추가
+  isInitialized: false,
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -181,6 +185,16 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   }),
   setTimeEnd: (time: Date) => set((state) => {
     const newState = { ...state, timeEnd: time };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  popUpModal: () => set((state) => {
+    const newState = { ...state, modalOpen: true, timeGoal: 60 * 60 * 800 };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  closeModal: () => set((state) => {
+    const newState = { ...state, modalOpen: false};
     saveStateToCookies(newState);
     return newState;
   }),
@@ -265,7 +279,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
   stopTimer: () => set((state) => {
-    const newState = { ...state, isRunning: false, timeEnd: new Date() };
+    const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
     removeStateFromCookies();
     const token = getToken();
     if (token) {
@@ -281,21 +295,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   checkAndStopTimer: () => {
     const { timeBurst, timeGoal } = get();
     if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
-      set((state) => {
-        const newState = { ...state, isRunning: false, timeEnd: new Date() };
-        saveStateToCookies(newState);
-        removeStateFromCookies();
-        const token = getToken();
-        if (token) {
-          sendTimeDataToServer({
-            timeStart: state.timeStart?.toISOString(),
-            timeBurst: state.timeBurst,
-            timeEnd: newState.timeEnd?.toISOString(),
-            hId: state.hId,
-          });
-        }
-        return newState;
-      });
+      get().popUpModal();
     }
   },
   initialize: () => {
@@ -311,6 +311,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         bbMode: parsedState.bbMode || false,
         pause: parsedState.pause || false,
         hId: parsedState.hId || null,
+        modalOpen: parsedState.modalOpen || false,
         isInitialized: true,
       });
     } else {
@@ -323,6 +324,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         bbMode: false,
         pause: false,
         hId: null,
+        modalOpen: false,
         isInitialized: true,
       });
     }
