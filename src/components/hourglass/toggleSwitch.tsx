@@ -49,7 +49,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ hideTimer, toggleTimer }) =
   };
 
   return (
-    <div style={styles.container} onClick={handleToggle}>
+    <div className='mt-6' style={styles.container} onClick={handleToggle}>
       <div style={{ ...styles.switch, ...(hideTimer ? styles.switchOn : styles.switchOff) }}>
         <div style={{ ...styles.circle, ...(hideTimer ? styles.circleOn : styles.circleOff) }} />
       </div>
