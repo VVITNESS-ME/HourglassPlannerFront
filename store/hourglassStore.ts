@@ -240,6 +240,10 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           saveStateToCookies(newState);
         }
       }
+    }else{
+      const newState = { ...state, pause: !state.pause};
+      set(newState);
+      saveStateToCookies(newState);
     }
   },
   handleSetTime: async (hours: number, minutes: number, seconds: number) => {
