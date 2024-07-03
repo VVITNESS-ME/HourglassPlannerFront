@@ -169,7 +169,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   hId: null,
   isInitialized: false,
   setTimeStart: (time: Date) => set((state) => {
-    const newState = { ...state, timeStart: time };
+    const newState = { ...state, timeStart: time};
     saveStateToCookies(newState);
     return newState;
   }),
@@ -252,7 +252,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       timeEnd: null,
       isRunning: true,
       bbMode: get().bbMode,
-      pause: get().pause,
+      pause: false,
       hId: null,
     };
     set(initialState);

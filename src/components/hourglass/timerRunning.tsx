@@ -75,8 +75,16 @@ const TimerRunning: React.FC = () => {
   return (
     <div className='flex flex-col w-max justify-center items-center text-2xl'>
       <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
-      <div {...hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" }}>
-        <div className='mt-6'><p>남은시간: {timeGoal !== null ? formatRemainingTime(timeGoal - (timeBurst || 0)) : 'N/A'}</p></div>
+      <div {...(hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" })}>
+        <div className='mt-6'>
+          {
+            timeGoal !== null ? (
+              timeGoal - (timeBurst || 0) > 86400000
+                ? <p>진행시간: {formatRemainingTime(timeBurst || 0)}</p>
+                : <p>남은시간: {formatRemainingTime(timeGoal - (timeBurst || 0))}</p>
+            ) : 'N/A'
+          }
+        </div>
         <button className='mt-2' onClick={togglePause}>pause/restart</button>
       </div>
       <div>
