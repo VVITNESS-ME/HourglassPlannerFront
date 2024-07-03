@@ -10,6 +10,7 @@ interface TimeState {
   bbMode: boolean;
   pause: boolean;
   hId: bigint | null;
+  isInitialized: boolean;
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
@@ -21,6 +22,7 @@ interface TimeState {
   incrementTimeBurst: () => void;
   stopTimer: () => void;
   checkAndStopTimer: () => void;
+  initialize: () => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -33,7 +35,35 @@ const removeStateFromCookies = () => {
 
 const getToken = (): string | undefined => {
   return Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
-}
+};
+
+const sendStartDataToServer = async (data: {
+  timeStart: string | undefined;
+  timeGoal: number | null;
+}): Promise<bigint | null> => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': `Bearer ${token}`,
+      },
+      credentials: 'include',
+      body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to start timer');
+    }
+
+    return responseData.hId;
+  } catch (error) {
+    console.error('Error:', error);
+    return null;
+  }
+};
 
 const sendTimeDataToServer = async (data: {
   timeStart: string | undefined;
@@ -47,8 +77,9 @@ const sendTimeDataToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        // 'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -65,6 +96,8 @@ const sendTimeDataToServer = async (data: {
 };
 
 const sendPauseSignalToServer = async (data: {
+  timeStart: string | undefined;
+  timeGoal: number | null;
   hId: bigint | null;
   timeBurst: number | null;
 }) => {
@@ -74,8 +107,9 @@ const sendPauseSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        // 'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -83,7 +117,6 @@ const sendPauseSignalToServer = async (data: {
     if (!response.ok) {
       throw new Error(responseData.message || 'Failed to pause timer');
     }
-
     return responseData.hId;
   } catch (error) {
     console.error('Error', error);
@@ -92,6 +125,8 @@ const sendPauseSignalToServer = async (data: {
 };
 
 const sendResumeSignalToServer = async (data: {
+  timeStart: string | undefined;
+  timeGoal: number | null;
   hId: bigint | null;
   timeBurst: number | null;
 }) => {
@@ -101,8 +136,9 @@ const sendResumeSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        // 'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -118,42 +154,16 @@ const sendResumeSignalToServer = async (data: {
   }
 };
 
-const sendStartDataToServer = async (data: {
-  timeStart: string | undefined;
-  timeGoal: number | null;
-}) => {
-  try {
-    const token = getToken();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(data),
-    });
-
-    const responseData = await response.json();
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Failed to start timer');
-    }
-
-    return responseData.hId; // 서버로부터 hId를 반환
-  } catch (error) {
-    console.error('Error:', error);
-    return null;
-  }
-};
-
 export const useHourglassStore = create<TimeState>((set, get) => ({
-  timeStart: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeStart) : null,
-  timeBurst: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeBurst : 0,
-  timeGoal: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).timeGoal : null,
-  timeEnd: Cookies.get('timerState') ? new Date(JSON.parse(Cookies.get('timerState')!).timeEnd) : null,
-  isRunning: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).isRunning : false,
-  bbMode: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).bbMode : false,
-  pause: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).pause : false,
-  hId: Cookies.get('timerState') ? JSON.parse(Cookies.get('timerState')!).hId : null,
+  timeStart: null,
+  timeBurst: null,
+  timeGoal: null,
+  timeEnd: null,
+  isRunning: false,
+  bbMode: false,
+  pause: false,
+  hId: null,
+  isInitialized: false, // 초기화 상태 추가
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -184,62 +194,88 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
     return newState;
   }),
-
-  // HOT FIXXX !!!! //
-  // async await 했더니 pause 작동 안됨.
-  togglePause: () => set((state) => {
-    const newState = { ...state, pause: !state.pause };
-    saveStateToCookies(newState);
-    if (!state.pause) {
-      sendPauseSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+  togglePause: async () => {
+    const token = getToken();
+    const state = get();
+    if (token) {
+      if (!state.pause) {
+        const hId = await sendPauseSignalToServer({
+          timeStart: state.timeStart?.toISOString(),
+          timeGoal: state.timeGoal,
+          hId: state.hId,
+          timeBurst: state.timeBurst
+        });
+        if (hId) {
+          const newState = { ...state, hId, pause: true };
+          set(newState);
+          saveStateToCookies(newState);
+        }
+      } else {
+        const hId = await sendResumeSignalToServer({
+          timeStart: state.timeStart?.toISOString(),
+          timeGoal: state.timeGoal,
+          hId: state.hId,
+          timeBurst: state.timeBurst
+        });
+        if (hId) {
+          const newState = { ...state, hId, pause: false };
+          set(newState);
+          saveStateToCookies(newState);
+        }
+      }
     } else {
-      sendResumeSignalToServer({ hId: state.hId, timeBurst: state.timeBurst });
+      const newState = { ...state, pause: !state.pause };
+      set(newState);
+      saveStateToCookies(newState);
     }
-    return newState;
-  }),
+  },
   handleSetTime: async (hours: number, minutes: number, seconds: number) => {
     const currentTime = new Date();
     const totalDuration = (hours * 3600 + minutes * 60 + seconds) * 1000;
     const initialState = {
       timeStart: currentTime,
-      timeBurst: 0, // 초기에는 0으로 설정
+      timeBurst: 0,
       timeGoal: totalDuration,
       timeEnd: null,
       isRunning: true,
       bbMode: get().bbMode,
       pause: get().pause,
-      hId: null, // 초기에는 null로 설정
+      hId: null,
     };
     set(initialState);
     saveStateToCookies(initialState);
-
-    const hId = await sendStartDataToServer({
-      timeStart: currentTime.toISOString(),
-      timeGoal: initialState.timeGoal,
-    });
-
-    if (hId) {
-      const newState = { ...get(), hId };
-      set(newState);
-      saveStateToCookies(newState);
+    const token = getToken();
+    if (token) {
+      const hId = await sendStartDataToServer({
+        timeStart: currentTime.toISOString(),
+        timeGoal: initialState.timeGoal,
+      });
+      if (hId) {
+        const newState = { ...get(), hId };
+        set(newState);
+        saveStateToCookies(newState);
+      }
     }
   },
   incrementTimeBurst: () => set((state) => {
     const newTimeBurst = state.timeBurst !== null ? state.timeBurst + 1000 : 1000;
     const newState = { ...state, timeBurst: newTimeBurst };
     saveStateToCookies(newState);
-    get().checkAndStopTimer(); // 타이머가 완료되었는지 확인
+    get().checkAndStopTimer();
     return newState;
   }),
   stopTimer: () => set((state) => {
     const newState = { ...state, isRunning: false, timeEnd: new Date() };
     removeStateFromCookies();
-    sendTimeDataToServer({
-      timeStart: state.timeStart?.toISOString(),
-      timeBurst: state.timeBurst,
-      timeEnd: newState.timeEnd?.toISOString(),
-      hId: state.hId,
-    });
+    const token = getToken();
+    if (token) {
+      sendTimeDataToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeBurst: state.timeBurst,
+        timeEnd: newState.timeEnd?.toISOString(),
+        hId: state.hId,
+      });
+    }
     return newState;
   }),
   checkAndStopTimer: () => {
@@ -249,13 +285,45 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         const newState = { ...state, isRunning: false, timeEnd: new Date() };
         saveStateToCookies(newState);
         removeStateFromCookies();
-        sendTimeDataToServer({
-          timeStart: state.timeStart?.toISOString(),
-          timeBurst: state.timeBurst,
-          timeEnd: newState.timeEnd?.toISOString(),
-          hId: state.hId,
-        });
+        const token = getToken();
+        if (token) {
+          sendTimeDataToServer({
+            timeStart: state.timeStart?.toISOString(),
+            timeBurst: state.timeBurst,
+            timeEnd: newState.timeEnd?.toISOString(),
+            hId: state.hId,
+          });
+        }
         return newState;
+      });
+    }
+  },
+  initialize: () => {
+    const timerState = Cookies.get('timerState');
+    if (timerState) {
+      const parsedState = JSON.parse(timerState);
+      set({
+        timeStart: parsedState.timeStart ? new Date(parsedState.timeStart) : null,
+        timeBurst: parsedState.timeBurst || 0,
+        timeGoal: parsedState.timeGoal || null,
+        timeEnd: parsedState.timeEnd ? new Date(parsedState.timeEnd) : null,
+        isRunning: parsedState.isRunning || false,
+        bbMode: parsedState.bbMode || false,
+        pause: parsedState.pause || false,
+        hId: parsedState.hId || null,
+        isInitialized: true,
+      });
+    } else {
+      set({
+        timeStart: null,
+        timeBurst: null,
+        timeGoal: null,
+        timeEnd: null,
+        isRunning: false,
+        bbMode: false,
+        pause: false,
+        hId: null,
+        isInitialized: true,
       });
     }
   },

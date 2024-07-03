@@ -1,22 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import TimerSelector from './timerSelector';
 import HourglassAni from './hourglassAni';
 import TimerRunning from './timerRunning';
 import { useHourglassStore } from '../../../store/hourglassStore';
 
 const Hourglass: React.FC = () => {
-  const isRunning = useHourglassStore((state) => state.isRunning);
-  const [selectedTime, setSelectedTime] = useState<number | null>(null);
+  const { isRunning, isInitialized, initialize } = useHourglassStore(state => ({
+    isRunning: state.isRunning,
+    isInitialized: state.isInitialized,
+    initialize: state.initialize,
+  }));
 
-  const handleTimeSelect = (time: number) => {
-    setSelectedTime(time);
-  };
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
-  const handleStart = (time: number) => {
-    setSelectedTime(time);
-  };
+  if (!isInitialized) {
+    return <div>Loading...</div>; // 초기화 중일 때 로딩 상태 표시
+  }
 
   return (
     <div className="flex flex-col items-center justify-center">
