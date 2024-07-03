@@ -1,7 +1,7 @@
 'use client';
 
 import { useHourglassStore } from '../../../store/hourglassStore';
-import Image from "next/image"
+import Image from "next/image";
 import './cascade.css';
 
   const styles = {

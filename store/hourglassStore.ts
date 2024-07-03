@@ -189,7 +189,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
   popUpModal: () => set((state) => {
-    const newState = { ...state, modalOpen: true, timeGoal: 60 * 60 * 800 };
+    const newState = { ...state, modalOpen: true, timeGoal: 60 * 60 * 800 * 1000 };
     saveStateToCookies(newState);
     return newState;
   }),
