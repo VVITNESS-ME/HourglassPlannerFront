@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import useAuthStore from "../../store/(auth)/authStore"; // 경로를 올바르게 수정
+import useAuthStore from "../../../store/(auth)/authStore"; // 경로를 올바르게 수정
 import LoginMenu from "./loginmenu";
 import UserMenu from "./usermenu";
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "../components/navbar";
+import Navbar from "../components/navbar/navbar";
 import localFont from "next/font/local";
 
 const mango = localFont({
