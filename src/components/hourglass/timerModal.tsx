@@ -3,6 +3,8 @@
 
 import React, { useState } from 'react';
 import Button from './button';
+import { useHourglassStore } from '../../../store/hourglassStore';
+import './timerModal.css';
 
 interface ModalProps {
   isOpen: boolean;
@@ -13,6 +15,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [selectedActivity, setSelectedActivity] = useState('');
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
+  const closeModal = useHourglassStore((state) => state.closeModal);
 
   const handleActivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedActivity(e.target.value);
@@ -33,8 +36,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-lg overflow-hidden shadow-lg w-96">
         <div className="p-6">
           <h2 className="text-lg font-bold mb-4">활동을 선택하세요</h2>
-          <div className="mb-4">
-            {['알고리즘 공부', '나만무 준비', '운동', '독서', '발표연습'].map((activity) => (
+          <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
+            {['알고리즘 공부', '나만무 준비', '운동', '독서', '발표연습', '요가', '명상', '코딩', '디자인', '게임'].map((activity) => (
               <label key={activity} className="block p-2 border-b border-gray-300">
                 <input
                   type="radio"
@@ -49,11 +52,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             ))}
           </div>
           <div className="mb-4">
-            <textarea 
-              className="w-full p-2 border border-gray-300 rounded" 
-              placeholder="코멘트를 입력하세요" 
-              value={comment} 
-              onChange={handleCommentChange} 
+            <textarea
+              className="w-full p-2 border border-gray-300 rounded"
+              placeholder="코멘트를 입력하세요"
+              value={comment}
+              onChange={handleCommentChange}
               rows={4}
             />
           </div>
@@ -73,6 +76,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="flex justify-center">
             <Button label="확인" onClick={onClose} isActive={false} />
+            <Button label="닫기" onClick={closeModal} isActive={false} />
           </div>
         </div>
       </div>

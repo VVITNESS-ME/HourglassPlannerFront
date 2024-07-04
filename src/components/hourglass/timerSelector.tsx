@@ -23,6 +23,9 @@ const TimerSelector: React.FC = () => {
     {toggleRunning}; // {동적!} 타이머 시작
   };
 
+  const inputValueInt = parseInt(inputValue, 10);
+  const isValidInput = !isNaN(inputValueInt) && Number.isInteger(inputValueInt) && inputValueInt > 0 && inputValueInt <= 2880000;
+
   return (
     <div className="flex flex-col justify-center">
       <div className='flex flex-row'>
@@ -40,7 +43,7 @@ const TimerSelector: React.FC = () => {
           onChange={handleInputChange}
         />
         {
-          (inputValue==='0' || inputValue==='') ? <button disabled className={`w-24 h-12 p-2 m-2 text-black rounded bg-mono-2`}>시작</button>
+          (!isValidInput) ? <button disabled className={`w-24 h-12 p-2 m-2 text-black rounded bg-mono-2`}>시작</button>
           : <Button label="시작" onClick={() => {handleClick('시작', parseInt(inputValue) * 60)}} isActive={false} />
         }
         {/* <Button label="시작" disabled onClick={() => {handleClick('시작', parseInt(inputValue) * 60)}} isActive={false} /> */}
