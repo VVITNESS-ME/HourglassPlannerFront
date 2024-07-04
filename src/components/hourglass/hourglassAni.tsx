@@ -25,7 +25,7 @@ import './cascade.css';
       backgroundColor: '#F2CD88',
       position: 'absolute' as 'absolute',
       bottom: 0,
-      transition: 'height 2s',
+      transition: 'height 0.1s',
     },
     mask: {
       width: '100%',

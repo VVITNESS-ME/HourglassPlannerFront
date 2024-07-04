@@ -35,7 +35,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-10">
       <div className="bg-white rounded-lg overflow-hidden shadow-lg w-96">
         <div className="p-6">
-          <h2 className="text-lg font-bold mb-4">활동을 선택하세요</h2>
+          <div className='flex w-full justify-between'>
+            <div className="text-lg font-bold mb-4">활동을 선택하세요</div>
+            <div className='' onClick={closeModal}><svg xmlns="http://www.w3.org/2000/svg" fill="none" color='#aaaaaa' viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+</svg></div>
+          </div>
           <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
             {['알고리즘 공부', '나만무 준비', '운동', '독서', '발표연습', '요가', '명상', '코딩', '디자인', '게임'].map((activity) => (
               <label key={activity} className="block p-2 border-b border-gray-300">
@@ -76,7 +81,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="flex justify-center">
             <Button label="확인" onClick={onClose} isActive={false} />
-            <Button label="닫기" onClick={closeModal} isActive={false} />
           </div>
         </div>
       </div>
