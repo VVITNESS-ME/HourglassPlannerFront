@@ -1,0 +1,62 @@
+.calendar {
+  width: 350px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.col {
+  width: 14.2857%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.col-center {
+  text-align: center;
+}
+
+.days {
+  display: flex;
+}
+
+.body {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+}
+
+.cell.disabled {
+  color: #ccc;
+}
+
+.cell.selected {
+  background-color: #f0ad4e;
+  color: white;
+}
+
+.number {
+  font-size: 16px;
+}
+
+.data-display {
+  margin-top: 20px;
+  text-align: center;
+}
