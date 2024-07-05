@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import CardLayout from './cardLayout';
+import CardLayout from '../cardLayout';
 import {
   Chart as ChartJS,
   CategoryScale,
