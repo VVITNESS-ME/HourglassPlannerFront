@@ -1,12 +1,13 @@
+'use client'
 import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
     const currentPath = usePathname();
-    if (currentPath == '/login') {
-        return (
-            <div></div>
-        )
-    }
+    return(
+        <div className="flex-col justify-self-start">
+            SIDEBAR HERE
+        </div>
+    )
 }
 
 export default Sidebar

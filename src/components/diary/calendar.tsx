@@ -7,8 +7,7 @@ import styles from './calendar.module.css';
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const { tasks, setTasks, setTil } = useDiaryState();
+  const { tasks, setTasks, setTil, selectedDate, setSelectedDate } = useDiaryState();
 
   const fetchData = async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
@@ -25,9 +24,18 @@ const Calendar: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const today = new Date();
+    setSelectedDate(today);
+    fetchData(today);
+  }, []);
+
   const handleDayClick = (day: Date) => {
-    setSelectedDate(day);
-    fetchData(day);
+    const today = new Date();
+    if (day <= today) {
+      setSelectedDate(day);
+      fetchData(day);
+    }
   };
 
   const renderHeader = () => {
@@ -82,11 +90,12 @@ const Calendar: React.FC = () => {
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
+        const isFutureDate = day > new Date();
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : isSameDay(day, selectedDate) ? styles.selected : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : isSameDay(day, selectedDate!) ? styles.selected : ""} ${isFutureDate ? styles.future : ""}`}
             key={day.toString()}
-            onClick={() => handleDayClick(cloneDay)}
+            onClick={() => !isFutureDate && handleDayClick(cloneDay)}
           >
             <span className={styles.number}>{formattedDate}</span>
           </div>
