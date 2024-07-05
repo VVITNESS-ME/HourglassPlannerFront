@@ -1,6 +1,6 @@
 import Calendar from "../../../components/diary/calendar"
 
-export default function Home() {
+export default function calender() {
   return (
    <Calendar/>
   );

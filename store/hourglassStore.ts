@@ -50,10 +50,12 @@ const sendStartDataToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
       },
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+      }),
     });
 
     const responseData = await response.json();
@@ -80,10 +82,12 @@ const sendTimeDataToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
       },
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+      }),
     });
 
     const responseData = await response.json();
@@ -110,10 +114,13 @@ const sendPauseSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
       },
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+        timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+      }),
     });
 
     const responseData = await response.json();
@@ -139,10 +146,13 @@ const sendResumeSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
       },
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+        timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+      }),
     });
 
     const responseData = await response.json();
@@ -169,7 +179,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   hId: null,
   isInitialized: false,
   setTimeStart: (time: Date) => set((state) => {
-    const newState = { ...state, timeStart: time};
+    const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
     return newState;
   }),
@@ -194,7 +204,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
   closeModal: () => set((state) => {
-    const newState = { ...state, modalOpen: false};
+    const newState = { ...state, modalOpen: false };
     saveStateToCookies(newState);
     return newState;
   }),
@@ -212,7 +222,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     const token = getToken();
     const state = get();
     if (token) {
-      const newState = { ...state, pause: !state.pause};
+      const newState = { ...state, pause: !state.pause };
       set(newState);
       saveStateToCookies(newState);
       if (!state.pause) {
@@ -223,7 +233,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId};
+          const newState = { ...state, hId };
           set(newState);
           saveStateToCookies(newState);
         }
@@ -235,13 +245,13 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId};
+          const newState = { ...state, hId };
           set(newState);
           saveStateToCookies(newState);
         }
       }
-    }else{
-      const newState = { ...state, pause: !state.pause};
+    } else {
+      const newState = { ...state, pause: !state.pause };
       set(newState);
       saveStateToCookies(newState);
     }
