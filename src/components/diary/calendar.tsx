@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
 import useDiaryState from '../../../store/diaryStore';
 import styles from './calendar.module.css';
@@ -9,26 +9,23 @@ const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { tasks, setTasks, setTil, selectedDate, setSelectedDate } = useDiaryState();
 
-  const fetchData = async (date: Date) => {
+  const fetchData = useCallback(async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
     try {
-      const tasksResponse = await fetch(`https://api.example.com/tasks?date=${formattedDate}`);
-      const tasksData = await tasksResponse.json();
-      setTasks(tasksData);
-
-      const tilResponse = await fetch(`https://api.example.com/til?date=${formattedDate}`);
-      const tilData = await tilResponse.json();
-      setTil(tilData.til);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`);
+      const data = await response.json();
+      setTasks(data.hourglassData);
+      setTil(data.til);
     } catch (error) {
       console.error('Error fetching data', error);
     }
-  };
+  }, [setTasks, setTil]);
 
   useEffect(() => {
     const today = new Date();
     setSelectedDate(today);
     fetchData(today);
-  }, []);
+  }, [fetchData, setSelectedDate]);
 
   const handleDayClick = (day: Date) => {
     const today = new Date();
@@ -129,10 +126,12 @@ const Calendar: React.FC = () => {
         <h3>Tasks</h3>
         {tasks.map((task, index) => (
           <div key={index}>
+            <p>hId: {task.hId}</p>
             <p>Category: {task.category}</p>
             <p>Task: {task.task}</p>
             <p>Start: {task.timeStart}</p>
             <p>End: {task.timeEnd}</p>
+            <p>Time Burst: {task.timeBurst} minutes</p>
             <p>Satisfaction: {task.satisfaction}</p>
           </div>
         ))}

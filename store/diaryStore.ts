@@ -1,10 +1,12 @@
 import create from 'zustand';
 
 interface Task {
+  hId: string;
   category: string;
   task: string;
   timeStart: string;
   timeEnd: string;
+  timeBurst: number;
   satisfaction: number;
 }
 
