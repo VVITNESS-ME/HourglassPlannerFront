@@ -21,6 +21,19 @@
   text-align: center;
 }
 
+.nav {
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav:hover {
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
 .days {
   display: flex;
 }

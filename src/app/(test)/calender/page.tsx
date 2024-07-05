@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import useDiaryState from '../../../../store/diaryStore';
 import Calendar from '../../../components/diary/calendar';
 import HourglassList from '../../../components/diary/hourglassList';
+import HourglassDetail from '../../../components/diary/hourglassDetail';
 
 const TestPage: React.FC = () => {
   const { setHourglass, setTil, setSelectedDate } = useDiaryState();
@@ -14,7 +15,8 @@ const TestPage: React.FC = () => {
     const initialHourglassData = [
       {
         hId: '1',
-        category: 'Work',
+        category: '다섯글자글',
+        categoryColor: '#F2CD88',
         task: 'Develop feature X',
         description: 'Implementing the new feature X for the project.',
         timeStart: '2023-07-05T09:00:00Z',
@@ -25,6 +27,7 @@ const TestPage: React.FC = () => {
       {
         hId: '2',
         category: 'Exercise',
+        categoryColor: '#F2BA52',
         task: 'Morning run',
         description: '30-minute morning run in the park.',
         timeStart: '2023-07-05T06:00:00Z',
@@ -33,8 +36,9 @@ const TestPage: React.FC = () => {
         satisfaction: 5,
       },
       {
-        hId: '2',
+        hId: '3',
         category: 'Exercise',
+        categoryColor: '#F2A950',
         task: 'Morning run',
         description: '30-minute morning run in the park.',
         timeStart: '2023-07-05T06:00:00Z',
@@ -43,8 +47,53 @@ const TestPage: React.FC = () => {
         satisfaction: 3,
       },
       {
+        hId: '4',
+        category: 'Exercise',
+        categoryColor: '#BFBFBF',
+        task: 'Morning run',
+        description: '30-minute morning run in the park.',
+        timeStart: '2023-07-05T06:00:00Z',
+        timeEnd: '2023-07-05T06:30:00Z',
+        timeBurst: 30,
+        satisfaction: 2,
+      },
+      {
+        hId: '1',
+        category: '다섯글자글',
+        categoryColor: '#F2CD88',
+        task: 'Develop feature X',
+        description: 'Implementing the new feature X for the project.',
+        timeStart: '2023-07-05T09:00:00Z',
+        timeEnd: '2023-07-05T12:00:00Z',
+        timeBurst: 180,
+        satisfaction: 4,
+      },
+      {
         hId: '2',
         category: 'Exercise',
+        categoryColor: '#F2BA52',
+        task: 'Morning run',
+        description: '30-minute morning run in the park.',
+        timeStart: '2023-07-05T06:00:00Z',
+        timeEnd: '2023-07-05T06:30:00Z',
+        timeBurst: 30,
+        satisfaction: 5,
+      },
+      {
+        hId: '3',
+        category: 'Exercise',
+        categoryColor: '#F2A950',
+        task: 'Morning run',
+        description: '30-minute morning run in the park.',
+        timeStart: '2023-07-05T06:00:00Z',
+        timeEnd: '2023-07-05T06:30:00Z',
+        timeBurst: 30,
+        satisfaction: 3,
+      },
+      {
+        hId: '4',
+        category: 'Exercise',
+        categoryColor: '#BFBFBF',
         task: 'Morning run',
         description: '30-minute morning run in the park.',
         timeStart: '2023-07-05T06:00:00Z',
@@ -62,8 +111,9 @@ const TestPage: React.FC = () => {
   return (
     <div>
       <h1>테스트 페이지</h1>
-      <Calendar />
+      <Calendar/>
       <HourglassList/>
+      <HourglassDetail/>
     </div>
   );
 };

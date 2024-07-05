@@ -1,62 +1,74 @@
 .hourglassList {
     padding: 20px;
-    max-width: 600px; /* 달력의 가로 사이즈와 비슷하게 설정 */
-    margin: 0 auto; /* 가운데 정렬 */
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .list {
     max-height: 400px;
     overflow-y: auto;
+    padding-right: 10px; /* Add some padding for scrollbar space */
 }
 
 .task {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
+    padding: 10px;
+    background-color: #EEEEEE;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .category {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 10px;
     border-radius: 8px;
-    background-color: #ddd;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
 }
 
 .details {
     flex: 1;
+    overflow: hidden;
 }
 
 .taskName,
-.description {
-    font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-}
-
-.taskName {
-    font-weight: bold;
-}
-
+.description,
 .time,
 .timeRange {
     font-size: 14px;
-    color: #999;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.taskName {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.timeRangeContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .satisfaction {
-    font-size: 16px;
-}
-
-.starFilled {
+    font-size: 45px; /* 적절한 크기 조정 */
     color: gold;
+    display: flex;
+    align-items: center;
+    margin-left: 10px; /* Add margin to the left for spacing */
 }
 
-.starEmpty {
-    color: #ddd;
+.star {
+    font-size: inherit;
 }
