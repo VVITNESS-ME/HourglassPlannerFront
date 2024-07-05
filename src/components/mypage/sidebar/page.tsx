@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Sidebar from './sidebar';
 import ProfileContent from './profileContent';
-import StatisticsContent from '../statisticsContent';
+import StatisticsContent from './statisticsContent';
 import DiaryContent from './diaryContent';
 
 const Home: React.FC = () => {
