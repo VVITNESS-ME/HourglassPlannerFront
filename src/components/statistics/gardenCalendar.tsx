@@ -34,7 +34,7 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
 
   const fetchData = async (start: string, end: string) => {
     try {
-      const response = await fetch(`/api/diary?start=${start}&end=${end}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/statistics/garden?start=${start}&end=${end}`);
       const data = await response.json();
       // 초단위를 분단위로 변환
       const convertedEntries = data.entries.map((entry: DiaryEntry) => ({
