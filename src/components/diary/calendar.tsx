@@ -40,14 +40,14 @@ const Calendar: React.FC = () => {
 
     return (
       <div className={`${styles.header} ${styles.row}`}>
-        <div className={`${styles.col} ${styles.colStart}`} onClick={prevMonth}>
-          <div className="icon"> &lt; </div>
+        <div className={`${styles.col} ${styles.colStart} ${styles.nav}`} onClick={prevMonth}>
+          <div className="icon">&lt;</div>
         </div>
         <div className={`${styles.col} ${styles.colCenter}`}>
           <span>{format(currentMonth, dateFormat)}</span>
         </div>
-        <div className={`${styles.col} ${styles.colEnd}`} onClick={nextMonth}>
-          <div className="icon"> &rt; </div>
+        <div className={`${styles.col} ${styles.colEnd} ${styles.nav}`} onClick={nextMonth}>
+          <div className="icon">&gt;</div>
         </div>
       </div>
     );
