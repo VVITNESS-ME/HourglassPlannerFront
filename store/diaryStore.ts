@@ -1,9 +1,10 @@
 import create from 'zustand';
 
-interface Task {
+interface Hourglass {
   hId: string;
   category: string;
   task: string;
+  description: string;
   timeStart: string;
   timeEnd: string;
   timeBurst: number;
@@ -11,19 +12,19 @@ interface Task {
 }
 
 interface DiaryState {
-  tasks: Task[];
+  hourglass: Hourglass[];
   til: string;
   selectedDate: Date | null;
-  setTasks: (tasks: Task[]) => void;
+  setHourglass: (hourglass: Hourglass[]) => void;
   setTil: (til: string) => void;
   setSelectedDate: (date: Date) => void;
 }
 
 const useDiaryState = create<DiaryState>((set) => ({
-  tasks: [],
+  hourglass: [],
   til: '',
   selectedDate: null,
-  setTasks: (tasks) => set({ tasks }),
+  setHourglass: (hourglass) => set({ hourglass }),
   setTil: (til) => set({ til }),
   setSelectedDate: (date) => set({ selectedDate: date }),
 }));

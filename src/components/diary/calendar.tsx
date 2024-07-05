@@ -7,19 +7,19 @@ import styles from './calendar.module.css';
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { tasks, setTasks, setTil, selectedDate, setSelectedDate } = useDiaryState();
+  const { hourglass, setHourglass, setTil, selectedDate, setSelectedDate } = useDiaryState();
 
   const fetchData = useCallback(async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`);
       const data = await response.json();
-      setTasks(data.hourglassData);
+      setHourglass(data.hourglassData);
       setTil(data.til);
     } catch (error) {
       console.error('Error fetching data', error);
     }
-  }, [setTasks, setTil]);
+  }, [setHourglass, setTil]);
 
   useEffect(() => {
     const today = new Date();
@@ -122,22 +122,6 @@ const Calendar: React.FC = () => {
       {renderHeader()}
       {renderDays()}
       {renderCells()}
-      <div className={styles.dataDisplay}>
-        <h3>Tasks</h3>
-        {tasks.map((task, index) => (
-          <div key={index}>
-            <p>hId: {task.hId}</p>
-            <p>Category: {task.category}</p>
-            <p>Task: {task.task}</p>
-            <p>Start: {task.timeStart}</p>
-            <p>End: {task.timeEnd}</p>
-            <p>Time Burst: {task.timeBurst} minutes</p>
-            <p>Satisfaction: {task.satisfaction}</p>
-          </div>
-        ))}
-        <h3>TIL</h3>
-        <p>{useDiaryState.getState().til}</p>
-      </div>
     </div>
   );
 };

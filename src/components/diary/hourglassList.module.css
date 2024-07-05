@@ -1,0 +1,62 @@
+.hourglassList {
+    padding: 20px;
+    max-width: 600px; /* 달력의 가로 사이즈와 비슷하게 설정 */
+    margin: 0 auto; /* 가운데 정렬 */
+}
+
+.list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.category {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    border-radius: 8px;
+    background-color: #ddd;
+}
+
+.details {
+    flex: 1;
+}
+
+.taskName,
+.description {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.taskName {
+    font-weight: bold;
+}
+
+.time,
+.timeRange {
+    font-size: 14px;
+    color: #999;
+}
+
+.satisfaction {
+    font-size: 16px;
+}
+
+.starFilled {
+    color: gold;
+}
+
+.starEmpty {
+    color: #ddd;
+}
