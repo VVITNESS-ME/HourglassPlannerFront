@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import CardLayout from './CardLayout';
+import CardLayout from './cardLayout';
 
 const TodayTasks: React.FC = () => {
   const tasks = [
@@ -19,10 +19,10 @@ const TodayTasks: React.FC = () => {
   ];
 
   return (
-    <CardLayout title="오늘의 할일" width="w-80" height="h-72"> {/* 높이와 너비 수정 */}
+    <CardLayout title="오늘의 할일" color="bg-blue-200"> {/* 배경색 수정 */}
       <ul>
         {tasks.map((task, index) => (
-          <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap">
+          <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap pr-4">  {/* 오른쪽 패딩 추가 */}
             <span>{task.text}</span>
             <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>
           </li>
