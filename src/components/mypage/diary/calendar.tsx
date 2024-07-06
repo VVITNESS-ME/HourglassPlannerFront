@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
-import useDiaryState from '../../../store/diaryStore';
+import useDiaryState from '../../../../store/diaryStore';
 import styles from './calendar.module.css';
 
 const Calendar: React.FC = () => {

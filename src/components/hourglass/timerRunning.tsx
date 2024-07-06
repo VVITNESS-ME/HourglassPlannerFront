@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Cookies from 'js-cookie';
 import Button from './button';
@@ -23,9 +23,9 @@ const TimerRunning: React.FC = () => {
   const [hideTimer, toggleTimer] = useState(false);
   const hideToggle = () => { toggleTimer(!hideTimer); };
 
-  const stopTimerAndPopUpModal = () => {
+  const stopTimerAndPopUpModal = useCallback(() => {
     popUpModal();
-  }
+  }, [popUpModal]);
 
   const formatRemainingTime = (milliseconds: number) => {
     if (milliseconds <= 0) return '0 seconds';
@@ -70,7 +70,7 @@ const TimerRunning: React.FC = () => {
     }
 
     return () => clearInterval(timer);
-  }, [isRunning, pause, timeBurst, timeGoal, setTimeEnd, stopTimer, incrementTimeBurst]);
+  }, [stopTimerAndPopUpModal, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
 
   return (
     <div className='flex flex-col w-max justify-center items-center text-2xl'>

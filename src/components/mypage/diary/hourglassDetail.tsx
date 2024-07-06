@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import useDiaryState from '../../../store/diaryStore';
+import useDiaryState from '../../../../store/diaryStore';
 import styles from './hourglassDetail.module.css';
 
 const HourglassDetail: React.FC = () => {

@@ -2,9 +2,9 @@
 
 import React, { useEffect } from 'react';
 import useDiaryState from '../../../../store/diaryStore';
-import Calendar from '../../../components/diary/calendar';
-import HourglassList from '../../../components/diary/hourglassList';
-import HourglassDetail from '../../../components/diary/hourglassDetail';
+import Calendar from '../../../components/mypage/diary/calendar'
+import HourglassList from '../../../components/mypage/diary/hourglassList';
+import HourglassDetail from '../../../components/mypage/diary/hourglassDetail';
 
 const TestPage: React.FC = () => {
   const { setHourglass, setTil, setSelectedDate } = useDiaryState();

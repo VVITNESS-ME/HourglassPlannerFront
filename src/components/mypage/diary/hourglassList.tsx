@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import useDiaryState, { Hourglass } from '../../../store/diaryStore'; // Hourglass 타입을 가져옵니다.
+import useDiaryState, { Hourglass } from '../../../../store/diaryStore'; // Hourglass 타입을 가져옵니다.
 import styles from './hourglassList.module.css';
 import { format, parseISO } from 'date-fns';
 

@@ -1,20 +1,20 @@
-// components/Sidebar.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { UserIcon, ChartBarIcon, BookOpenIcon } from '@heroicons/react/24/solid';
 import MenuTab from './menuTab';
 
-const Sidebar: React.FC<{ onSelect: (selected: string) => void }> = ({ onSelect }) => {
+const Sidebar: React.FC<{}> = () => {
+  const [selectedTab, setSelectedTab] = useState('프로필');
   const [activeTab, setActiveTab] = useState('프로필');
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
-    onSelect(tab);
+    setSelectedTab(tab);
   };
 
   return (
-    <div className="border-r border-gray-300">
+    <div className="fixed top-20 left-0 h-full border-r border-gray-300 w-64 bg-white">
       <MenuTab
         icon={<UserIcon className={`h-6 w-6 ${activeTab === '프로필' ? 'text-yellow-500' : 'text-gray-600'}`} />}
         label="프로필"

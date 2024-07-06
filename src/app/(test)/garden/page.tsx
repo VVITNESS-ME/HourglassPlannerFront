@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import GardenCalendar from '../../../components/statistics/gardenCalendar';
+import GardenCalendar from '../../../components/mypage/statistics/gardenCalendar';
 
 const GardenCalendarTestPage: React.FC = () => {
   const [entries] = useState([

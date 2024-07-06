@@ -1,39 +1,80 @@
-// components/TitleList.tsx
 'use client';
 
 import React, { useState } from 'react';
 import CardLayout from '../../cardLayout';
+import Button from './button';
 
-const TitleList: React.FC = () => {
+interface Title {
+  titleId: bigint;
+  name: string;
+  description: string;
+  color: string;
+}
+
+interface UserInfo {
+  userEmail: string;
+  userName: string;
+  main_title: bigint;
+}
+
+interface TitleListProps {
+  titles: Title[];
+  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo | null>>;
+}
+
+const TitleList: React.FC<TitleListProps> = ({ titles, setUserInfo }) => {
   const [selectedTitle, setSelectedTitle] = useState<number | null>(null);
-  const titles = [
-    { name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-    { name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-    { name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-    { name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-    { name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-  ];
 
-  const handleSelectTitle = (index: number) => {
-    setSelectedTitle(index);
+  const handleSelectTitle = async () => {
+    if (selectedTitle === null) return;
+
+    const selectedTitleId = titles[selectedTitle].titleId;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/title/select-title/?title-id=${selectedTitleId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setUserInfo(prevUserInfo => {
+          if (prevUserInfo) {
+            return { ...prevUserInfo, main_title: selectedTitleId };
+          }
+          return prevUserInfo;
+        });
+      } else {
+        console.error('Failed to select title');
+      }
+    } catch (error) {
+      console.error('Error selecting title', error);
+    }
   };
 
   return (
-    <CardLayout title="칭호" width="w-96" height="h-auto" color="bg-white">
-      <ul className='p-2'>
+    <CardLayout title="칭호" width="w-[700px]" height="h-auto" color="bg-[#EEEEEE]">
+      <ul className="p-2 max-h-80 overflow-y-auto">
         {titles.map((title, index) => (
           <li
             key={index}
-            className={`p-2 mb-2 text-white rounded flex justify-between items-center cursor-pointer group ${selectedTitle === index ? 'ring-4 ring-yellow-500' : ''}`}
+            className={`p-2 mb-2 text-white rounded flex items-center cursor-pointer group ${selectedTitle === index ? 'ring-4 ring-yellow-500' : ''}`}
             style={{ backgroundColor: title.color }}
-            onClick={() => handleSelectTitle(index)}
+            onClick={() => setSelectedTitle(index)}
           >
-            <div>
-              <strong>{title.name}</strong> - {title.description}
+            <div className="flex w-full items-center space-x-2 ">
+              <strong className="flex-none w-[150px]">{title.name}</strong>
+              <span className="flex-grow truncate">{title.description}</span>
             </div>
           </li>
         ))}
       </ul>
+      <Button
+        label="선택"
+        onClick={handleSelectTitle}
+        isActive={selectedTitle !== null}
+        disabled={selectedTitle === null}
+      />
     </CardLayout>
   );
 };

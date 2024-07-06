@@ -1,4 +1,3 @@
-// components/Modal.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,7 +5,7 @@ import React, { useState } from 'react';
 interface CategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddCategory: (category: { name: string; color: string }) => void;
+  onAddCategory: (category: { categoryName: string; color: string }) => void;
 }
 
 const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCategory }) => {
@@ -18,9 +17,9 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCat
     '#FF8C33', '#33FFF0', '#FF5733', '#33FF57', '#FFC300',
   ];
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (categoryName.trim() && selectedColor) {
-      onAddCategory({ name: categoryName, color: selectedColor });
+      onAddCategory({ categoryName, color: selectedColor });
       setCategoryName('');
       setSelectedColor('#000000');
       onClose();
