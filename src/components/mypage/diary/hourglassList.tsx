@@ -1,12 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import useDiaryState, { Hourglass } from '../../../../store/diaryStore'; // Hourglass 타입을 가져옵니다.
 import styles from './hourglassList.module.css';
 import { format, parseISO } from 'date-fns';
 
 const HourglassList: React.FC = () => {
-  const { hourglass, setSelectedHourglass } = useDiaryState();
+  const { hourglasses, setSelectedHourglass } = useDiaryState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!hourglasses) {
+      setError('데이터를 불러오는 중 오류가 발생했습니다.');
+      setLoading(false);
+    } else if (hourglasses.length === 0) {
+      // 데이터 로딩이 끝난 후 빈 배열 확인
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, [hourglasses]);
 
   const formatTime = (time: string) => {
     const date = parseISO(time);
@@ -17,12 +31,39 @@ const HourglassList: React.FC = () => {
     setSelectedHourglass(task);
   };
 
+  if (loading) {
+    return (
+      <div className={styles.hourglassList}>
+        <h3>일간 작업 목록</h3>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.hourglassList}>
+        <h3>일간 작업 목록</h3>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (!hourglasses || hourglasses.length === 0) {
+    return (
+      <div className={styles.hourglassList}>
+        <h3>일간 작업 목록</h3>
+        <p>현재 등록된 작업이 없습니다.</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.hourglassList}>
       <h3>일간 작업 목록</h3>
       <div className={styles.list}>
-        {hourglass.map((task, index) => (
-          <div key={index} className={styles.task} onClick={() => handleTaskClick(task)}>
+        {hourglasses.map((task) => (
+          <div key={task.hId} className={styles.task} onClick={() => handleTaskClick(task)}>
             <div className={styles.category} style={{ backgroundColor: task.categoryColor }}>{task.category}</div>
             <div className={styles.details}>
               <p className={styles.taskName} title={task.task}>{task.task}</p>

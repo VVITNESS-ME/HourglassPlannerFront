@@ -1,5 +1,6 @@
 .calendar {
-  width: 350px;
+  min-width: 400px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -19,14 +20,19 @@
 
 .col-center {
   text-align: center;
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav {
-  cursor: pointer;
-  padding: 10px;
+  width: 50px;
+  height: 50px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 
 .nav:hover {

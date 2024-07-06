@@ -1,7 +1,7 @@
 .hourglassDetail {
     width: 100%;
+    min-width: 400px;
     max-width: 600px;
-    padding: 20px;
     border-radius: 8px;
     background-color: transparent; /* 투명 배경 설정 */
     display: flex;

@@ -53,7 +53,7 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
       const end = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
       fetchData(start, end);
     }
-  }, [currentMonth]);
+  }, [initialEntries, initialEntries.length, currentMonth]);
 
   const renderHeader = () => {
     const dateFormat = 'MMMM yyyy';

@@ -12,13 +12,13 @@ export interface Hourglass {
   satisfaction: number;
 }
 
-interface DiaryState {
-  hourglass: Hourglass[];
+interface DiaryStore {
+  hourglasses: Hourglass[];
   til: string;
   selectedDate: Date | null;
   selectedHourglass: Hourglass | null;
   description: string;
-  setHourglass: (hourglass: Hourglass[]) => void;
+  setHourglasses: (hourglasses: Hourglass[]) => void;
   setTil: (til: string) => void;
   setSelectedDate: (date: Date) => void;
   setSelectedHourglass: (hourglass: Hourglass | null) => void;
@@ -26,23 +26,23 @@ interface DiaryState {
   updateHourglass: (updatedHourglass: Hourglass) => void;
 }
 
-const useDiaryState = create<DiaryState>((set) => ({
-  hourglass: [],
+const useDiaryStore = create<DiaryStore>((set) => ({
+  hourglasses: [],
   til: '',
   selectedDate: null,
   selectedHourglass: null,
   description: '',
-  setHourglass: (hourglass) => set({ hourglass }),
+  setHourglasses: (hourglasses) => set({ hourglasses }),
   setTil: (til) => set({ til }),
   setSelectedDate: (date) => set({ selectedDate: date }),
   setSelectedHourglass: (hourglass) => set({ selectedHourglass: hourglass }),
   setDescription: (description) => set({ description }),
   updateHourglass: (updatedHourglass) => set((state) => ({
-    hourglass: state.hourglass.map((task) =>
+    hourglasses: state.hourglasses.map((task) =>
       task.hId === updatedHourglass.hId ? updatedHourglass : task
     ),
     selectedHourglass: updatedHourglass,
   })),
 }));
 
-export default useDiaryState;
+export default useDiaryStore;

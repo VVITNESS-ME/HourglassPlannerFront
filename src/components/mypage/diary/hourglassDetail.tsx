@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import useDiaryState from '../../../../store/diaryStore';
+import useDiaryStore from '../../../../store/diaryStore';
 import styles from './hourglassDetail.module.css';
 
 const HourglassDetail: React.FC = () => {
-  const { selectedHourglass, description, setDescription, updateHourglass } = useDiaryState();
+  const { selectedHourglass, description, setDescription, updateHourglass } = useDiaryStore();
   const [text, setText] = useState(description);
 
   useEffect(() => {
