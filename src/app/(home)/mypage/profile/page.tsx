@@ -79,6 +79,13 @@ const Profile: React.FC = () => {
       { categoryId: BigInt(5), categoryName: '코딩', color: '#FF69B4' },
       { categoryId: BigInt(6), categoryName: '핀토스', color: '#FF4500' },
       { categoryId: BigInt(7), categoryName: '알고리즘', color: '#808080' },
+      { categoryId: BigInt(8), categoryName: 'Spring', color: '#228B22' },
+      { categoryId: BigInt(9), categoryName: 'MySQL', color: '#1E90FF' },
+      { categoryId: BigInt(10), categoryName: '독서', color: '#8A2BE2' },
+      { categoryId: BigInt(11), categoryName: '운동', color: '#FFD700' },
+      { categoryId: BigInt(12), categoryName: '코딩', color: '#FF69B4' },
+      { categoryId: BigInt(13), categoryName: '핀토스', color: '#FF4500' },
+      { categoryId: BigInt(14), categoryName: '알고리즘', color: '#808080' },
     ];
     setTitles(testTitleData);
     setUserInfo(testUserInfoData);
@@ -88,15 +95,21 @@ const Profile: React.FC = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div className="lg:col-span-2 mb-4">
-        <ProfileCard userInfo={userInfo} mainTitle={mainTitle} />
-      </div>
-      <div className="mb-4">
-        <TitleList titles={titles} setUserInfo={setUserInfo} />
-      </div>
-      <div className="mb-4">
-        <CategorySettings categories={categories} setCategories={setCategories} />
+    <div>
+      <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
+        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+          <ProfileCard userInfo={userInfo} mainTitle={mainTitle}/>
+        </div>
+        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+          <CategorySettings categories={categories} setCategories={setCategories}/>
+        </div>
+      </ div>
+      <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
+        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+          <TitleList titles={titles} setUserInfo={setUserInfo}/>
+        </div>
+        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+        </div>
       </div>
     </div>
   );

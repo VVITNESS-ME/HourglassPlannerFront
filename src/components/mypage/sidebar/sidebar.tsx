@@ -5,12 +5,10 @@ import { UserIcon, ChartBarIcon, BookOpenIcon } from '@heroicons/react/24/solid'
 import MenuTab from './menuTab';
 
 const Sidebar: React.FC<{}> = () => {
-  const [selectedTab, setSelectedTab] = useState('프로필');
   const [activeTab, setActiveTab] = useState('프로필');
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
-    setSelectedTab(tab);
   };
 
   return (

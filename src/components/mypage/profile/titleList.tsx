@@ -30,7 +30,7 @@ const TitleList: React.FC<TitleListProps> = ({ titles, setUserInfo }) => {
 
     const selectedTitleId = titles[selectedTitle].titleId;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/title/select-title/?title-id=${selectedTitleId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile/select-title/?title-id=${selectedTitleId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const TitleList: React.FC<TitleListProps> = ({ titles, setUserInfo }) => {
   };
 
   return (
-    <CardLayout title="칭호" width="w-[700px]" height="h-auto" color="bg-[#EEEEEE]">
+    <CardLayout title="칭호" width="flex-1 min-w-[400px] max-w-[700px]" height="h-auto" color="bg-[#EEEEEE]">
       <ul className="p-2 max-h-80 overflow-y-auto">
         {titles.map((title, index) => (
           <li
@@ -63,7 +63,7 @@ const TitleList: React.FC<TitleListProps> = ({ titles, setUserInfo }) => {
             onClick={() => setSelectedTitle(index)}
           >
             <div className="flex w-full items-center space-x-2 ">
-              <strong className="flex-none w-[150px]">{title.name}</strong>
+              <strong className="flex-none w-[200px]">{title.name}</strong>
               <span className="flex-grow truncate">{title.description}</span>
             </div>
           </li>

@@ -38,11 +38,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, mainTitle }) => {
   }
 
   return (
-    <div className="relative box-border w-[700px] h-[350px] bg-[#EEEEEE] border shadow-lg rounded-lg p-6">
-      <div className="absolute left-6 top-4 font-MangoDdobak text-3xl leading-[60px] text-black">
+    <div className="relative box-border flex-1 min-w-[400px] max-w-[700px] bg-[#EEEEEE] border shadow-lg rounded-lg p-6 mb-4">
+      <div className="font-MangoDdobak text-3xl leading-[60px] text-black mb-4">
         나의 정보
       </div>
-      <div className="absolute w-[650px] h-[250px] left-1/2 transform -translate-x-1/2 top-[75px] bg-[rgba(223,208,179,0.5)] rounded-2xl p-6">
+      <div className="w-full bg-[rgba(223,208,179,0.5)] rounded-2xl p-6">
         <div className="font-MangoDdobak text-2xl leading-[40px] text-black mb-4">
           <div className="flex items-center justify-between mb-2">
             <p><strong>닉네임:</strong> {userInfo.userName}</p>
