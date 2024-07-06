@@ -12,3 +12,15 @@ body {
   font-style: normal;
   src: url(/public/fonts/MangoDdobak-B.ttf) format("truetype");
 }
+
+.video-container {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.local-video, .remote-video {
+  width: 45%;
+  border: 1px solid #ccc;
+}
