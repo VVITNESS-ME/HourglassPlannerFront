@@ -4,7 +4,7 @@ const nextConfig = {
         return [{
             source: '/api/:path*',
             destination: 'http://hourglass.ninja:8082/:path*'
-        }];
+        }]
     }
 };
 

@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "lint": "next lint",
-    "local": "env-cmd -f .env.localhost next dev -p 3000",
+    "local": "node server.js",
     "start": "next start -p 3000"
   },
   "dependencies": {
@@ -19,6 +19,8 @@
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
+    "socketio": "^1.0.0",
+    "ws": "^8.18.0",
     "yarn": "^1.22.22",
     "zustand": "^4.5.4"
   },

@@ -13,7 +13,7 @@ const Video: React.FC<VideoProps> = ({stream}) => {
     }, [stream])
 
     return (
-        <video ref={videoRef} autoPlay playsInline />
+        <video className="w-1/4 h-1/4" ref={videoRef} autoPlay playsInline />
     )
 }
 
