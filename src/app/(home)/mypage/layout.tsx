@@ -1,4 +1,4 @@
-import Sidebar from '../../../components/sidebar/sidebar'
+import Sidebar from '../../../components/mypage/sidebar/sidebar'
 
 export default function MypageLayout({ children }: Readonly<{ children: React.ReactNode;}>) {
   return (
