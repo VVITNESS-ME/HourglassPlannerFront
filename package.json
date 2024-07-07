@@ -10,6 +10,7 @@
     "start": "next start -p 3000"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.4",
     "@types/date-fns": "^2.6.0",
     "chart.js": "^4.4.3",
