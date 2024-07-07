@@ -15,7 +15,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [selectedActivity, setSelectedActivity] = useState('');
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
-  const closeModal = useHourglassStore((state) => state.closeModal);
+  const { closeModal, stopTimer } = useHourglassStore();
 
   const handleActivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedActivity(e.target.value);
@@ -29,6 +29,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     setRating(newRating);
   };
 
+  const handleSubmit = () => {
+    stopTimer(selectedActivity, rating, comment);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -37,9 +42,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-lg font-bold mb-4">활동을 선택하세요</div>
-            <div className='' onClick={closeModal}><svg xmlns="http://www.w3.org/2000/svg" fill="none" color='#aaaaaa' viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="size-6">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-</svg></div>
+            <div className='' onClick={closeModal}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" color='#aaaaaa' viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </div>
           </div>
           <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
             {['알고리즘 공부', '나만무 준비', '운동', '독서', '발표연습', '요가', '명상', '코딩', '디자인', '게임'].map((activity) => (
@@ -80,7 +87,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             ))}
           </div>
           <div className="flex justify-center">
-            <Button label="확인" onClick={onClose} isActive={false} />
+            <Button label="확인" onClick={handleSubmit} isActive={true} />
           </div>
         </div>
       </div>

@@ -23,7 +23,7 @@ interface TimeState {
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
-  stopTimer: () => void;
+  stopTimer: (categoryName: string, rating: number, description: string) => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
 }
@@ -57,13 +57,12 @@ const sendStartDataToServer = async (data: {
         timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
       }),
     });
-
     const responseData = await response.json();
+    console.log(responseData)
     if (!response.ok) {
       throw new Error(responseData.message || 'Failed to start timer');
     }
-
-    return responseData.hId;
+    return responseData.data.hid;
   } catch (error) {
     console.error('Error:', error);
     return null;
@@ -75,6 +74,9 @@ const sendTimeDataToServer = async (data: {
   timeBurst: number | null;
   timeEnd: string | undefined;
   hId: bigint | null;
+  categoryName: string;
+  rating: number;
+  description: string;
 }) => {
   try {
     const token = getToken();
@@ -142,7 +144,7 @@ const sendResumeSignalToServer = async (data: {
 }) => {
   try {
     const token = getToken();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/resume`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/restart`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -291,7 +293,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     get().checkAndStopTimer();
     return newState;
   }),
-  stopTimer: () => set((state) => {
+  stopTimer: (categoryName: string, rating: number, description: string) => set((state) => {
     const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
     removeStateFromCookies();
     const token = getToken();
@@ -301,6 +303,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeBurst: state.timeBurst,
         timeEnd: newState.timeEnd?.toISOString(),
         hId: state.hId,
+        categoryName,
+        rating,
+        description,
       });
     }
     return newState;
