@@ -84,19 +84,19 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, mainTitle }) => {
         </div>
       </div>
 
-      <NicknameModal
-        isOpen={isNicknameModalOpen}
-        onClose={() => setIsNicknameModalOpen(false)}
-      />
-      <PasswordModal
-        isOpen={isPasswordModalOpen}
-        onClose={() => setIsPasswordModalOpen(false)}
-      />
-      <SignOutModal
-        isOpen={isSignOutModalOpen}
-        onClose={() => setIsSignOutModalOpen(false)}
-        onSignOut={() => console.log('User signed out')}
-      />
+      {/*<NicknameModal*/}
+      {/*  isOpen={isNicknameModalOpen}*/}
+      {/*  onClose={() => setIsNicknameModalOpen(false)}*/}
+      {/*/>*/}
+      {/*<PasswordModal*/}
+      {/*  isOpen={isPasswordModalOpen}*/}
+      {/*  onClose={() => setIsPasswordModalOpen(false)}*/}
+      {/*/>*/}
+      {/*<SignOutModal*/}
+      {/*  isOpen={isSignOutModalOpen}*/}
+      {/*  onClose={() => setIsSignOutModalOpen(false)}*/}
+      {/*  onSignOut={() => console.log('User signed out')}*/}
+      {/*/>*/}
 
 
     </div>
