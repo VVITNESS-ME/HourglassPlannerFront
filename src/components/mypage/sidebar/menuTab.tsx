@@ -21,7 +21,7 @@ const MenuTab: React.FC<MenuTabProps> = ({ icon, label, isActive, onClick }) => 
       <div className={`mr-4 ${isActive ? 'text-yellow-500' : 'text-gray-600'}`}>
         {icon}
       </div>
-      <span className={isActive ? 'font-bold text-black' : 'text-gray-600'}>
+      <span className={`hidden md:block ${isActive ? 'font-bold text-black' : 'text-gray-600'}`}>
         {label}
       </span>
     </div>

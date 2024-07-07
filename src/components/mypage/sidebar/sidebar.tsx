@@ -13,7 +13,7 @@ const Sidebar: React.FC<{}> = () => {
   };
 
   return (
-    <div className="fixed top-20 left-0 h-full border-r border-gray-300 w-64 bg-white">
+    <div className="flex flex-row justify-between space-x-2 grow md:flex-col md:space-x-0 md:space-y-2 top-20 left-0 h-full border-r border-gray-300 bg-white">
       <Link href="/mypage/profile" legacyBehavior>
         <a onClick={() => handleTabClick('프로필')}>
           <MenuTab
@@ -44,6 +44,7 @@ const Sidebar: React.FC<{}> = () => {
           />
         </a>
       </Link>
+      <div className='hidden grow bg-white md:block md:h-auto md:rounded-md'></div>
     </div>
   );
 };
