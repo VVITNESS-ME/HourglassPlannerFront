@@ -1,6 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import NicknameModal from './NicknameModal';
+import PasswordModal from './PasswordModal';
+import SignOutModal from './SignOutModal';
 
 interface UserInfo {
   userEmail: string;
@@ -21,15 +24,22 @@ interface ProfileCardProps {
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, mainTitle }) => {
+  const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
+
   const handleNicknameChange = () => {
+    setIsNicknameModalOpen(true);
     console.log('닉네임 변경');
   };
 
   const handlePasswordChange = () => {
+    setIsPasswordModalOpen(true);
     console.log('비밀번호 변경');
   };
 
   const handleSignOut = () => {
+    setIsSignOutModalOpen(true);
     console.log('탈퇴하기');
   };
 
@@ -73,6 +83,22 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, mainTitle }) => {
           </button>
         </div>
       </div>
+
+      <NicknameModal
+        isOpen={isNicknameModalOpen}
+        onClose={() => setIsNicknameModalOpen(false)}
+      />
+      <PasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
+      <SignOutModal
+        isOpen={isSignOutModalOpen}
+        onClose={() => setIsSignOutModalOpen(false)}
+        onSignOut={() => console.log('User signed out')}
+      />
+
+
     </div>
   );
 };
