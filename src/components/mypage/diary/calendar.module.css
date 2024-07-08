@@ -1,5 +1,6 @@
 .calendar {
-  width: 350px;
+  min-width: 400px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -19,6 +20,24 @@
 
 .col-center {
   text-align: center;
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav:hover {
+  background-color: #f0f0f0;
+  border-radius: 50%;
 }
 
 .days {

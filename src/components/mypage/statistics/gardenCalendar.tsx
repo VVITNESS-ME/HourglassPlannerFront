@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth } from 'date-fns';
 import styles from './gardenCalendar.module.css';
+import useStatisticsStore from '../../../../store/statisticsStore';
 
-interface DiaryEntry {
+interface Grass {
   date: string;
   timeBurst: number;
 }
 
 interface GardenCalendarProps {
-  initialEntries?: DiaryEntry[];
+  initialEntries?: Grass[];
 }
 
 const getBackgroundColor = (timeBurst: number) => {
@@ -28,32 +29,36 @@ const getBackgroundColor = (timeBurst: number) => {
 };
 
 const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) => {
-  const [entries, setEntries] = useState<DiaryEntry[]>(initialEntries);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [tooltip, setTooltip] = useState<{ date: string, timeBurst: number } | null>(null);
+  const grasses = useStatisticsStore(state => state.grasses);
+  const setGrasses = useStatisticsStore(state => state.setGrasses);
+  const setSelectedDate = useStatisticsStore(state => state.setSelectedDate);
+  const setRangeSelection = useStatisticsStore(state => state.setRangeSelection);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const fetchData = async (start: string, end: string) => {
-    try {
-      const response = await fetch(`/api/diary?start=${start}&end=${end}`);
-      const data = await response.json();
-      // 초단위를 분단위로 변환
-      const convertedEntries = data.entries.map((entry: DiaryEntry) => ({
-        ...entry,
-        timeBurst: Math.floor(entry.timeBurst / 60), // 초를 분으로 변환
-      }));
-      setEntries(convertedEntries);
-    } catch (error) {
-      console.error('Error fetching data', error);
-    }
-  };
+  // const fetchData = async (start: string, end: string) => {
+  //   try {
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/statistics/garden?start=${start}&end=${end}`);
+  //     const data = await response.json();
+  //     const convertedEntries = data.entries.map((entry: Grass) => ({
+  //       ...entry,
+  //       timeBurst: Math.floor(entry.timeBurst / 60), // 초를 분으로 변환
+  //     }));
+  //     setGrasses(convertedEntries);
+  //   } catch (error) {
+  //     console.error('Error fetching data', error);
+  //   }
+  // };
 
   useEffect(() => {
-    if (initialEntries.length === 0) {
-      const start = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
-      const end = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
-      fetchData(start, end);
-    }
-  }, [currentMonth]);
+    setGrasses([
+      { date: '2024-07-01', timeBurst: 400 },
+      { date: '2024-07-02', timeBurst: 45 },
+      { date: '2024-07-03', timeBurst: 90 },
+      { date: '2024-07-04', timeBurst: 700 },
+      { date: '2024-07-05', timeBurst: 150 },
+    ]);
+  }, [setGrasses]);
 
   const renderHeader = () => {
     const dateFormat = 'MMMM yyyy';
@@ -96,14 +101,18 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
         const currentDay = day;
-        const entry = entries.find(entry => isSameDay(new Date(entry.date), currentDay));
-        const bgColor = entry ? getBackgroundColor(entry.timeBurst) : 'transparent';
+        const grass = grasses.find(entry => isSameDay(new Date(entry.date), currentDay));
+        const bgColor = grass ? getBackgroundColor(grass.timeBurst) : 'transparent';
         days.push(
           <div
             key={currentDay.toString()}
             className={`${styles.cell} ${isSameDay(currentDay, new Date()) ? styles.today : ''} ${!isSameMonth(currentDay, monthStart) ? styles.disabled : ''}`}
-            onMouseEnter={() => entry && setTooltip({ date: entry.date, timeBurst: entry.timeBurst })}
+            onMouseEnter={() => grass && setTooltip({ date: grass.date, timeBurst: grass.timeBurst })}
             onMouseLeave={() => setTooltip(null)}
+            onClick={() => {
+              setSelectedDate(currentDay);
+              setRangeSelection('daily');
+            }}
             style={{ backgroundColor: bgColor }}
           >
             <span className={styles.number}>{format(currentDay, 'd')}</span>

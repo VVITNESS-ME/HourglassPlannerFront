@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 
 const SignUp = () => {
-  const token = Cookies.get("token");
+  const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
   if (token) redirect('/');
 
   const [email, setEmail] = useState('');

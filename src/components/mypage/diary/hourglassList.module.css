@@ -1,0 +1,75 @@
+.hourglassList {
+    padding: 20px;
+    min-width: 400px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px; /* Add some padding for scrollbar space */
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #EEEEEE;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.category {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.details {
+    flex: 1;
+    overflow: hidden;
+}
+
+.taskName,
+.description,
+.time,
+.timeRange {
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.taskName {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.timeRangeContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.satisfaction {
+    font-size: 45px; /* 적절한 크기 조정 */
+    color: gold;
+    display: flex;
+    align-items: center;
+    margin-left: 10px; /* Add margin to the left for spacing */
+}
+
+.star {
+    font-size: inherit;
+}

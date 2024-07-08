@@ -1,29 +1,48 @@
 import create from 'zustand';
 
-interface Task {
+export interface Hourglass {
+  hId: string;
   category: string;
+  categoryColor: string;
   task: string;
+  description: string;
   timeStart: string;
   timeEnd: string;
+  timeBurst: number;
   satisfaction: number;
 }
 
-interface DiaryState {
-  tasks: Task[];
+interface DiaryStore {
+  hourglasses: Hourglass[];
   til: string;
   selectedDate: Date | null;
-  setTasks: (tasks: Task[]) => void;
+  selectedHourglass: Hourglass | null;
+  description: string;
+  setHourglasses: (hourglasses: Hourglass[]) => void;
   setTil: (til: string) => void;
   setSelectedDate: (date: Date) => void;
+  setSelectedHourglass: (hourglass: Hourglass | null) => void;
+  setDescription: (description: string) => void;
+  updateHourglass: (updatedHourglass: Hourglass) => void;
 }
 
-const useDiaryState = create<DiaryState>((set) => ({
-  tasks: [],
+const useDiaryStore = create<DiaryStore>((set) => ({
+  hourglasses: [],
   til: '',
   selectedDate: null,
-  setTasks: (tasks) => set({ tasks }),
+  selectedHourglass: null,
+  description: '',
+  setHourglasses: (hourglasses) => set({ hourglasses }),
   setTil: (til) => set({ til }),
   setSelectedDate: (date) => set({ selectedDate: date }),
+  setSelectedHourglass: (hourglass) => set({ selectedHourglass: hourglass }),
+  setDescription: (description) => set({ description }),
+  updateHourglass: (updatedHourglass) => set((state) => ({
+    hourglasses: state.hourglasses.map((task) =>
+      task.hId === updatedHourglass.hId ? updatedHourglass : task
+    ),
+    selectedHourglass: updatedHourglass,
+  })),
 }));
 
-export default useDiaryState;
+export default useDiaryStore;

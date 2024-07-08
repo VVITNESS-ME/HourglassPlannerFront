@@ -1,34 +1,36 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
-import useDiaryState from '../../../store/diaryStore';
+import useDiaryStore from '../../../../store/diaryStore';
 import styles from './calendar.module.css';
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { tasks, setTasks, setTil, selectedDate, setSelectedDate } = useDiaryState();
+  const { hourglasses, setHourglasses, setTil, selectedDate, setSelectedDate } = useDiaryStore();
 
-  const fetchData = async (date: Date) => {
+  const fetchData = useCallback(async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
     try {
-      const tasksResponse = await fetch(`https://api.example.com/tasks?date=${formattedDate}`);
-      const tasksData = await tasksResponse.json();
-      setTasks(tasksData);
-
-      const tilResponse = await fetch(`https://api.example.com/til?date=${formattedDate}`);
-      const tilData = await tilResponse.json();
-      setTil(tilData.til);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setHourglasses(data.hourglassData);
+      setTil(data.til);
     } catch (error) {
       console.error('Error fetching data', error);
+      // 데이터 로딩 실패 시 사용자에게 알림 (옵션)
+      alert('Failed to load data. Please try again later.');
     }
-  };
+  }, [setHourglasses, setTil]);
 
   useEffect(() => {
     const today = new Date();
     setSelectedDate(today);
     fetchData(today);
-  }, []);
+  }, [fetchData, setSelectedDate]);
 
   const handleDayClick = (day: Date) => {
     const today = new Date();
@@ -43,14 +45,14 @@ const Calendar: React.FC = () => {
 
     return (
       <div className={`${styles.header} ${styles.row}`}>
-        <div className={`${styles.col} ${styles.colStart}`} onClick={prevMonth}>
-          <div className="icon">chevron_left</div>
+        <div className={`${styles.nav}`} onClick={prevMonth}>
+          <div className="icon">&lt;</div>
         </div>
-        <div className={`${styles.col} ${styles.colCenter}`}>
+        <div className={`${styles.colCenter}`}>
           <span>{format(currentMonth, dateFormat)}</span>
         </div>
-        <div className={`${styles.col} ${styles.colEnd}`} onClick={nextMonth}>
-          <div className="icon">chevron_right</div>
+        <div className={`${styles.nav}`} onClick={nextMonth}>
+          <div className="icon">&gt;</div>
         </div>
       </div>
     );
@@ -93,7 +95,7 @@ const Calendar: React.FC = () => {
         const isFutureDate = day > new Date();
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : isSameDay(day, selectedDate!) ? styles.selected : ""} ${isFutureDate ? styles.future : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : isSameDay(day, selectedDate) ? styles.selected : ""} ${isFutureDate ? styles.future : ""}`}
             key={day.toString()}
             onClick={() => !isFutureDate && handleDayClick(cloneDay)}
           >
@@ -125,20 +127,6 @@ const Calendar: React.FC = () => {
       {renderHeader()}
       {renderDays()}
       {renderCells()}
-      <div className={styles.dataDisplay}>
-        <h3>Tasks</h3>
-        {tasks.map((task, index) => (
-          <div key={index}>
-            <p>Category: {task.category}</p>
-            <p>Task: {task.task}</p>
-            <p>Start: {task.timeStart}</p>
-            <p>End: {task.timeEnd}</p>
-            <p>Satisfaction: {task.satisfaction}</p>
-          </div>
-        ))}
-        <h3>TIL</h3>
-        <p>{useDiaryState.getState().til}</p>
-      </div>
     </div>
   );
 };

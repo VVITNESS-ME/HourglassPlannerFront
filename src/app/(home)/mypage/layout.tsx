@@ -1,10 +1,17 @@
-import Sidebar from '../../../components/sidebar/sidebar'
+'use client';
 
-export default function MypageLayout({ children }: Readonly<{ children: React.ReactNode;}>) {
+import React from 'react';
+import Sidebar from '../../../components/mypage/sidebar/sidebar';
+
+export default function MypageLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div>
-        <Sidebar />
+    <div className="flex flex-col md:flex-row md:overflow-hidden">
+      <div className='flex-none w-full md:w-64'>
+        <Sidebar  />
+      </div>
+      <div className="flex-grow p-8">
         {children}
+      </div>
     </div>
   );
 }
