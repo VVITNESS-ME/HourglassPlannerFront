@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import Button from '../general/Button';
+import Button from '../mypage/profile/button';
 
 interface TodoModalProps {
   isOpen: boolean;
