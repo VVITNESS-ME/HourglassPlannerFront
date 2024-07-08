@@ -24,6 +24,7 @@ interface TimeState {
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
   stopTimer: (categoryName: string, rating: number, content: string) => void;
+  stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
 }
@@ -45,30 +46,31 @@ const sendStartDataToServer = async (data: {
   timeGoal: number | null;
 }): Promise<bigint | null> => {
   const token = getToken();
-  if (token) {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...data,
-          timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
-        }),
-      });
-      const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to start timer');
-      }
-      return responseData.data.hid;
-    } catch (error) {
-      console.error('Error:', error);
-      return null;
-    }
+  if (!token) {
+    return null;
   }
-  return null; // Ensure a return statement here for when token is not available
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        ...data,
+        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+      }),
+    });
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to start timer');
+    }
+    return responseData.data.hid;
+  } catch (error) {
+    console.error('Error:', error);
+    return null;
+  }
 };
 
 const sendTimeDataToServer = async (data: {
@@ -106,7 +108,6 @@ const sendTimeDataToServer = async (data: {
       return null;
     }
   }
-  return null;
 };
 
 const sendPauseSignalToServer = async (data: {
@@ -115,33 +116,30 @@ const sendPauseSignalToServer = async (data: {
   hId: bigint | null;
   timeBurst: number | null;
 }) => {
-  const token = getToken();
-  if (token) {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...data,
-          timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
-          timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
-        }),
-      });
+  try {
+    const token = getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        ...data,
+        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+        timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+      }),
+    });
 
-      const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to pause timer');
-      }
-      return responseData.hId;
-    } catch (error) {
-      console.error('Error', error);
-      return null;
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to pause timer');
     }
+    return responseData.hId;
+  } catch (error) {
+    console.error('Error', error);
+    return null;
   }
-  return null;
 };
 
 const sendResumeSignalToServer = async (data: {
@@ -177,7 +175,6 @@ const sendResumeSignalToServer = async (data: {
       return null;
     }
   }
-  return null;
 };
 
 export const useHourglassStore = create<TimeState>((set, get) => ({
@@ -246,9 +243,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const updatedState = { ...state, hId };
-          set(updatedState);
-          saveStateToCookies(updatedState);
+          const newState = { ...state, hId };
+          set(newState);
+          saveStateToCookies(newState);
         }
       } else {
         const hId = await sendResumeSignalToServer({
@@ -258,9 +255,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const updatedState = { ...state, hId };
-          set(updatedState);
-          saveStateToCookies(updatedState);
+          const newState = { ...state, hId };
+          set(newState);
+          saveStateToCookies(newState);
         }
       }
     } else {
@@ -302,6 +299,11 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     const newState = { ...state, timeBurst: newTimeBurst };
     saveStateToCookies(newState);
     get().checkAndStopTimer();
+    return newState;
+  }),
+  stopTimerWithNOAuth:() => set((state) => {
+    const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
+    removeStateFromCookies();
     return newState;
   }),
   stopTimer: (categoryName: string, rating: number, content: string) => set((state) => {

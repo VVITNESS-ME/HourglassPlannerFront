@@ -24,6 +24,7 @@ const TimerRunning: React.FC = () => {
   const setTimeEnd = useHourglassStore((state) => state.setTimeEnd);
   const togglePause = useHourglassStore((state) => state.togglePause);
   const stopTimer = useHourglassStore((state) => state.stopTimer);
+  const stopTimerWithNOAuth = useHourglassStore((state) => state.stopTimerWithNOAuth);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
   const popUpModal = useHourglassStore((state) => state.popUpModal);
   const [hideTimer, toggleTimer] = useState(false);
@@ -50,8 +51,10 @@ const TimerRunning: React.FC = () => {
       } catch (error) {
         console.error('Failed to fetch user categories:', error);
       }
+    } else {
+      stopTimerWithNOAuth();
     }
-  }, [popUpModal]);
+  }, [popUpModal, stopTimer]);
 
   useEffect(() => {
     console.log(userCategories);
@@ -78,13 +81,13 @@ const TimerRunning: React.FC = () => {
         incrementTimeBurst();
       } else if (isRunning && now >= endTime) {
         setTimeEnd(new Date());
+        stopTimerWithNOAuth();
         alert('Time is up!');
       }
     }
   }, [setTimeEnd, stopTimer, incrementTimeBurst]);
-
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout | number;
 
     if (isRunning && !pause) {
       timer = setInterval(() => {
@@ -98,12 +101,8 @@ const TimerRunning: React.FC = () => {
       }, 1000);
     }
 
-    return () => clearInterval(timer);
+    return () => clearInterval(timer as NodeJS.Timeout);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
-
-  const handleCloseModal = () => {
-    stopTimer('', 0, ''); // 기본 값을 전달
-  };
 
   return (
     <div className='flex flex-col w-max justify-center items-center text-2xl'>
@@ -121,7 +120,7 @@ const TimerRunning: React.FC = () => {
       <div>
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
-      <Modal isOpen={modalOpen} onClose={handleCloseModal} userCategories={userCategories} setUserCategories={setUserCategories} />
+      <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
     </div>
   );
 };

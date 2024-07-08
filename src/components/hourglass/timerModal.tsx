@@ -8,7 +8,6 @@ import CategoryModal from "@/components/mypage/profile/categoryModal";
 
 interface ModalProps {
   isOpen: boolean;
-  onClose: () => void;
   userCategories: UserCategory[];
   setUserCategories: React.Dispatch<React.SetStateAction<UserCategory[]>>;
 }
@@ -19,7 +18,7 @@ interface UserCategory {
   color: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories, setUserCategories }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState('');
   const [description, setDescription] = useState('');
@@ -82,7 +81,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories, setUserC
 
   const handleSubmit = () => {
     stopTimer(selectedActivity, rating, description);
-    onClose();
   };
 
   const isValidInput = !!selectedActivity;

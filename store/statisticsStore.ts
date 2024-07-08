@@ -86,27 +86,34 @@ const fetchData = async (url: string, errorMessage: string) => {
   }
 };
 
-export const fetchDailyData = async () => {
+const formatDate = (date: Date): string => {
+  return date.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+};
+
+export const fetchDailyData = async (date: Date) => {
+  const formattedDate = formatDate(date);
   const responseData = await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/daily-statistics?date`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/daily-statistics?date=${formattedDate}`,
     'Failed to fetch dailyStatistics'
   );
   const { pieData, dailyStatistics } = responseData;
   return { pieData, dailyStatistics };
 };
 
-export const fetchWeeklyData = async () => {
+export const fetchWeeklyData = async (date: Date) => {
+  const formattedDate = formatDate(date);
   const responseData = await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/weekly-statistics?date`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/weekly-statistics?date=${formattedDate}`,
     'Failed to fetch weeklyStatistics'
   );
   const { pieData, weeklyStatistics } = responseData;
   return { pieData, weeklyStatistics };
 };
 
-export const fetchMonthlyData = async () => {
+export const fetchMonthlyData = async (date: Date) => {
+  const formattedDate = formatDate(date);
   const responseData = await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/monthly-statistics?date`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/monthly-statistics?date=${formattedDate}`,
     'Failed to fetch monthlyStatistics'
   );
   const { pieData, monthlyStatistics } = responseData;
