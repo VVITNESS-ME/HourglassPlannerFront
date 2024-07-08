@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import DrawLandmarkCanvas from "./DrawLandmarkCanvas";
 import AvatarCanvas from "./AvatarCanvas";
 import ReadyPlayerCreator from "./ReadyPlayerCreator";
@@ -27,7 +27,7 @@ const FaceLandmarkCanvas = () => {
     toggleAvatarCreatorView();
   };
 
-  const animate = () => {
+  const animate = useCallback(() => {
     if (
       videoRef.current &&
       videoRef.current.currentTime !== lastVideoTimeRef.current
@@ -41,7 +41,7 @@ const FaceLandmarkCanvas = () => {
       }
     }
     requestRef.current = requestAnimationFrame(animate);
-  };
+  },[]);
 
   useEffect(() => {
     const getUserCamera = async () => {
@@ -70,7 +70,7 @@ const FaceLandmarkCanvas = () => {
     getUserCamera();
 
     return () => cancelAnimationFrame(requestRef.current);
-  }, []);
+  }, [animate]);
 
   return (
     <div className="flex flex-col items-center">

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import FaceLandmarkManager from "../class/FaceLandmarkManager";
 
 interface DrawLandmarkCanvasProps {
@@ -9,7 +9,7 @@ const DrawLandmarkCanvas = ({ width, height }: DrawLandmarkCanvasProps) => {
   const drawCanvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef(0);
 
-  const animate = () => {
+  const animate = useCallback(() => {
     if (drawCanvasRef.current) {
       drawCanvasRef.current.width = width;
       drawCanvasRef.current.height = height;
@@ -17,12 +17,12 @@ const DrawLandmarkCanvas = ({ width, height }: DrawLandmarkCanvasProps) => {
       faceLandmarkManager.drawLandmarks(drawCanvasRef.current);
     }
     requestRef.current = requestAnimationFrame(animate);
-  };
+  }, [width, height]);
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
-  }, []);
+  }, [animate]);
 
   return (
     <canvas

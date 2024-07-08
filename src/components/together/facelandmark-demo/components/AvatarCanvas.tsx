@@ -1,6 +1,6 @@
 import * as THREE from 'three'; // THREE 네임스페이스 불러오기
 import { Canvas } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { OrbitControls } from "@react-three/drei";
 import { Float, Text3D } from "@react-three/drei";
 import AvatarManager from "../class/AvatarManager";
@@ -18,16 +18,16 @@ const AvatarCanvas = ({ width, height, url }: AvatarCanvasProps) => {
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
 
-  const animate = () => {
+  const animate = useCallback(() => {
     const results = FaceLandmarkManager.getInstance().getResults();
     avatarManagerRef.current.updateFacialTransforms(results, true);
     requestRef.current = requestAnimationFrame(animate);
-  };
+  }, []);
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
-  }, []);
+  }, [animate]);
 
   useEffect(() => {
     setIsLoading(true);
