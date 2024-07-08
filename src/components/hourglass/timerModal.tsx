@@ -19,14 +19,14 @@ interface UserCategory {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories }) => {
   const [selectedActivity, setSelectedActivity] = useState('');
-  const [comment, setComment] = useState('');
+  const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
   const { closeModal, stopTimer } = useHourglassStore();
 
   useEffect(() => {
     if (isOpen) {
       setSelectedActivity('');
-      setComment('');
+      setDescription('');
       setRating(0);
     }
   }, [isOpen]);
@@ -36,7 +36,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories }) => {
   };
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setComment(e.target.value);
+    setDescription(e.target.value);
   };
 
   const handleRatingChange = (newRating: number) => {
@@ -44,9 +44,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories }) => {
   };
 
   const handleSubmit = () => {
-    stopTimer(selectedActivity, rating, comment);
+    stopTimer(selectedActivity, rating, description);
     onClose();
   };
+
+  const isValidInput = !!selectedActivity;
 
   if (!isOpen) return null;
 
@@ -81,7 +83,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories }) => {
             <textarea
               className="w-full p-2 border border-gray-300 rounded"
               placeholder="코멘트를 입력하세요"
-              value={comment}
+              value={description}
               onChange={handleCommentChange}
               rows={4}
             />
@@ -101,7 +103,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories }) => {
             ))}
           </div>
           <div className="flex justify-center">
-            <Button label="확인" onClick={handleSubmit} isActive={true} />
+            {
+              !isValidInput
+                ? <button disabled className="px-4 py-2 font-bold text-white bg-gray-500 rounded opacity-50 cursor-not-allowed">확인</button>
+                : <Button label="확인" onClick={handleSubmit} isActive={true} />
+            }
           </div>
         </div>
       </div>

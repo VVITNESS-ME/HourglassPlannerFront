@@ -32,21 +32,26 @@ const TimerRunning: React.FC = () => {
   const hideToggle = () => { toggleTimer(!hideTimer); };
 
   const stopTimerAndFetchCategories = useCallback(async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category/`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setUserCategories(data.data.userCategoriesWithName);
-        popUpModal();
+    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
+    if (token) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUserCategories(data.data.userCategoriesWithName);
+          popUpModal();
+        }
+      } catch (error) {
+        console.error('Failed to fetch user categories:', error);
       }
-    } catch (error) {
-      console.error('Failed to fetch user categories:', error);
+    }else {
+      stopTimer();
     }
   }, [popUpModal]);
 
