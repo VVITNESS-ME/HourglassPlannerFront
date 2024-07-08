@@ -2,9 +2,9 @@
 'use client';
 
 import React from 'react';
-import ParticipantList from './ParticipantList';
-import VideoChat from './VideoChat';
-import ScreenDetectionMessage from './ScreenDetectionMessage';
+import ParticipantList from './participantList';
+import VideoChat from './videoChat';
+import ScreenDetectionMessage from './screenDetectionMessage';
 import Hourglass from '../hourglass/hourglass';
 
 const VideoChatRoom: React.FC = () => {
