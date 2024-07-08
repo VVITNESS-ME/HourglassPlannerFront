@@ -1,10 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Video from '@/components/general/video';
-import { sendToServer } from '@/components/general/signaling';
+const socketURL = "wss://hourglass.ninja:8889"
+const signalingServer = new WebSocket(socketURL);
+const sendToServer = (message: any) => {
+  signalingServer.send(JSON.stringify(message));
+};
 
 const VideoPage: React.FC = () => {
-  const socketURL = "wss://hourglass.ninja:8889"
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
@@ -28,6 +31,7 @@ const VideoPage: React.FC = () => {
 
         stream.getTracks().forEach(track => pc.addTrack(track, stream));
         setPeerConnection(pc);
+        console.log(peerConnection)
       } catch (error) {
         console.error('Error accessing media devices.', error);
       }
@@ -40,7 +44,6 @@ const VideoPage: React.FC = () => {
     if (peerConnection) {
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-      console.log("OFFER!");
       sendToServer({ type: 'offer', offer });
     }
   };
@@ -50,7 +53,6 @@ const VideoPage: React.FC = () => {
       await peerConnection.setRemoteDescription(offer);
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);
-      console.log("ANSWER!");
       sendToServer({ type: 'answer', answer });
     }
   };
@@ -66,24 +68,19 @@ const VideoPage: React.FC = () => {
         peerConnection?.setRemoteDescription(data.answer);
       } else if (data.type === 'candidate') {
         const candidate = new RTCIceCandidate(data.candidate);
-        console.log("CANDIDATE!");
         peerConnection?.addIceCandidate(candidate);
       }
     };
 
-    const signalingServer = new WebSocket(socketURL);
     signalingServer.onmessage = handleMessage;
 
-    return () => {
-      signalingServer.close();
-    };
-  }, []);
+  }, [peerConnection]);
 
   return (
     <div>
       <h1>WebRTC Video Chat</h1>
       <button onClick={createOffer}>Start Call</button>
-      <div className='flex flex-row justify-between'>
+      <div>
         <Video stream={localStream} />
         <Video stream={remoteStream} />
       </div>
