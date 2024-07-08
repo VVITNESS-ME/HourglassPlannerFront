@@ -50,10 +50,10 @@ const TimerRunning: React.FC = () => {
       } catch (error) {
         console.error('Failed to fetch user categories:', error);
       }
-    }else {
+    } else {
       stopTimer();
     }
-  }, [popUpModal]);
+  }, [popUpModal, stopTimer]);
 
   useEffect(() => {
     console.log(userCategories);
@@ -68,7 +68,7 @@ const TimerRunning: React.FC = () => {
     const seconds = totalSeconds % 60;
 
     return `${hours} 시간 ${minutes} 분 ${seconds} 초`;
-  }
+  };
 
   useEffect(() => {
     const savedState = Cookies.get('timerState');
@@ -109,20 +109,18 @@ const TimerRunning: React.FC = () => {
       <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
       <div {...(hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" })}>
         <div className='mt-6'>
-          {
-            timeGoal !== null ? (
-              timeGoal - (timeBurst || 0) > 86400000
-                ? <p>진행시간: {formatRemainingTime(timeBurst || 0)}</p>
-                : <p>남은시간: {formatRemainingTime(timeGoal - (timeBurst || 0))}</p>
-            ) : 'N/A'
-          }
+          {timeGoal !== null ? (
+            timeGoal - (timeBurst || 0) > 86400000
+              ? <p>진행시간: {formatRemainingTime(timeBurst || 0)}</p>
+              : <p>남은시간: {formatRemainingTime(timeGoal - (timeBurst || 0))}</p>
+          ) : 'N/A'}
         </div>
         <button className='mt-2' onClick={togglePause}>pause/restart</button>
       </div>
       <div>
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
-      <Modal isOpen={modalOpen} onClose={stopTimer} userCategories={userCategories} />
+      <Modal isOpen={modalOpen} onClose={stopTimer} userCategories={userCategories} setUserCategories={setUserCategories} />
     </div>
   );
 };
