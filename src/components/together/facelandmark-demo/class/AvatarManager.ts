@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { loadGltf } from "@/utils/loaders";
 import { FaceLandmarkerResult } from "@mediapipe/tasks-vision";
 import { decomposeMatrix } from "../utils/decomposeMatrix";
+import { loadGltf } from "../utils/loaders";
 
 class AvatarManager {
   private static instance: AvatarManager = new AvatarManager();
@@ -26,7 +26,7 @@ class AvatarManager {
       this.scene.children[0].removeFromParent();
     }
     const gltf = await loadGltf(url);
-    gltf.scene.traverse((obj) => (obj.frustumCulled = false));
+    gltf.scene.traverse((obj: { frustumCulled: boolean; }) => (obj.frustumCulled = false));
     this.scene.add(gltf.scene);
 
     // make hands invisible

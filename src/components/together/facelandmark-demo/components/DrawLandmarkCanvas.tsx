@@ -1,5 +1,5 @@
-import FaceLandmarkManager from "@/class/FaceLandmarkManager";
 import { useEffect, useRef } from "react";
+import FaceLandmarkManager from "../class/FaceLandmarkManager";
 
 interface DrawLandmarkCanvasProps {
   width: number;

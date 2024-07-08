@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import DrawLandmarkCanvas from "./DrawLandmarkCanvas";
 import AvatarCanvas from "./AvatarCanvas";
-import FaceLandmarkManager from "@/class/FaceLandmarkManager";
 import ReadyPlayerCreator from "./ReadyPlayerCreator";
+import FaceLandmarkManager from "../class/FaceLandmarkManager";
 
 const FaceLandmarkCanvas = () => {
   const videoRef = useRef<HTMLVideoElement>(null);

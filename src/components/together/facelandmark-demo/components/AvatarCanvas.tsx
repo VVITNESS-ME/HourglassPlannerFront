@@ -1,9 +1,9 @@
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import AvatarManager from "@/class/AvatarManager";
 import { OrbitControls } from "@react-three/drei";
-import FaceLandmarkManager from "@/class/FaceLandmarkManager";
 import { Float, Text3D } from "@react-three/drei";
+import AvatarManager from "../class/AvatarManager";
+import FaceLandmarkManager from "../class/FaceLandmarkManager";
 
 interface AvatarCanvasProps {
   width: number;

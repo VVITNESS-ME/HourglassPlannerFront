@@ -11,7 +11,7 @@ const FaceLandmarkCanvas = dynamic(
   { ssr: false }
 );
 
-export default function Home() {
+export default function FaceLandmarkerPage() {
   return (
     <div className="flex flex-col items-center px-2 pt-10 bg-gradient-to-r from-purple-500 to-blue-800 min-h-screen text-white">
       <Head>
