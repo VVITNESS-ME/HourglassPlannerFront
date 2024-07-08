@@ -1,7 +1,6 @@
-// components/Modal.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from './button';
 import { useHourglassStore } from '../../../store/hourglassStore';
 import './timerModal.css';
@@ -9,13 +8,28 @@ import './timerModal.css';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userCategories: UserCategory[];
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+interface UserCategory {
+  userCategoryId: number;
+  categoryName: string;
+  color: string;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, userCategories }) => {
   const [selectedActivity, setSelectedActivity] = useState('');
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
   const { closeModal, stopTimer } = useHourglassStore();
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedActivity('');
+      setComment('');
+      setRating(0);
+    }
+  }, [isOpen]);
 
   const handleActivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedActivity(e.target.value);
@@ -49,17 +63,17 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
           <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
-            {['알고리즘 공부', '나만무 준비', '운동', '독서', '발표연습', '요가', '명상', '코딩', '디자인', '게임'].map((activity) => (
-              <label key={activity} className="block p-2 border-b border-gray-300">
+            {userCategories.map((category) => (
+              <label key={category.userCategoryId} className="block p-2 border-b border-gray-300">
                 <input
                   type="radio"
                   name="activity"
-                  value={activity}
-                  checked={selectedActivity === activity}
+                  value={category.categoryName}
+                  checked={selectedActivity === category.categoryName}
                   onChange={handleActivityChange}
                   className="mr-2"
                 />
-                {activity}
+                {category.categoryName}
               </label>
             ))}
           </div>

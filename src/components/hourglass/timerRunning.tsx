@@ -7,6 +7,12 @@ import Button from './button';
 import ToggleSwitch from './toggleSwitch';
 import Modal from './timerModal';
 
+interface UserCategory {
+  userCategoryId: number;
+  categoryName: string;
+  color: string;
+}
+
 const TimerRunning: React.FC = () => {
   const timeStart = useHourglassStore((state) => state.timeStart);
   const timeBurst = useHourglassStore((state) => state.timeBurst);
@@ -21,11 +27,32 @@ const TimerRunning: React.FC = () => {
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
   const popUpModal = useHourglassStore((state) => state.popUpModal);
   const [hideTimer, toggleTimer] = useState(false);
+  const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+
   const hideToggle = () => { toggleTimer(!hideTimer); };
 
-  const stopTimerAndPopUpModal = useCallback(() => {
-    popUpModal();
+  const stopTimerAndFetchCategories = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUserCategories(data.data.userCategoriesWithName);
+        popUpModal();
+      }
+    } catch (error) {
+      console.error('Failed to fetch user categories:', error);
+    }
   }, [popUpModal]);
+
+  useEffect(() => {
+    console.log(userCategories);
+  }, [userCategories]);
 
   const formatRemainingTime = (milliseconds: number) => {
     if (milliseconds <= 0) return '0 seconds';
@@ -64,13 +91,13 @@ const TimerRunning: React.FC = () => {
         if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
           clearInterval(timer);
           setTimeEnd(new Date());
-          stopTimerAndPopUpModal();
+          stopTimerAndFetchCategories();
         }
       }, 1000);
     }
 
     return () => clearInterval(timer);
-  }, [stopTimerAndPopUpModal, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
+  }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
 
   return (
     <div className='flex flex-col w-max justify-center items-center text-2xl'>
@@ -88,9 +115,9 @@ const TimerRunning: React.FC = () => {
         <button className='mt-2' onClick={togglePause}>pause/restart</button>
       </div>
       <div>
-        <Button label="종료" onClick={stopTimerAndPopUpModal} isActive={false} />
+        <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
-      <Modal isOpen={modalOpen} onClose={stopTimer} />
+      <Modal isOpen={modalOpen} onClose={stopTimer} userCategories={userCategories} />
     </div>
   );
 };
