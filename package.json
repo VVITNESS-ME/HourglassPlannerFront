@@ -2,11 +2,12 @@
   "name": "hourglass_planner_front",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "lint": "next lint",
-    "local": "node server-local.js",
+    "local": "node server.js",
     "start": "next start -p 3000"
   },
   "dependencies": {
