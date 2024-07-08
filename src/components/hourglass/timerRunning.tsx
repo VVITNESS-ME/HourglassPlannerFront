@@ -51,7 +51,7 @@ const TimerRunning: React.FC = () => {
         console.error('Failed to fetch user categories:', error);
       }
     } else {
-      stopTimer();
+      // stopTimer();
     }
   }, [popUpModal, stopTimer]);
 
@@ -80,7 +80,7 @@ const TimerRunning: React.FC = () => {
         incrementTimeBurst();
       } else if (isRunning && now >= endTime) {
         setTimeEnd(new Date());
-        stopTimer();
+        // stopTimer();
         alert('Time is up!');
       }
     }
@@ -120,7 +120,7 @@ const TimerRunning: React.FC = () => {
       <div>
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
-      <Modal isOpen={modalOpen} onClose={stopTimer} userCategories={userCategories} setUserCategories={setUserCategories} />
+      {/* <Modal isOpen={modalOpen} onClose={stopTimer} userCategories={userCategories} setUserCategories={setUserCategories} /> */}
     </div>
   );
 };

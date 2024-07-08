@@ -1,10 +1,10 @@
 const nextConfig = {
-    reactStrictMode: true,
+    reactStrictMode: false,
     async rewrites() {
         return [{
             source: '/api/:path*',
-            destination: 'http://localhost:8082/:path*'
-        }];
+            destination: 'http://hourglass.ninja:8082/:path*'
+        }]
     }
 };
 
