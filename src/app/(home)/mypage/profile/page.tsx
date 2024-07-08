@@ -72,7 +72,7 @@ const Profile: React.FC = () => {
       main_title: BigInt(6),
     };
     const testCategoryData = [
-      { categoryId: BigInt(1), categoryName: 'Spring', color: '#228B22' },
+      { categoryId: BigInt(1), categoryName: 'Spring', color: '#FFB6C1' },
       { categoryId: BigInt(2), categoryName: 'MySQL', color: '#1E90FF' },
       { categoryId: BigInt(3), categoryName: '독서', color: '#8A2BE2' },
       { categoryId: BigInt(4), categoryName: '운동', color: '#FFD700' },

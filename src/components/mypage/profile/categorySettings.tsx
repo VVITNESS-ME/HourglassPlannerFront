@@ -20,7 +20,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,10 +28,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
         body: JSON.stringify(category),
       });
 
-      if (response.ok) {
-        const newCategory = await response.json();
-        setCategories([...categories, { categoryId: BigInt(newCategory.id), ...category }]);
-      } else {
+      if (!response.ok) {
         console.error('Failed to add category');
       }
     } catch (error) {
