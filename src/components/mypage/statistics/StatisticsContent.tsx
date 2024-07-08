@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Bar, Line, Pie } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement, ArcElement } from 'chart.js';
@@ -9,28 +9,49 @@ import useStatisticsStore, { fetchDailyData, fetchWeeklyData, fetchMonthlyData }
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement, ArcElement);
 
-const transformedPieData = [
+interface PieData {
+  label: string;
+  value: number;
+  backgroundColor: string;
+}
+
+interface DailyData {
+  day: string;
+  studyTime: number;
+}
+
+interface WeeklyData {
+  week: string;
+  studyTime: number;
+}
+
+interface MonthlyData {
+  month: string;
+  studyTime: number;
+}
+
+const transformedPieData: PieData[] = [
   { label: '핀토스', value: 30, backgroundColor: '#FF4500' },
   { label: '운동', value: 15, backgroundColor: '#FFD700' },
   { label: '알고리즘', value: 20, backgroundColor: '#808080' },
   { label: '기타', value: 35, backgroundColor: '#D3D3D3' },
 ];
 
-const transformedDailyData = [
+const transformedDailyData: DailyData[] = [
   { day: '월', studyTime: 120 },
   { day: '화', studyTime: 150 },
   { day: '수', studyTime: 180 },
   { day: '목', studyTime: 200 },
 ];
 
-const transformedWeeklyData = [
+const transformedWeeklyData: WeeklyData[] = [
   { week: '1주', studyTime: 400 },
   { week: '2주', studyTime: 500 },
   { week: '3주', studyTime: 450 },
   { week: '4주', studyTime: 600 },
 ];
 
-const transformedMonthlyData = [
+const transformedMonthlyData: MonthlyData[] = [
   { month: '1', studyTime: 400 },
   { month: '2', studyTime: 500 },
   { month: '3', studyTime: 600 },
@@ -40,17 +61,17 @@ const transformedMonthlyData = [
   { month: '7', studyTime: 800 },
 ];
 
-const fillMissingDailyData = (data) => {
+const fillMissingDailyData = (data: DailyData[]): DailyData[] => {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   return days.map(day => data.find(item => item.day === day) || { day, studyTime: 0 });
 };
 
-const fillMissingWeeklyData = (data) => {
+const fillMissingWeeklyData = (data: WeeklyData[]): WeeklyData[] => {
   const weeks = ['1주', '2주', '3주', '4주', '5주'];
   return weeks.map(week => data.find(item => item.week === week) || { week, studyTime: 0 });
 };
 
-const fillMissingMonthlyData = (data) => {
+const fillMissingMonthlyData = (data: MonthlyData[]): MonthlyData[] => {
   const months = Array.from({ length: 12 }, (_, i) => `${i + 1}`);
   return months.map(month => data.find(item => item.month === month) || { month, studyTime: 0 });
 };

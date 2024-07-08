@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
-import useDiaryStore from '../../../../store/diaryStore';
+import useDiaryStore from '../../../store/diaryStore';
 import styles from './calendar.module.css';
 
 const Calendar: React.FC = () => {
@@ -93,10 +93,9 @@ const Calendar: React.FC = () => {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
         const isFutureDate = day > new Date();
-        const isSelected = selectedDate ? isSameDay(day, selectedDate) : false; // 변경된 부분
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : isSelected ? styles.selected : ""} ${isFutureDate ? styles.future : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : selectedDate && isSameDay(day, selectedDate) ? styles.selected : ""} ${isFutureDate ? styles.future : ""}`}
             key={day.toString()}
             onClick={() => !isFutureDate && handleDayClick(cloneDay)}
           >

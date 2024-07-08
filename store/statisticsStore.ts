@@ -37,7 +37,6 @@ interface StatisticsStore {
   grasses: Grass[];
   rangeSelection: RangeSelection;
   setSelectedDate: (date: Date) => void;
-  setDescription: (description: string) => void;
   setPieData: (data: PieData[]) => void;
   setDailyData: (data: DailyData[]) => void;
   setWeeklyData: (data: WeeklyData[]) => void;
@@ -63,7 +62,6 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
       console.warn('Cannot set selectedDate to a future date');
     }
   },
-  setDescription: (description) => set({ description }),
   setPieData: (data) => set({ pieData: data }),
   setDailyData: (data) => set({ dailyData: data }),
   setWeeklyData: (data) => set({ weeklyData: data }),
@@ -90,7 +88,7 @@ const fetchData = async (url: string, errorMessage: string) => {
 
 export const fetchDailyData = async () => {
   const responseData = await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/dailyStatistics`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/daily-statistics?date`,
     'Failed to fetch dailyStatistics'
   );
   const { pieData, dailyStatistics } = responseData;
@@ -99,7 +97,7 @@ export const fetchDailyData = async () => {
 
 export const fetchWeeklyData = async () => {
   const responseData = await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/weeklyStatistics`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/weekly-statistics?date`,
     'Failed to fetch weeklyStatistics'
   );
   const { pieData, weeklyStatistics } = responseData;
@@ -108,7 +106,7 @@ export const fetchWeeklyData = async () => {
 
 export const fetchMonthlyData = async () => {
   const responseData = await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/monthlyStatistics`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/monthly-statistics?date`,
     'Failed to fetch monthlyStatistics'
   );
   const { pieData, monthlyStatistics } = responseData;

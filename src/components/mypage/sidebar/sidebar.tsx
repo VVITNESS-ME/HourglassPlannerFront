@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { UserIcon, ChartBarIcon, BookOpenIcon } from '@heroicons/react/24/solid';
 import MenuTab from './menuTab';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
   const [activeTab, setActiveTab] = useState('');
@@ -28,6 +28,7 @@ const Sidebar: React.FC = () => {
             icon={<UserIcon className={`h-6 w-6 ${activeTab === '프로필' ? 'text-yellow-500' : 'text-gray-600'}`} />}
             label="프로필"
             isActive={activeTab === '프로필'}
+            onClick={() => {}}
           />
         </a>
       </Link>
@@ -37,6 +38,7 @@ const Sidebar: React.FC = () => {
             icon={<ChartBarIcon className={`h-6 w-6 ${activeTab === '통계' ? 'text-yellow-500' : 'text-gray-600'}`} />}
             label="통계"
             isActive={activeTab === '통계'}
+            onClick={() => {}}
           />
         </a>
       </Link>
@@ -46,6 +48,7 @@ const Sidebar: React.FC = () => {
             icon={<BookOpenIcon className={`h-6 w-6 ${activeTab === '다이어리' ? 'text-yellow-500' : 'text-gray-600'}`} />}
             label="다이어리"
             isActive={activeTab === '다이어리'}
+            onClick={() => {}}
           />
         </a>
       </Link>

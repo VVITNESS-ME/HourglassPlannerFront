@@ -1,3 +1,4 @@
+import * as THREE from 'three'; // THREE 네임스페이스 불러오기
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { OrbitControls } from "@react-three/drei";

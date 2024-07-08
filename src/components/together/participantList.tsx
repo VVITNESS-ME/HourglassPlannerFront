@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import VideoChat from './VideoChat';
+import VideoChat from './videoChat';
 
 const participants = [
   { name: '원펀맨', time: '04:32', color: 'bg-blue-500' },

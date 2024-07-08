@@ -50,10 +50,8 @@ const TimerRunning: React.FC = () => {
       } catch (error) {
         console.error('Failed to fetch user categories:', error);
       }
-    } else {
-      // stopTimer();
     }
-  }, [popUpModal, stopTimer]);
+  }, [popUpModal]);
 
   useEffect(() => {
     console.log(userCategories);
@@ -80,7 +78,6 @@ const TimerRunning: React.FC = () => {
         incrementTimeBurst();
       } else if (isRunning && now >= endTime) {
         setTimeEnd(new Date());
-        // stopTimer();
         alert('Time is up!');
       }
     }
@@ -104,6 +101,10 @@ const TimerRunning: React.FC = () => {
     return () => clearInterval(timer);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
 
+  const handleCloseModal = () => {
+    stopTimer('', 0, ''); // 기본 값을 전달
+  };
+
   return (
     <div className='flex flex-col w-max justify-center items-center text-2xl'>
       <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
@@ -120,7 +121,7 @@ const TimerRunning: React.FC = () => {
       <div>
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
-      {/* <Modal isOpen={modalOpen} onClose={stopTimer} userCategories={userCategories} setUserCategories={setUserCategories} /> */}
+      <Modal isOpen={modalOpen} onClose={handleCloseModal} userCategories={userCategories} setUserCategories={setUserCategories} />
     </div>
   );
 };

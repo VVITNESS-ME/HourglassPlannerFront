@@ -59,7 +59,6 @@ const sendStartDataToServer = async (data: {
         }),
       });
       const responseData = await response.json();
-      console.log(responseData)
       if (!response.ok) {
         throw new Error(responseData.message || 'Failed to start timer');
       }
@@ -69,6 +68,7 @@ const sendStartDataToServer = async (data: {
       return null;
     }
   }
+  return null; // Ensure a return statement here for when token is not available
 };
 
 const sendTimeDataToServer = async (data: {
@@ -106,6 +106,7 @@ const sendTimeDataToServer = async (data: {
       return null;
     }
   }
+  return null;
 };
 
 const sendPauseSignalToServer = async (data: {
@@ -114,30 +115,33 @@ const sendPauseSignalToServer = async (data: {
   hId: bigint | null;
   timeBurst: number | null;
 }) => {
-  try {
-    const token = getToken();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        ...data,
-        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
-        timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
-      }),
-    });
+  const token = getToken();
+  if (token) {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...data,
+          timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+          timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+        }),
+      });
 
-    const responseData = await response.json();
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Failed to pause timer');
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Failed to pause timer');
+      }
+      return responseData.hId;
+    } catch (error) {
+      console.error('Error', error);
+      return null;
     }
-    return responseData.hId;
-  } catch (error) {
-    console.error('Error', error);
-    return null;
   }
+  return null;
 };
 
 const sendResumeSignalToServer = async (data: {
@@ -173,6 +177,7 @@ const sendResumeSignalToServer = async (data: {
       return null;
     }
   }
+  return null;
 };
 
 export const useHourglassStore = create<TimeState>((set, get) => ({
@@ -241,9 +246,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId };
-          set(newState);
-          saveStateToCookies(newState);
+          const updatedState = { ...state, hId };
+          set(updatedState);
+          saveStateToCookies(updatedState);
         }
       } else {
         const hId = await sendResumeSignalToServer({
@@ -253,9 +258,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId };
-          set(newState);
-          saveStateToCookies(newState);
+          const updatedState = { ...state, hId };
+          set(updatedState);
+          saveStateToCookies(updatedState);
         }
       }
     } else {
