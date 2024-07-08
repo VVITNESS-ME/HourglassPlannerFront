@@ -54,7 +54,15 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
   monthlyData: [],
   grasses: [],
   rangeSelection: 'daily',
-  setSelectedDate: (date) => set({ selectedDate: date }),
+  setSelectedDate: (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간을 00:00:00으로 설정
+    if (date <= today) {
+      set({ selectedDate: date });
+    } else {
+      console.warn('Cannot set selectedDate to a future date');
+    }
+  },
   setDescription: (description) => set({ description }),
   setPieData: (data) => set({ pieData: data }),
   setDailyData: (data) => set({ dailyData: data }),
