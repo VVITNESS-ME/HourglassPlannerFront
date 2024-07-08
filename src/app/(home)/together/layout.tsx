@@ -4,7 +4,7 @@ export default function TogetherLayout({ children }: Readonly<{ children: React.
   return (
     <div className="">
         {children}
-        <RootLayout />
+        <RootLayout children={undefined} />
     </div>
   );
 }
