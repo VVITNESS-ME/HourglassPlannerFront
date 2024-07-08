@@ -39,8 +39,6 @@ app.prepare().then(() => {
   }))
   server.use(cors());
 
-
-
   // Next.js의 기본 요청 핸들러 설정
   server.all('*', (req, res) => {
     return handle(req, res);
@@ -52,21 +50,21 @@ app.prepare().then(() => {
     console.log(`Server is running on https://localhost:${PORT}`);
   });
 
-  const wss = new WebSocket.Server({ server });
+  // const wss = new WebSocket.Server({ server });
 
-  wss.on('connection', function connection(ws) {
-      // 웹소켓 연결 처리 로직
-      ws.on('message', (data, isBinary) => {
-          // Broadcast to everyone else.
-          const message = isBinary ? data : data.toString();
-          console.log("you've got message!");
-          console.log(message);
-          wss.clients.forEach((client) => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(message);
-            }
-          });
-        });
-      console.log("연결됐음")
-  });
+  // wss.on('connection', function connection(ws) {
+  //     // 웹소켓 연결 처리 로직
+  //     ws.on('message', (data, isBinary) => {
+  //         // Broadcast to everyone else.
+  //         const message = isBinary ? data : data.toString();
+  //         console.log("you've got message!");
+  //         console.log(message);
+  //         wss.clients.forEach((client) => {
+  //           if (client !== ws && client.readyState === WebSocket.OPEN) {
+  //             client.send(message);
+  //           }
+  //         });
+  //       });
+  //     console.log("연결됐음")
+  // });
 });

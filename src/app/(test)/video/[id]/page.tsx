@@ -1,13 +1,24 @@
 'use client'
+import { useParams } from "next/navigation";
 import React, { useState, useEffect } from 'react';
-import Video from '@/components/general/video';
-const socketURL = "wss://hourglass.ninja:8889"
+import LocalVideo from "@/components/general/localVideo";
+import PeerVideo from "@/components/general/peerVideo";
+import Hourglass from "@/components/hourglass/hourglass";
+
+const socketURL = "wss://hourglass.ninja:8889/";
 const signalingServer = new WebSocket(socketURL);
 const sendToServer = (message: any) => {
   signalingServer.send(JSON.stringify(message));
 };
 
+signalingServer.onopen = () => {
+  console.log('WebSocket connection established.');
+};
+
 const VideoPage: React.FC = () => {
+  const params = useParams();
+  const roomId = params?.id;
+
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
@@ -17,7 +28,13 @@ const VideoPage: React.FC = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         setLocalStream(stream);
-        const pc = new RTCPeerConnection();
+        const pc = new RTCPeerConnection(
+          {
+          iceServers: [
+          {urls: 'stun:stun.l.google.com:19302',},
+          ],
+        }
+        );
 
         pc.onicecandidate = (event) => {
           if (event.candidate) {
@@ -77,12 +94,17 @@ const VideoPage: React.FC = () => {
   }, [peerConnection]);
 
   return (
-    <div>
-      <h1>WebRTC Video Chat</h1>
+    <div className="items-center justify-center">
+      <h1>WebRTC Video Chat Room #{roomId}</h1>
       <button onClick={createOffer}>Start Call</button>
-      <div>
-        <Video stream={localStream} />
-        <Video stream={remoteStream} />
+      <div className="items-center justify-between">
+        <div className="flex absolute">
+          <PeerVideo stream={remoteStream} />
+        </div>
+        <div className="flex absolute w-screen items-center justify-center">
+          <LocalVideo stream={localStream} />
+        </div>
+        <div className="flax absolute right-0"><Hourglass /></div>
       </div>
     </div>
   );

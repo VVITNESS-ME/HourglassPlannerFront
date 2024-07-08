@@ -5,7 +5,7 @@ interface VideoProps {
     stream: MediaStream | null;
 }
 
-const Video: React.FC<VideoProps> = ({stream}) => {
+const LocalVideo: React.FC<VideoProps> = ({stream}) => {
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect (() => {
@@ -13,8 +13,8 @@ const Video: React.FC<VideoProps> = ({stream}) => {
     }, [stream])
 
     return (
-        <video className="w-1/4 h-1/4" ref={videoRef} autoPlay playsInline />
+        <video className="w-1/3 h-1/3" ref={videoRef} autoPlay playsInline />
     )
 }
 
-export default Video;
+export default LocalVideo;
