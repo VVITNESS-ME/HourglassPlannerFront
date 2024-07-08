@@ -13,9 +13,12 @@ const Home = () => {
     const localVideoRef = useRef<HTMLVideoElement | null>(null);
     const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+    const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
     const [peerConnection, setPeerConnection] = useState<RTCPeerConnection>(new RTCPeerConnection(peerConnectionConfig));
 
     useEffect(() => {
+        const pc = new RTCPeerConnection(peerConnectionConfig);
+        setPeerConnection(pc);
         connectWebSocket();
 
         return () => {
@@ -145,6 +148,10 @@ const Home = () => {
         }
     }, [peerConnection]);
 
+    const checkPeerConnect = () => {
+        console.log(peerConnection);
+    }
+
     return (
         <div className="flex items-center justify-center min-h-screen">
             <h1>WebRTC Video Call</h1>
@@ -152,6 +159,7 @@ const Home = () => {
             <video ref={remoteVideoRef} autoPlay playsInline></video>
             <button onClick={getMedia}>Start Video</button>
             <button onClick={createOffer}>Create Offer</button>
+            <button onClick={checkPeerConnect}>Check PeerConnection</button>
         </div>
     );
 };
