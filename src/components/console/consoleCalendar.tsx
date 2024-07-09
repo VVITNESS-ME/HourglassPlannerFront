@@ -4,11 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
 import useConsoleStore from '../../../store/consoleStore';
 import styles from '../mypage/diary/calendar.module.css';
+import ScheduleModal from './consoleCalendarModal';
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { schedules, setSchedules } = useConsoleStore();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchSchedules = async () => {
     try {
@@ -41,7 +43,18 @@ const Calendar: React.FC = () => {
     const today = new Date();
     if (day <= today) {
       setSelectedDate(day);
+      setIsModalOpen(true); // 모달 열기
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleRegisterSchedules = (schedules: string[]) => {
+    // 여기에 일정 등록 로직 구현
+    console.log('Registered schedules:', schedules);
+    setIsModalOpen(false); // 일정 등록 후 모달 닫기
   };
 
   const renderHeader = () => {
@@ -134,6 +147,12 @@ const Calendar: React.FC = () => {
       {renderHeader()}
       {renderDays()}
       {renderCells()}
+      {/* <ScheduleModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onRegister={handleRegisterSchedules}
+        selectedDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
+      /> */}
     </div>
   );
 };
