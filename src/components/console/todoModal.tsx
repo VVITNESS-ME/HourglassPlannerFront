@@ -1,11 +1,26 @@
 // components/TodoModal.tsx
 'use client';
 
-import React, {useCallback, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import Button from '../mypage/profile/button';
-import Cookies from "js-cookie";
+
+// 카테고리 데이터
+const categories = [
+  { categoryId: 3, categoryName: '독서', color: '#8A2BE2' },
+  { categoryId: 4, categoryName: '운동', color: '#FFD700' },
+  { categoryId: 5, categoryName: '코딩', color: '#FF69B4' },
+  { categoryId: 6, categoryName: '핀토스', color: '#FF4500' },
+  { categoryId: 7, categoryName: '알고리즘', color: '#808080' },
+  { categoryId: 8, categoryName: 'Spring', color: '#228B22' },
+  { categoryId: 9, categoryName: 'MySQL', color: '#1E90FF' },
+  { categoryId: 10, categoryName: '독서', color: '#8A2BE2' },
+  { categoryId: 11, categoryName: '운동', color: '#FFD700' },
+  { categoryId: 12, categoryName: '코딩', color: '#FF69B4' },
+  { categoryId: 13, categoryName: '핀토스', color: '#FF4500' },
+  { categoryId: 14, categoryName: '알고리즘', color: '#808080' },
+];
 
 interface TodoModalProps {
   isOpen: boolean;
@@ -13,44 +28,48 @@ interface TodoModalProps {
   onAddTask: (task: { text: string; color: string }) => void;
 }
 
-interface UserCategory {
-  userCategoryId: number;
-  categoryName: string;
-  color: string;
-}
-
 const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask }) => {
   const [taskText, setTaskText] = useState('');
-  const [taskColor, setTaskColor] = useState('gray');
-  const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
-  const stopTimerAndFetchCategories = async () => {
-    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
-    if (token) {
+  const [taskColor, setTaskColor] = useState(categories[0].color);
+
+  const handleAddTask = async () => {
+    if (taskText.trim()) {
+      const selectedCategory = categories.find(category => category.color === taskColor);
+      const categoryId = selectedCategory ? selectedCategory.categoryId : null;
+      // const newTask = { text: taskText, color: taskColor, categoryId };
+
+      // Making the API call to register the task
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category/`, {
-          method: 'GET',
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo/`, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
+          body: JSON.stringify({
+            title: taskText,
+            userCategoryId: categoryId,
+          }),
         });
-        const data = await response.json();
-        if (response.ok) {
-          setUserCategories(data.data.userCategoriesWithName);
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
+
+
       } catch (error) {
-        console.error('Failed to fetch user categories:', error);
+        console.error('Error adding task:', error);
       }
     }
   };
-  const handleAddTask = () => {
-    if (taskText.trim()) {
-      onAddTask({ text: taskText, color: taskColor });
+
+  useEffect(() => {
+    if (isOpen) {
+      // If successful, add the task to the local state
       setTaskText('');
-      setTaskColor('gray');
-      onClose();
+      setTaskColor(categories[0].color);
     }
-  };
+  }, [isOpen]);
+
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -95,16 +114,11 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask }) => 
                     value={taskColor}
                     onChange={(e) => setTaskColor(e.target.value)}
                   >
-                    <option value="gray">Spring</option>
-                    <option value="lightgray">MySQL</option>
-                    <option value="green">독서</option>
-                    <option value="blue">운동</option>
-                    <option value="red">코딩</option>
-                    <option value="purple">핀토스</option>
-                    <option value="orange">기타</option>
-                    <option value="brown">추가1</option>
-                    <option value="pink">추가2</option>
-                    <option value="yellow">추가3</option>
+                    {categories.map((category) => (
+                      <option key={category.categoryId} value={category.color}>
+                        {category.categoryName}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
