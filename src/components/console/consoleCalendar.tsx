@@ -6,6 +6,11 @@ import useConsoleStore from '../../../store/consoleStore';
 import styles from '../mypage/diary/calendar.module.css';
 import ScheduleModal from './consoleCalendarModal';
 
+interface Schedule {
+  dDay: number; // Assuming Schedule has a property named dDay of type number
+  description: string;
+}
+
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { schedules, setSchedules } = useConsoleStore();
@@ -60,7 +65,6 @@ const Calendar: React.FC = () => {
       dday: Math.ceil((selectedDate!.getTime() - td.getTime()) / (1000 * 60 * 60 * 24)),
     }));
 
-    // 새로 등록한 스케줄을 기존 스케줄과 합쳐서 state에 반영
     setSchedules([...schedules, ...formattedSchedules]);
 
     setIsModalOpen(false); // 일정 등록 후 모달 닫기
@@ -118,15 +122,15 @@ const Calendar: React.FC = () => {
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
-        const isLateDate = day <= new Date(); // 미래 날짜가 아닌 경우
+        const isFutureOrTodayDate = day >= new Date(); // 오늘 또는 미래 날짜인 경우
         const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
         const isSameDayInSchedules = schedules.some(schedule => isSameDay(new Date(schedule.dday), cloneDay));
 
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDayInSchedules ? 'bg-[#f4a261] text-white' : ''} ${isSelected ? 'bg-orange-500 text-white' : ''} ${!isLateDate ? styles.future : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDayInSchedules ? 'bg-[#f4a261] text-white' : ''} ${isSelected ? 'bg-orange-500 text-white' : ''} ${isFutureOrTodayDate ? styles.future : ""}`}
             key={day.toString()}
-            onClick={() => !isLateDate && handleDayClick(cloneDay)}
+            onClick={() => isFutureOrTodayDate && handleDayClick(cloneDay)}
           >
             <span className={styles.number}>{formattedDate}</span>
           </div>

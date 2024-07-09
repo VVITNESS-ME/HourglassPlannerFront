@@ -5,7 +5,7 @@ import CardLayout from '../../cardLayout';
 import CategoryModal from './categoryModal';
 
 interface Category {
-  categoryId: BigInt;
+  categoryId: bigint;
   categoryName: string;
   color: string;
 }
@@ -13,28 +13,11 @@ interface Category {
 interface CategorySettingsProps {
   categories: Category[];
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
+  onAddCategory: (category: { categoryName: string; color: string }) => void;
 }
 
-const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCategories }) => {
+const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCategories, onAddCategory }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleAddCategory = async (category: { categoryName: string; color: string }) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(category),
-      });
-
-      if (!response.ok) {
-        console.error('Failed to add category');
-      }
-    } catch (error) {
-      console.error('Error adding category', error);
-    }
-  };
 
   const handleDeleteCategory = async (index: number) => {
     const categoryToDelete = categories[index];
@@ -80,7 +63,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
       <CategoryModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAddCategory={handleAddCategory}
+        onAddCategory={onAddCategory}
       />
     </div>
   );
