@@ -8,30 +8,35 @@ import SandTimerTasks from '../../../components/console/sandTimerSecretary';
 import TodayTasks from '../../../components/console/todayTasks';
 import Hourglass from '../../../components/hourglass/hourglass';
 import Calendar from "@/components/console/consoleCalendar";
+import ProfileCard from "@/components/mypage/profile/profileCard";
+import CategorySettings from "@/components/mypage/profile/categorySettings";
+import TitleList from "@/components/mypage/profile/titleList";
 
 const MainConsole: React.FC = () => {
   return (
     <div className="min-h-screen p-8 bg-gray-100">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="col-span-1">
-          <Calendar />
+      <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
+        <div className="flex-1 min-w-[400px] max-w-[700px] max-h-[500px] mb-4">
+          <Calendar/>
         </div>
-        <div className="col-span-1">
-          <TodayTasks />
+        <div className="flex-1 min-w-[400px] max-w-[700px] max-h-[500px] mb-4">
+          <TodayTasks/>
         </div>
-        <div className="col-span-1">
-          <Hourglass />
+        <div className="flex-1 min-w-[400px] max-w-[700px] max-h-[500px] mb-4">
+          <Hourglass/>
         </div>
-        <div className="col-span-1">
-          <SandTimerTasks />
+      </ div>
+      <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
+        <div className="flex-1 min-w-[400px] max-w-[700px] max-h-[500px] mb-4">
+          <SandTimerTasks/>
         </div>
-        <div className="col-span-1">
-          <CompletedTasks />
+        <div className="flex-1 min-w-[400px] max-w-[700px] max-h-[500px] mb-4">
+          <CompletedTasks/>
         </div>
-        <div className="col-span-1">
-          <AchievementCard />
+        <div className="flex-1 min-w-[400px] max-w-[700px] max-h-[500px] mb-4">
+          <AchievementCard/>
         </div>
-      </div>
+      </ div>
     </div>
   );
 };

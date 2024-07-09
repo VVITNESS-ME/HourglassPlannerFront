@@ -1,44 +1,30 @@
-// components/TodoModal.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
 import Button from '../mypage/profile/button';
-
-// 카테고리 데이터
-const categories = [
-  { categoryId: 3, categoryName: '독서', color: '#8A2BE2' },
-  { categoryId: 4, categoryName: '운동', color: '#FFD700' },
-  { categoryId: 5, categoryName: '코딩', color: '#FF69B4' },
-  { categoryId: 6, categoryName: '핀토스', color: '#FF4500' },
-  { categoryId: 7, categoryName: '알고리즘', color: '#808080' },
-  { categoryId: 8, categoryName: 'Spring', color: '#228B22' },
-  { categoryId: 9, categoryName: 'MySQL', color: '#1E90FF' },
-  { categoryId: 10, categoryName: '독서', color: '#8A2BE2' },
-  { categoryId: 11, categoryName: '운동', color: '#FFD700' },
-  { categoryId: 12, categoryName: '코딩', color: '#FF69B4' },
-  { categoryId: 13, categoryName: '핀토스', color: '#FF4500' },
-  { categoryId: 14, categoryName: '알고리즘', color: '#808080' },
-];
 
 interface TodoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTask: (task: { text: string; color: string }) => void;
+  onAddTask: (task: { text: string; color: string; categoryName: string; }) => void;
+  userCategories: { userCategoryId: number; categoryName: string; color: string }[];
+  onOpenCategoryModal: () => void; // 카테고리 모달 열기 함수
 }
 
-const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask }) => {
+const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, userCategories, onOpenCategoryModal }) => {
   const [taskText, setTaskText] = useState('');
-  const [taskColor, setTaskColor] = useState(categories[0].color);
+  const [selectedCategory, setSelectedCategory] = useState<{ userCategoryId: number; categoryName: string; color: string } | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTaskText('');
+      setSelectedCategory(userCategories[0] || null);
+    }
+  }, [isOpen, userCategories]);
 
   const handleAddTask = async () => {
-    if (taskText.trim()) {
-      const selectedCategory = categories.find(category => category.color === taskColor);
-      const categoryId = selectedCategory ? selectedCategory.categoryId : null;
-      // const newTask = { text: taskText, color: taskColor, categoryId };
-
-      // Making the API call to register the task
+    if (taskText.trim() && selectedCategory) {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo/`, {
           method: 'POST',
@@ -47,29 +33,21 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask }) => 
           },
           body: JSON.stringify({
             title: taskText,
-            userCategoryId: categoryId,
+            userCategoryId: selectedCategory.userCategoryId,
           }),
         });
 
-        if (!response.ok) {
+        if (response.ok) {
+          onAddTask({ text: taskText, color: selectedCategory.color, categoryName:selectedCategory.categoryName });
+          onClose();
+        } else {
           throw new Error('Network response was not ok');
         }
-
-
       } catch (error) {
         console.error('Error adding task:', error);
       }
     }
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      // If successful, add the task to the local state
-      setTaskText('');
-      setTaskColor(categories[0].color);
-    }
-  }, [isOpen]);
-
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -109,34 +87,53 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask }) => 
                     value={taskText}
                     onChange={(e) => setTaskText(e.target.value)}
                   />
-                  <select
-                    className="w-full p-2 border border-gray-300 rounded mt-2"
-                    value={taskColor}
-                    onChange={(e) => setTaskColor(e.target.value)}
-                  >
-                    {categories.map((category) => (
-                      <option key={category.categoryId} value={category.color}>
-                        {category.categoryName}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative mt-2">
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded appearance-none"
+                      value={selectedCategory ? selectedCategory.userCategoryId : ''}
+                      onChange={(e) => {
+                        const selected = userCategories.find(category => category.userCategoryId === Number(e.target.value));
+                        setSelectedCategory(selected || null);
+                      }}
+                      style={{ backgroundColor: selectedCategory ? selectedCategory.color : 'white' }}
+                    >
+                      {userCategories.map((category) => (
+                        <option key={category.userCategoryId} value={category.userCategoryId} style={{ backgroundColor: category.color }}>
+                          {category.categoryName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                      <svg className="w-4 h-4 fill-current text-gray-400" viewBox="0 0 20 20">
+                        <path d="M7 10l5 5 5-5H7z" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    label="취소"
-                    onClick={onClose}
-                    isActive={false}
-                    width="w-auto"
-                    height="h-10"
-                  />
-                  <Button
-                    label="추가"
-                    onClick={handleAddTask}
-                    isActive={true}
-                    width="w-auto"
-                    height="h-10"
-                  />
+                <div className="mt-4 flex justify-between">
+                  <button
+                    className="text-gray-500 mt-2"
+                    onClick={onOpenCategoryModal}
+                  >
+                    + 카테고리 추가
+                  </button>
+                  <div className="flex">
+                    <Button
+                      label="취소"
+                      onClick={onClose}
+                      isActive={false}
+                      width="w-auto"
+                      height="h-10"
+                    />
+                    <Button
+                      label="추가"
+                      onClick={handleAddTask}
+                      isActive={true}
+                      width="w-auto"
+                      height="h-10"
+                    />
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
