@@ -27,6 +27,9 @@ interface TimeState {
   stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
+
+  setPause: () => void;
+  setResume: () => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -228,6 +231,19 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
     return newState;
   }),
+
+  setPause: () => set((state) =>  {
+    const newState = {...state , pause: true};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+
+  setResume: () => set((state) =>  {
+    const newState = {...state , pause: false};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+
   togglePause: async () => {
     const token = getToken();
     const state = get();

@@ -4,7 +4,7 @@ export default function HomeLayout({ children }: Readonly<{ children: React.Reac
   return (
     <div className="">
         {children}
-        <Hourglass />
+        {/* <Hourglass /> */}
     </div>
   );
 }

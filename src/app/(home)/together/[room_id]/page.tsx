@@ -102,15 +102,17 @@ const VideoPage: React.FC = () => {
     <div className="items-center justify-center">
       <h1>WebRTC Video Chat Room #{roomId}</h1>
       <button onClick={createOffer}>Start Call</button>
-      <div className="items-center justify-between">
-        <div className="flex absolute">
+      <div className="flex flex-row items-center justify-center">
+        <div className="w-1/5">
           <PeerVideo stream={remoteStream} />
         </div>
-        <div className="flex absolute w-screen items-center justify-center">
+        <div className="flex w-1/3 items-center justify-center">
           <LocalVideo stream={localStream} />
-          <button onClick={logpeer}>aaaaaaaa</button>
         </div>
+        <div><Hourglass/></div>
       </div>
+      <button onClick={logpeer}>check console to see peerConnection</button>
+
     </div>
   );
 };

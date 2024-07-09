@@ -1,13 +1,6 @@
 import {  FaceLandmarker,  FilesetResolver,  FaceLandmarkerResult,  DrawingUtils } from "@mediapipe/tasks-vision";
-import { useHourglassStore } from "../../../store/hourglassStore";
-
-let timeDoze = 0;
-let timeMia = 0;
 
 class FaceLandmarkManager {
-  // togglePause = useHourglassStore((state) => state.togglePause);
-  // pause = useHourglassStore((state) => state.pause);
-  // bbmode = useHourglassStore((state) => state.bbMode);
   private static instance: FaceLandmarkManager = new FaceLandmarkManager();
   private results!: FaceLandmarkerResult;
   faceLandmarker!: FaceLandmarker | null;
@@ -130,45 +123,16 @@ class FaceLandmarkManager {
 
         // 눈이 감긴 상태를 콘솔에 출력
         if (leftEyeClosed && rightEyeClosed) {
-          console.log('Eyes are closed (drowsiness detected)');
-
-          // bb모드에서 졸면 퍼즈
-          // if (this.bbmode && !this.pause) {
-          //   timeDoze++;
-          //   console.log("timeDoze: " + timeDoze);
-          //   if (timeDoze > 100) this.togglePause;
-          // }
+          // console.log('Eyes are closed (drowsiness detected)');
+          return 1;
         } else {
-          console.log('Eyes are open');
-          // if (timeDoze > 0) timeDoze -=5;
-          // if (this.bbmode && this.pause) {
-          //   console.log("timeDoze: " + timeDoze);
-          //   if (timeDoze < 50) {
-          //     this.togglePause;
-          //     timeDoze = 0;
-          //   }
-          // }
+          // console.log('Eyes are open');
+          return 0;
         }
       }
-      // bb모드에서 자리에 돌아오면 퍼즈 풀기
-      // if (timeMia > 0) timeMia -=5;
-      // if (this.bbmode && this.pause) {
-      //   console.log("timeMia: " + timeMia);
-      //   if (timeMia < 50) {
-      //     this.togglePause;
-      //     timeMia = 0;
-      //   }
-      // }
-
     } else {
-      
-      console.log("얼굴이 화면에서 사라졌습니다");
-      // bb모드에서 자리 비우면 퍼즈
-      // if (this.bbmode && !this.pause) {
-      //   timeMia++;
-      //   console.log("timeMia: " + timeMia);
-      //   if (timeMia > 100) this.togglePause;
-      // }
+      // console.log("얼굴이 화면에서 사라졌습니다");
+      return 2;
     };
   }
 }
