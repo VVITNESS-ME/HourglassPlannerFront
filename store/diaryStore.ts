@@ -39,7 +39,7 @@ const useDiaryStore = create<DiaryStore>((set) => ({
   setDescription: (description) => set({ description }),
   updateHourglass: (updatedHourglass) => set((state) => ({
     hourglasses: state.hourglasses.map((task) =>
-      task.hId === updatedHourglass.hId ? updatedHourglass : task
+      task.hid === updatedHourglass.hid ? updatedHourglass : task
     ),
     selectedHourglass: updatedHourglass,
   })),
