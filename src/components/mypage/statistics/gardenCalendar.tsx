@@ -7,7 +7,7 @@ import useStatisticsStore from '../../../../store/statisticsStore';
 
 interface Grass {
   date: string;
-  timeBurst: number;
+  totalBurst: number;
 }
 
 interface GardenCalendarProps {
@@ -35,30 +35,32 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
   const setSelectedDate = useStatisticsStore(state => state.setSelectedDate);
   const setRangeSelection = useStatisticsStore(state => state.setRangeSelection);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
-  // const fetchData = async (start: string, end: string) => {
-  //   try {
-  //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/statistics/garden?start=${start}&end=${end}`);
-  //     const data = await response.json();
-  //     const convertedEntries = data.entries.map((entry: Grass) => ({
-  //       ...entry,
-  //       timeBurst: Math.floor(entry.timeBurst / 60), // 초를 분으로 변환
-  //     }));
-  //     setGrasses(convertedEntries);
-  //   } catch (error) {
-  //     console.error('Error fetching data', error);
-  //   }
-  // };
+  const fetchData = async (start: string, end: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/statics/garden?start=${start}&end=${end}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      const convertedEntries = data.data.entries.map((entry: Grass) => ({
+        ...entry,
+        timeBurst: Math.floor(entry.totalBurst / 60), // 초를 분으로 변환
+      }));
+      setGrasses(convertedEntries);
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+  };
 
   useEffect(() => {
-    setGrasses([
-      { date: '2024-07-01', timeBurst: 400 },
-      { date: '2024-07-02', timeBurst: 45 },
-      { date: '2024-07-03', timeBurst: 90 },
-      { date: '2024-07-04', timeBurst: 700 },
-      { date: '2024-07-05', timeBurst: 150 },
-    ]);
-  }, [setGrasses]);
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(monthStart);
+    fetchData(format(monthStart, 'yyyy-MM-dd'), format(monthEnd, 'yyyy-MM-dd'));
+  }, [currentMonth]);
 
   const renderHeader = () => {
     const dateFormat = 'MMMM yyyy';

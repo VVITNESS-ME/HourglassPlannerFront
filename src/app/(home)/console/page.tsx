@@ -8,9 +8,7 @@ import SandTimerTasks from '../../../components/console/sandTimerSecretary';
 import TodayTasks from '../../../components/console/todayTasks';
 import Hourglass from '../../../components/hourglass/hourglass';
 import Calendar from "@/components/console/consoleCalendar";
-import ProfileCard from "@/components/mypage/profile/profileCard";
-import CategorySettings from "@/components/mypage/profile/categorySettings";
-import TitleList from "@/components/mypage/profile/titleList";
+
 
 const MainConsole: React.FC = () => {
   return (
