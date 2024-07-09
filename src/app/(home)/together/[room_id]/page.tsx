@@ -99,17 +99,17 @@ const VideoPage: React.FC = () => {
     return;
   }
   return (
-    <div className="items-center justify-center">
+    <div className="max-w-fit">
       <h1>WebRTC Video Chat Room #{roomId}</h1>
       <button onClick={createOffer}>Start Call</button>
-      <div className="flex flex-row items-center justify-center">
-        <div className="w-1/5">
+      <div className="flex flex-wrap md:flex-row justify-between">
+        <div className="flex flex-col w-full md:w-1/4 space-y-4">
           <PeerVideo stream={remoteStream} />
         </div>
-        <div className="flex w-1/3 items-center justify-center">
+        <div className="flex flex-col w-full md:w-2/4 p-4 justify-center">
           <LocalVideo stream={localStream} />
         </div>
-        <div><Hourglass/></div>
+        <div className="flex flex-col w-full md:w-1/4 p-4 space-y-4"><Hourglass/></div>
       </div>
       <button onClick={logpeer}>check console to see peerConnection</button>
 

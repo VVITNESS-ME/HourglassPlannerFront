@@ -28,7 +28,7 @@ const TimerSelector: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center">
-      <div className='flex flex-row'>
+      <div className='flex flex-wrap pt-2 justify-evenly items-center'>
         <Button label="10분" onClick={() => handleClick('10분', 10 * 60)} isActive={activeButton === '10분'} />
         <Button label="30분" onClick={() => handleClick('30분', 30 * 60)} isActive={activeButton === '30분'} />
         <Button label="1시간" onClick={() => handleClick('1시간', 60 * 60)} isActive={activeButton === '1시간'} />

@@ -14,17 +14,17 @@ interface Room {
 }
 
 const rooms: Room[] = [
-  { roomId: BigInt(1),title: '그래프 알고리즘 공부하실분~', status: 'locked', participants: '3/4', path: '/rooms/graph-algorithm' },
-  { roomId: BigInt(2),title: '같이 청소년 상어 푸실실 비법: 문제풀이', status: 'open', participants: '3/4', path: '/rooms/youth-study' },
-  {roomId: BigInt(3), title: '서로 감시하는 스터디 카페 (결과만 봄)', status: 'locked', participants: '3/4', path: '/rooms/study-cafe' },
-  {roomId: BigInt(4), title: '질문/취업 고민 공유방', status: 'open', participants: '3/4', path: '/rooms/job-discussion' },
-  {roomId: BigInt(5), title: 'ALL DAY 공부방', status: 'locked', participants: '3/4', path: '/rooms/all-day-study' },
-  {roomId: BigInt(6), title: '마지막까지 남으실분 기프티콘 드려요', status: 'open', participants: '3/4', path: '/rooms/gifticon' },
-  { roomId: BigInt(7),title: '아무거나 모각코 하는 방', status: 'locked', participants: '3/4', path: '/rooms/anything' },
-  {roomId: BigInt(8), title: '추가 방 1', status: 'open', participants: '3/4', path: '/rooms/additional-room-1' },
-  {roomId: BigInt(9), title: '추가 방 2', status: 'locked', participants: '3/4', path: '/rooms/additional-room-2' },
-  {roomId: BigInt(10), title: '추가 방 3', status: 'open', participants: '3/4', path: '/rooms/additional-room-3' },
-  {roomId: BigInt(11), title: '추가 방 4', status: 'locked', participants: '3/4', path: '/rooms/additional-room-4' },
+  {roomId: BigInt(1),title: '그래프 알고리즘 공부하실분~', status: 'locked', participants: '3/4', path: '/together/graph-algorithm' },
+  {roomId: BigInt(2),title: '같이 청소년 상어 푸실실 비법: 문제풀이', status: 'open', participants: '3/4', path: '/together/youth-study' },
+  {roomId: BigInt(3), title: '서로 감시하는 스터디 카페 (결과만 봄)', status: 'locked', participants: '3/4', path: '/together/study-cafe' },
+  {roomId: BigInt(4), title: '질문/취업 고민 공유방', status: 'open', participants: '3/4', path: '/together/job-discussion' },
+  {roomId: BigInt(5), title: 'ALL DAY 공부방', status: 'locked', participants: '3/4', path: '/together/all-day-study' },
+  {roomId: BigInt(6), title: '마지막까지 남으실분 기프티콘 드려요', status: 'open', participants: '3/4', path: '/together/gifticon' },
+  {roomId: BigInt(7),title: '아무거나 모각코 하는 방', status: 'locked', participants: '3/4', path: '/together/anything' },
+  {roomId: BigInt(8), title: '추가 방 1', status: 'open', participants: '3/4', path: '/together/additional-room-1' },
+  {roomId: BigInt(9), title: '추가 방 2', status: 'locked', participants: '3/4', path: '/together/additional-room-2' },
+  {roomId: BigInt(10), title: '추가 방 3', status: 'open', participants: '3/4', path: '/together/additional-room-3' },
+  {roomId: BigInt(11), title: '추가 방 4', status: 'locked', participants: '3/4', path: '/together/additional-room-4' },
   {roomId: BigInt(12), title: '추가 방 5', status: 'open', participants: '3/4', path: '/together/12' },
 ];
 
