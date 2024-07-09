@@ -1,42 +1,46 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
-import useDiaryStore from '../../../store/diaryStore';
-import styles from './calendar.module.css';
+import useConsoleStore from '../../../store/consoleStore';
+import styles from '../mypage/diary/calendar.module.css';
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { hourglasses, setHourglasses, setTil, selectedDate, setSelectedDate } = useDiaryStore();
+  const { schedules, setSchedules } = useConsoleStore();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const fetchData = useCallback(async (date: Date) => {
-    const formattedDate = format(date, 'yyyy-MM-dd');
+  const fetchSchedules = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/calendar/1`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSchedules(data.data.schedules);
+      } else {
+        console.error('Failed to fetch schedules');
       }
-      const data = await response.json();
-      setHourglasses(data.hourglassData);
-      setTil(data.til);
     } catch (error) {
-      console.error('Error fetching data', error);
-      // 데이터 로딩 실패 시 사용자에게 알림 (옵션)
-      alert('Failed to load data. Please try again later.');
+      console.error('Error fetching schedules', error);
     }
-  }, [setHourglasses, setTil]);
+  };
 
   useEffect(() => {
     const today = new Date();
     setSelectedDate(today);
-    fetchData(today);
-  }, [fetchData, setSelectedDate]);
+    fetchSchedules();
+  }, []);
 
   const handleDayClick = (day: Date) => {
     const today = new Date();
     if (day <= today) {
       setSelectedDate(day);
-      fetchData(day);
     }
   };
 
@@ -93,9 +97,12 @@ const Calendar: React.FC = () => {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
         const isFutureDate = day > new Date();
+        const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
+        const isSameDayInSchedules = schedules.some(schedule => isSameDay(new Date(schedule.dDay), cloneDay));
+
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : selectedDate && isSameDay(day, selectedDate) ? styles.selected : ""} ${isFutureDate ? styles.future : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDayInSchedules ? 'bg-[#f4a261] text-white' : ''} ${isSelected ? 'bg-orange-500 text-white' : ''} ${isFutureDate ? styles.future : ""}`}
             key={day.toString()}
             onClick={() => !isFutureDate && handleDayClick(cloneDay)}
           >
@@ -123,7 +130,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className={styles.calendar}>
+    <div className={`${styles.calendar} p-4 max-w-md mx-auto bg-white rounded-lg shadow-md`}>
       {renderHeader()}
       {renderDays()}
       {renderCells()}
