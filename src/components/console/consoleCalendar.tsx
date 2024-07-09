@@ -46,6 +46,7 @@ const Calendar: React.FC = () => {
 
   const handleDayClick = (day: Date) => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정하여 날짜 비교
     if (day >= today) {
       setSelectedDate(day);
       setIsModalOpen(true); // 모달 열기
@@ -122,7 +123,9 @@ const Calendar: React.FC = () => {
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
-        const isFutureOrTodayDate = day >= new Date(); // 오늘 또는 미래 날짜인 경우
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정하여 날짜 비교
+        const isFutureOrTodayDate = day >= today; // 오늘 또는 미래 날짜인 경우
         const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
         const isSameDayInSchedules = schedules.some(schedule => isSameDay(new Date(schedule.dday), cloneDay));
 
