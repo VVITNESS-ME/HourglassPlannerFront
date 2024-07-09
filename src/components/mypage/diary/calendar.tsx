@@ -12,12 +12,19 @@ const Calendar: React.FC = () => {
   const fetchData = useCallback(async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
+        method: 'GET',
+          headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data)
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const data = await response.json();
-      setHourglasses(data.hourglassData);
+      setHourglasses(data.data.records);
       setTil(data.til);
     } catch (error) {
       console.error('Error fetching data', error);

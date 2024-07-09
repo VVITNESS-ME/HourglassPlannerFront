@@ -1,10 +1,11 @@
 // components/TodoModal.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, {useCallback, useState} from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import Button from '../mypage/profile/button';
+import Cookies from "js-cookie";
 
 interface TodoModalProps {
   isOpen: boolean;
@@ -12,10 +13,36 @@ interface TodoModalProps {
   onAddTask: (task: { text: string; color: string }) => void;
 }
 
+interface UserCategory {
+  userCategoryId: number;
+  categoryName: string;
+  color: string;
+}
+
 const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask }) => {
   const [taskText, setTaskText] = useState('');
   const [taskColor, setTaskColor] = useState('gray');
-
+  const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+  const stopTimerAndFetchCategories = async () => {
+    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
+    if (token) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUserCategories(data.data.userCategoriesWithName);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user categories:', error);
+      }
+    }
+  };
   const handleAddTask = () => {
     if (taskText.trim()) {
       onAddTask({ text: taskText, color: taskColor });

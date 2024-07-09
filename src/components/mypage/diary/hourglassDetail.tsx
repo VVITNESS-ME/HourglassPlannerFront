@@ -16,22 +16,19 @@ const HourglassDetail: React.FC = () => {
 
   const handleSave = async () => {
     if (selectedHourglass) {
-      const updatedHourglass = {
-        ...selectedHourglass,
-        description,
-      };
+      const content = text;
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/update`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/hourglass/${selectedHourglass.hid}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(updatedHourglass),
+          body: JSON.stringify({ content }), // JSON 객체로 전송
         });
 
         if (response.ok) {
-          updateHourglass(updatedHourglass);
+          setText(content);
         } else {
           console.error('Failed to update task');
         }
@@ -40,6 +37,7 @@ const HourglassDetail: React.FC = () => {
       }
     }
   };
+
 
   useEffect(() => {
     setText(description);

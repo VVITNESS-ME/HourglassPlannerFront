@@ -63,19 +63,19 @@ const HourglassList: React.FC = () => {
       <h3>일간 작업 목록</h3>
       <div className={styles.list}>
         {hourglasses.map((task) => (
-          <div key={task.hId} className={styles.task} onClick={() => handleTaskClick(task)}>
-            <div className={styles.category} style={{ backgroundColor: task.categoryColor }}>{task.category}</div>
+          <div key={task.hid} className={styles.task} onClick={() => handleTaskClick(task)}>
+            <div className={styles.category} style={{ backgroundColor: task.color }}>{task.categoryName}</div>
             <div className={styles.details}>
-              <p className={styles.taskName} title={task.task}>{task.task}</p>
+              <p className={styles.taskName} title={task.taskName}>{task.taskName}</p>
               <p className={styles.description} title={task.description}>{task.description}</p>
               <div className={styles.timeRangeContainer}>
                 <p className={styles.time}>{task.timeBurst}분</p>
                 <p className={styles.timeRange}>{formatTime(task.timeStart)} ~ {formatTime(task.timeEnd)}</p>
                 <div className={styles.satisfaction}>
-                  {'★'.repeat(task.satisfaction).split('').map((star, i) => (
+                  {'★'.repeat(task.rating).split('').map((star, i) => (
                     <span key={i} className={styles.star}>{star}</span>
                   ))}
-                  {'☆'.repeat(5 - task.satisfaction).split('').map((star, i) => (
+                  {'☆'.repeat(5 - task.rating).split('').map((star, i) => (
                     <span key={i} className={styles.star}>{star}</span>
                   ))}
                 </div>

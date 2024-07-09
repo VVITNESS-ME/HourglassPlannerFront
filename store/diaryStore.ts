@@ -1,15 +1,15 @@
 import create from 'zustand';
 
 export interface Hourglass {
-  hId: string;
-  category: string;
-  categoryColor: string;
-  task: string;
+  hid: string;
+  categoryName: string;
+  color: string;
+  taskName: string;
   description: string;
   timeStart: string;
   timeEnd: string;
   timeBurst: number;
-  satisfaction: number;
+  rating: number;
 }
 
 interface DiaryStore {
@@ -39,7 +39,7 @@ const useDiaryStore = create<DiaryStore>((set) => ({
   setDescription: (description) => set({ description }),
   updateHourglass: (updatedHourglass) => set((state) => ({
     hourglasses: state.hourglasses.map((task) =>
-      task.hId === updatedHourglass.hId ? updatedHourglass : task
+      task.hid === updatedHourglass.hid ? updatedHourglass : task
     ),
     selectedHourglass: updatedHourglass,
   })),
