@@ -5,7 +5,7 @@ import LocalVideo from "@/components/general/localVideo";
 import PeerVideo from "@/components/general/peerVideo";
 import Hourglass from "@/components/hourglass/hourglass";
 
-const socketURL = "wss://hourglass.ninja:8889/";
+const socketURL:any = process.env.NEXT_PUBLIC_SOCKET_URL;
 const signalingServer = new WebSocket(socketURL);
 const sendToServer = (message: any) => {
   signalingServer.send(JSON.stringify(message));

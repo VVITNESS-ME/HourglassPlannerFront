@@ -11,7 +11,7 @@ const handle = app.getRequestHandler();
 
 const httpsOptions = {
   key: fs.readFileSync('./server.key'),
-  cert: fs.readFileSync('./server.crt'),
+  cert: fs.readFileSync('./server.cert'),
   // key: fs.readFileSync('./localhost-key.pem'),
   // cert: fs.readFileSync('./localhost.pem'),
 };

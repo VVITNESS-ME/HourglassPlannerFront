@@ -37,3 +37,9 @@ yarn-error.log*
 next-env.d.ts
 
 yarn.lock
+
+dev.key
+dev.cert
+server.cert
+server.key
+server-local.js
