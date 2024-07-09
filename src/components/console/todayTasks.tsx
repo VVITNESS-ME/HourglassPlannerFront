@@ -1,25 +1,26 @@
+// components/TodayTasks.tsx
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import { useDrag } from 'react-dnd';
 import CardLayout from '../cardLayout';
 import TodoModal from './todoModal';
 import CategoryModal from '../mypage/profile/categoryModal';
 
-const TodayTasks: React.FC = () => {
+interface Task {
+  color: string;
+  taskId: bigint;
+  title: string;
+  userCategoryName: string;
+}
+interface UserCategory {
+  userCategoryId: number;
+  categoryName: string;
+  color: string;
+}
 
-  interface Task {
-    color: string;
-    taskId: bigint;
-    title: string;
-    userCategoryName: string;
-  }
-  interface UserCategory {
-    userCategoryId: number;
-    categoryName: string;
-    color: string;
-  }
+const TodayTasks: React.FC<{ tasks: Task[]; setTasks: React.Dispatch<React.SetStateAction<Task[]>>; onTaskComplete: (taskId: bigint) => void }> = ({ tasks, setTasks, onTaskComplete }) => {
 
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [isTodoModalOpen, setIsTodoModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<bigint | null>(null);
@@ -37,14 +38,19 @@ const TodayTasks: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setTasks(data.data.schedules);
+        setTasks(data.data.schedules.map((task: any) => ({
+          color: task.color,
+          taskId: BigInt(task.taskId),
+          title: task.title,
+          userCategoryName: task.userCategoryName,
+        })));
       } else {
         console.error('Failed to fetch schedules');
       }
     } catch (error) {
       console.error('Error fetching schedules', error);
     }
-  }, []);
+  }, [setTasks]);
 
   const fetchUserCategories = useCallback(async () => {
     try {
@@ -127,16 +133,12 @@ const TodayTasks: React.FC = () => {
       <CardLayout title="오늘의 할일">
         <ul>
           {tasks.map((task) => (
-            <li
+            <DraggableTask
               key={task.taskId.toString()}
-              className={`flex justify-between items-center mb-2 p-2 border rounded-lg cursor-pointer ${
-                selectedTask === task.taskId ? 'bg-gray-300' : ''
-              }`}
-              onClick={() => handleTaskClick(task.taskId)}
-            >
-              <span>{task.title}</span>
-              <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>
-            </li>
+              task={task}
+              selectedTask={selectedTask}
+              onTaskClick={handleTaskClick}
+            />
           ))}
         </ul>
       </CardLayout>
@@ -161,6 +163,34 @@ const TodayTasks: React.FC = () => {
         onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
       />
     </div>
+  );
+};
+
+const DraggableTask: React.FC<{
+  task: any;
+  selectedTask: bigint | null;
+  onTaskClick: (taskId: bigint) => void;
+}> = ({ task, selectedTask, onTaskClick }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'task',
+    item: { taskId: task.taskId },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  return (
+    <li
+      ref={drag}
+      key={task.taskId.toString()}
+      className={`flex justify-between items-center mb-2 p-2 border rounded-lg cursor-pointer ${
+        selectedTask === task.taskId ? 'bg-gray-300' : ''
+      } ${isDragging ? 'opacity-50' : ''}`}
+      onClick={() => onTaskClick(task.taskId)}
+    >
+      <span>{task.title}</span>
+      <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>
+    </li>
   );
 };
 
