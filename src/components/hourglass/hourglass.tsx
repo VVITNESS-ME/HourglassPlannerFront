@@ -24,9 +24,9 @@ const Hourglass: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <button onClick={toggleBBMode}>외쳐 BB!!</button>
       <HourglassAni/>
       {isRunning ? <TimerRunning /> : <TimerSelector />}
+      <button onClick={toggleBBMode}>외쳐 BB!!</button>
     </div>
   );
 };
