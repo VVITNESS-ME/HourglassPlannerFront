@@ -51,7 +51,7 @@ const HourglassAni = () => {
   const timeGoal = useHourglassStore((state) => state.timeGoal);
 
     return (
-        <div className='mt-16'>
+        <div className='mt-4'>
         {isRunning?
         <div>
           <div style={styles.container}>

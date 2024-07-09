@@ -11,7 +11,7 @@ interface CardLayoutProps {
   color?: string;  // 추가된 color prop
 }
 
-const CardLayout: React.FC<CardLayoutProps> = ({ title, children, width = 'w-80', height = 'h-72'}) => {
+const CardLayout: React.FC<CardLayoutProps> = ({ title, children, width = 'w-80', height = 'h-[500px]'}) => {
   return (
     <div className={`p-4 mb-4 w-full`}>
       <h2 className="text-lg font-bold mb-2">{title}</h2>
