@@ -5,20 +5,9 @@ import CardLayout from '../cardLayout';
 import TodoModal from './todoModal';
 
 const TodayTasks: React.FC = () => {
-  const initialTasks = [
-    { text: '시니컬한 개구리 풀기', color: 'gray' },
-    { text: '크래프톤 정글 발표', color: 'lightgray' },
-    { text: 'Spring JPA 1장 강의', color: 'green' },
-    { text: '굉장히 길고 긴 추가 할일 1', color: 'blue' },
-    { text: '굉장히 길고 긴 추가 할일 2', color: 'red' },
-    { text: '굉장히 길고 긴 추가 할일 333333333333333333333333333', color: 'purple' },
-    { text: '굉장히 길고 긴 추가 할일 4', color: 'orange' },
-    { text: '굉장히 길고 긴 추가 할일 5', color: 'brown' },
-    { text: '굉장히 길고 긴 추가 할일 6', color: 'pink' },
-    { text: '굉장히 길고 긴 추가 할일 7', color: 'yellow' },
-  ];
 
-  const [tasks, setTasks] = useState(initialTasks);
+
+  const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
 

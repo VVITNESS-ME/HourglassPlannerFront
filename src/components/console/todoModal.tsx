@@ -47,7 +47,7 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask }) => 
           },
           body: JSON.stringify({
             title: taskText,
-            usercategoryId: categoryId,
+            userCategoryId: categoryId,
           }),
         });
 
