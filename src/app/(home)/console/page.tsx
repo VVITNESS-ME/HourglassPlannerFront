@@ -6,15 +6,15 @@ import AchievementCard from '../../../components/console/achievementCard';
 import CompletedTasks from '../../../components/console/completedTasks';
 import SandTimerTasks from '../../../components/console/sandTimerSecretary';
 import TodayTasks from '../../../components/console/todayTasks';
-import GardenCalendar from '../../../components/mypage/statistics/gardenCalendar';
 import Hourglass from '../../../components/hourglass/hourglass';
+import Calendar from "@/components/console/consoleCalendar";
 
 const MainConsole: React.FC = () => {
   return (
     <div className="min-h-screen p-8 bg-gray-100">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="col-span-1">
-          <GardenCalendar />
+          <Calendar />
         </div>
         <div className="col-span-1">
           <TodayTasks />
