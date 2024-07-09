@@ -25,7 +25,7 @@ const rooms: Room[] = [
   {roomId: BigInt(9), title: '추가 방 2', status: 'locked', participants: '3/4', path: '/rooms/additional-room-2' },
   {roomId: BigInt(10), title: '추가 방 3', status: 'open', participants: '3/4', path: '/rooms/additional-room-3' },
   {roomId: BigInt(11), title: '추가 방 4', status: 'locked', participants: '3/4', path: '/rooms/additional-room-4' },
-  {roomId: BigInt(12), title: '추가 방 5', status: 'open', participants: '3/4', path: '/rooms/additional-room-5' },
+  {roomId: BigInt(12), title: '추가 방 5', status: 'open', participants: '3/4', path: '/together/12' },
 ];
 
 const RoomList: React.FC = () => {

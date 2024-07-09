@@ -12,6 +12,7 @@ const Hourglass: React.FC = () => {
     isInitialized: state.isInitialized,
     initialize: state.initialize,
   }));
+  const toggleBBMode = useHourglassStore((state) => state.toggleBBMode);
 
   useEffect(() => {
     initialize();
@@ -23,6 +24,7 @@ const Hourglass: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
+      <button onClick={toggleBBMode}>외쳐 BB!!</button>
       <HourglassAni/>
       {isRunning ? <TimerRunning /> : <TimerSelector />}
     </div>
