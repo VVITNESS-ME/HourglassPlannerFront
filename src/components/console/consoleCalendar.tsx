@@ -147,12 +147,12 @@ const Calendar: React.FC = () => {
       {renderHeader()}
       {renderDays()}
       {renderCells()}
-      {/* <ScheduleModal
+      <ScheduleModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onRegister={handleRegisterSchedules}
         selectedDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
-      /> */}
+      />
     </div>
   );
 };

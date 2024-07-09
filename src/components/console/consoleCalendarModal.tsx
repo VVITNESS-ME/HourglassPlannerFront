@@ -23,10 +23,40 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, onRegist
     }
   };
 
-  const handleRegister = () => {
-    onRegister(schedules);
-    setSchedules([]);
-    onClose();
+  const handleRegister = async () => {
+    // 일정이 비어있지 않은 경우에만 서버 요청 실행
+    if (schedules.length > 0) {
+      try {
+        // 서버에 POST 요청을 보내는 부분
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/calendar`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // schedules 배열을 문자열로 변환하여 body에 담아 전송
+          body: JSON.stringify({
+            dueDate: selectedDate,
+            schedules: schedules,
+          }),
+        });
+  
+        // 응답이 성공적인 경우
+        if (response.ok) {
+          // onRegister 콜백 함수를 호출하여 상위 컴포넌트에 등록된 일정 정보 전달
+          onRegister(schedules);
+          // 등록 후 schedules 상태 초기화
+          setSchedules([]);
+          // 모달 닫기
+          onClose();
+        } else {
+          // 응답이 실패한 경우 오류 메시지 출력
+          throw new Error('Network response was not ok');
+        }
+      } catch (error) {
+        // 네트워크 요청 중 발생한 오류 처리
+        console.error('Error registering schedules:', error);
+      }
+    }
   };
 
   return (
