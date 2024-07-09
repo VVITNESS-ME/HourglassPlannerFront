@@ -10,19 +10,13 @@ import SandTimerTasks from '../../../components/console/sandTimerSecretary';
 import TodayTasks from '../../../components/console/todayTasks';
 import Hourglass from '../../../components/hourglass/hourglass';
 import Calendar from "@/components/console/consoleCalendar";
-
-interface Task {
-  color: string;
-  taskId: bigint;
-  title: string;
-  userCategoryName: string;
-}
+import { Task } from '@/type/types';
 
 const MainConsole: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [todayTasks, setTodayTasks] = useState<Task[]>([]);
 
-  const handleTaskComplete = (taskId: bigint) => {
+  const handleTaskComplete = (taskId: number) => {
     setTodayTasks(prevTasks => prevTasks.filter(task => task.taskId !== taskId));
     const completedTask = todayTasks.find(task => task.taskId === taskId);
     if (completedTask) {
@@ -40,7 +34,7 @@ const MainConsole: React.FC = () => {
           <div className="flex-1 min-w-[400px] max-w-[700px] h-[650px] mb-4">
             <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/>
           </div>
-          <div className="flex-1 min-w/[400px] max-w/[700px] h-[650px] mb-4">
+          <div className="flex-1 min-w/[400px] max-w/[700px] h/[650px] mb-4">
             <Hourglass/>
           </div>
         </div>

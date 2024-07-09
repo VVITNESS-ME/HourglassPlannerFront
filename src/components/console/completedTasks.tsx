@@ -1,17 +1,17 @@
-// components/CompletedTasks.tsx
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import CardLayout from '../cardLayout';
+import { Task } from '@/type/types';
 
-interface Task {
-  text: string;
-  color: string;
-  taskId: bigint;
+interface CompletedTasksProps {
+  tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  onTaskComplete: (taskId: number) => void;
 }
 
-const CompletedTasks: React.FC<{ tasks: Task[]; setTasks: React.Dispatch<React.SetStateAction<Task[]>>; onTaskComplete: (taskId: bigint) => void }> = ({ tasks, setTasks, onTaskComplete }) => {
+const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTaskComplete }) => {
   const fetchCompletedTasks = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo/completion`, {
@@ -25,9 +25,9 @@ const CompletedTasks: React.FC<{ tasks: Task[]; setTasks: React.Dispatch<React.S
       if (response.ok) {
         const data = await response.json();
         const fetchedTasks = data.data.schedules.map((task: any) => ({
-          text: task.title,
+          title: task.title,
           color: task.color,
-          taskId: BigInt(task.taskId),
+          taskId: task.taskId,
         }));
         setTasks(fetchedTasks);
       } else {
@@ -50,7 +50,7 @@ const CompletedTasks: React.FC<{ tasks: Task[]; setTasks: React.Dispatch<React.S
     }),
   }));
 
-  const handleDrop = async (taskId: bigint) => {
+  const handleDrop = async (taskId: number) => {
     console.log(`Dropped task with ID: ${taskId}`);
 
     try {
@@ -73,12 +73,15 @@ const CompletedTasks: React.FC<{ tasks: Task[]; setTasks: React.Dispatch<React.S
     }
   };
 
+  const ref = useRef<HTMLUListElement>(null);
+  drop(ref);
+
   return (
-    <CardLayout title="해낸 일" color="bg-white-200"> {/* 배경색 수정 */}
-      <ul ref={drop} className={`min-h-[200px] ${isOver ? 'bg-green-100' : ''}`}>
+    <CardLayout title="해낸 일" color="bg-white-200">
+      <ul ref={ref} className={`min-h-[200px] ${isOver ? 'bg-green-100' : ''}`}>
         {tasks.map((task, index) => (
-          <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap pr-4">  {/* 오른쪽 패딩 추가 */}
-            <span>{task.text}</span>
+          <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap pr-4">
+            <span>{task.title}</span>
             <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>
           </li>
         ))}
