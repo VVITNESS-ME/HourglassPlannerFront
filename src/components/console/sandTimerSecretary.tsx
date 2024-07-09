@@ -17,10 +17,11 @@ const SandTimerTasks: React.FC = () => {
 
     // schedules가 변경될 때마다 실행되는 useEffect
     useEffect(() => {
+      console.log('schedules:', schedules);
       const sortedSchedules = schedules
         .map(schedule => ({
           text: schedule.description,
-          status: `D-${schedule.dDay}`,
+          status: `D-${schedule.dday}`,
         }))
         .sort((a, b) => a.status.localeCompare(b.status)); // dDay 기준으로 오름차순 정렬
       setSortedTasks(sortedSchedules);

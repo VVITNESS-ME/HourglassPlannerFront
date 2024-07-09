@@ -41,7 +41,7 @@ const Calendar: React.FC = () => {
 
   const handleDayClick = (day: Date) => {
     const today = new Date();
-    if (day <= today) {
+    if (day >= today) {
       setSelectedDate(day);
       setIsModalOpen(true); // 모달 열기
     }
@@ -51,9 +51,18 @@ const Calendar: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleRegisterSchedules = (schedules: string[]) => {
-    // 여기에 일정 등록 로직 구현
-    console.log('Registered schedules:', schedules);
+  const handleRegisterSchedules = (newSchedules: string[]) => {
+    const td = new Date();
+
+    // 등록된 일정을 state에 반영
+    const formattedSchedules = newSchedules.map(schedule => ({
+      description: schedule,
+      dday: Math.ceil((selectedDate!.getTime() - td.getTime()) / (1000 * 60 * 60 * 24)),
+    }));
+
+    // 새로 등록한 스케줄을 기존 스케줄과 합쳐서 state에 반영
+    setSchedules([...schedules, ...formattedSchedules]);
+
     setIsModalOpen(false); // 일정 등록 후 모달 닫기
   };
 
@@ -109,15 +118,15 @@ const Calendar: React.FC = () => {
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
-        const isFutureDate = day > new Date();
+        const isLateDate = day <= new Date(); // 미래 날짜가 아닌 경우
         const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
-        const isSameDayInSchedules = schedules.some(schedule => isSameDay(new Date(schedule.dDay), cloneDay));
+        const isSameDayInSchedules = schedules.some(schedule => isSameDay(new Date(schedule.dday), cloneDay));
 
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDayInSchedules ? 'bg-[#f4a261] text-white' : ''} ${isSelected ? 'bg-orange-500 text-white' : ''} ${isFutureDate ? styles.future : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDayInSchedules ? 'bg-[#f4a261] text-white' : ''} ${isSelected ? 'bg-orange-500 text-white' : ''} ${!isLateDate ? styles.future : ""}`}
             key={day.toString()}
-            onClick={() => !isFutureDate && handleDayClick(cloneDay)}
+            onClick={() => !isLateDate && handleDayClick(cloneDay)}
           >
             <span className={styles.number}>{formattedDate}</span>
           </div>
