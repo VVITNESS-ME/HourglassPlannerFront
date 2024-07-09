@@ -25,7 +25,7 @@ import './cascade.css';
       backgroundColor: '#F2CD88',
       position: 'absolute' as 'absolute',
       bottom: 0,
-      transition: 'height 2s',
+      transition: 'height 0.1s',
     },
     mask: {
       width: '100%',
@@ -51,7 +51,7 @@ const HourglassAni = () => {
   const timeGoal = useHourglassStore((state) => state.timeGoal);
 
     return (
-        <div className='mt-16'>
+        <div className='mt-4'>
         {isRunning?
         <div>
           <div style={styles.container}>

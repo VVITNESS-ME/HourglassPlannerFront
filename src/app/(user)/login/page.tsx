@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 
 export default function Login() {
-  const token = Cookies.get("token");
+  const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
   if (token) redirect('/');
 
   const {login, error, initialize } = useAuthStore();

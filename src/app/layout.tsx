@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "../components/navbar";
+import Navbar from "../components/navbar/navbar";
 import localFont from "next/font/local";
 
 const mango = localFont({
@@ -15,18 +15,18 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
+                                     children,
+                                   }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="ko">
-      <body className={mango.className}>
-        <div className="">
-        <Navbar />
-        {children}
-        </div>
-      </body>
+    <body className={mango.className}>
+    <Navbar />
+    <div className="pt-20 flex flex-col h-screen">
+      {children}
+    </div>
+    </body>
     </html>
   );
 }

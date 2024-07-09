@@ -23,9 +23,13 @@ interface TimeState {
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
-  stopTimer: () => void;
+  stopTimer: (categoryName: string, rating: number, content: string) => void;
+  stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
+
+  setPause: () => void;
+  setResume: () => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -44,24 +48,28 @@ const sendStartDataToServer = async (data: {
   timeStart: string | undefined;
   timeGoal: number | null;
 }): Promise<bigint | null> => {
+  const token = getToken();
+  if (!token) {
+    return null;
+  }
+
   try {
-    const token = getToken();
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
       },
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+      }),
     });
-
     const responseData = await response.json();
     if (!response.ok) {
       throw new Error(responseData.message || 'Failed to start timer');
     }
-
-    return responseData.hId;
+    return responseData.data.hid;
   } catch (error) {
     console.error('Error:', error);
     return null;
@@ -73,28 +81,35 @@ const sendTimeDataToServer = async (data: {
   timeBurst: number | null;
   timeEnd: string | undefined;
   hId: bigint | null;
+  categoryName: string;
+  rating: number;
+  content: string;
 }) => {
-  try {
-    const token = getToken();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
+  const token = getToken();
+  if (token) {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...data,
+          timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+        }),
+      });
 
-    const responseData = await response.json();
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Failed to end timer');
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Failed to end timer');
+      }
+
+      return responseData;
+    } catch (error) {
+      console.error('Error:', error);
+      return null;
     }
-
-    return responseData;
-  } catch (error) {
-    console.error('Error:', error);
-    return null;
   }
 };
 
@@ -110,10 +125,13 @@ const sendPauseSignalToServer = async (data: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
       },
       credentials: 'include',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+        timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+      }),
     });
 
     const responseData = await response.json();
@@ -133,27 +151,32 @@ const sendResumeSignalToServer = async (data: {
   hId: bigint | null;
   timeBurst: number | null;
 }) => {
-  try {
-    const token = getToken();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/resume`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`,
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
+  const token = getToken();
+  if (token) {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/restart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...data,
+          timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+          timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+        }),
+      });
 
-    const responseData = await response.json();
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Failed to resume timer');
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Failed to resume timer');
+      }
+
+      return responseData.hId;
+    } catch (error) {
+      console.error('Error', error);
+      return null;
     }
-
-    return responseData.hId;
-  } catch (error) {
-    console.error('Error', error);
-    return null;
   }
 };
 
@@ -169,7 +192,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   hId: null,
   isInitialized: false,
   setTimeStart: (time: Date) => set((state) => {
-    const newState = { ...state, timeStart: time};
+    const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
     return newState;
   }),
@@ -194,7 +217,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
   closeModal: () => set((state) => {
-    const newState = { ...state, modalOpen: false};
+    const newState = { ...state, modalOpen: false };
     saveStateToCookies(newState);
     return newState;
   }),
@@ -208,11 +231,24 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
     return newState;
   }),
+
+  setPause: () => set((state) =>  {
+    const newState = {...state , pause: true};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+
+  setResume: () => set((state) =>  {
+    const newState = {...state , pause: false};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+
   togglePause: async () => {
     const token = getToken();
     const state = get();
     if (token) {
-      const newState = { ...state, pause: !state.pause};
+      const newState = { ...state, pause: !state.pause };
       set(newState);
       saveStateToCookies(newState);
       if (!state.pause) {
@@ -223,7 +259,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId};
+          const newState = { ...state, hId };
           set(newState);
           saveStateToCookies(newState);
         }
@@ -235,13 +271,13 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst
         });
         if (hId) {
-          const newState = { ...state, hId};
+          const newState = { ...state, hId };
           set(newState);
           saveStateToCookies(newState);
         }
       }
-    }else{
-      const newState = { ...state, pause: !state.pause};
+    } else {
+      const newState = { ...state, pause: !state.pause };
       set(newState);
       saveStateToCookies(newState);
     }
@@ -281,7 +317,12 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     get().checkAndStopTimer();
     return newState;
   }),
-  stopTimer: () => set((state) => {
+  stopTimerWithNOAuth:() => set((state) => {
+    const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
+    removeStateFromCookies();
+    return newState;
+  }),
+  stopTimer: (categoryName: string, rating: number, content: string) => set((state) => {
     const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
     removeStateFromCookies();
     const token = getToken();
@@ -291,6 +332,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeBurst: state.timeBurst,
         timeEnd: newState.timeEnd?.toISOString(),
         hId: state.hId,
+        categoryName,
+        rating,
+        content,
       });
     }
     return newState;

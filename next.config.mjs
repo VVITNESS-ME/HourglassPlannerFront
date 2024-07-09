@@ -1,10 +1,10 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
+    reactStrictMode: false,
     async rewrites() {
         return [{
             source: '/api/:path*',
-            destination: 'http://192.168.1.80:8082/:path*'
-        }];
+            destination: 'http://hourglass.ninja:10000/:path*'
+        }]
     }
 };
 
