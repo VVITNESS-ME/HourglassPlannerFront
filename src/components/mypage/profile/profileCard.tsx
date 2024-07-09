@@ -11,7 +11,7 @@ interface UserInfo {
 }
 
 interface Title {
-  titleId: bigint;
+  titleId: number;
   name: string;
   description: string;
   color: string;

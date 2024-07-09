@@ -5,7 +5,7 @@ import CardLayout from '../../cardLayout';
 import Button from './button';
 
 interface Title {
-  titleId: bigint;
+  titleId: number;
   name: string;
   description: string;
   color: string;
@@ -14,7 +14,7 @@ interface Title {
 interface UserInfo {
   userEmail: string;
   userName: string;
-  main_title: bigint;
+  main_title: number;
 }
 
 interface TitleListProps {

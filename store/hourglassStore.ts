@@ -9,7 +9,7 @@ interface TimeState {
   isRunning: boolean;
   bbMode: boolean;
   pause: boolean;
-  hId: bigint | null;
+  hId: number | null;
   isInitialized: boolean;
   modalOpen: boolean;
   setTimeStart: (time: Date) => void;
@@ -47,7 +47,7 @@ const getToken = (): string | undefined => {
 const sendStartDataToServer = async (data: {
   timeStart: string | undefined;
   timeGoal: number | null;
-}): Promise<bigint | null> => {
+}): Promise<number | null> => {
   const token = getToken();
   if (!token) {
     return null;
@@ -66,6 +66,7 @@ const sendStartDataToServer = async (data: {
       }),
     });
     const responseData = await response.json();
+    console.log(responseData);
     if (!response.ok) {
       throw new Error(responseData.message || 'Failed to start timer');
     }
@@ -80,7 +81,7 @@ const sendTimeDataToServer = async (data: {
   timeStart: string | undefined;
   timeBurst: number | null;
   timeEnd: string | undefined;
-  hId: bigint | null;
+  hId: number | null;
   categoryName: string;
   rating: number;
   content: string;
@@ -116,7 +117,7 @@ const sendTimeDataToServer = async (data: {
 const sendPauseSignalToServer = async (data: {
   timeStart: string | undefined;
   timeGoal: number | null;
-  hId: bigint | null;
+  hId: number | null;
   timeBurst: number | null;
 }) => {
   try {
@@ -148,7 +149,7 @@ const sendPauseSignalToServer = async (data: {
 const sendResumeSignalToServer = async (data: {
   timeStart: string | undefined;
   timeGoal: number | null;
-  hId: bigint | null;
+  hId: number | null;
   timeBurst: number | null;
 }) => {
   const token = getToken();

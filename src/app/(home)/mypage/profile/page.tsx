@@ -7,7 +7,7 @@ import CategorySettings from "@/components/mypage/profile/categorySettings";
 import useAuthStore from "../../../../../store/(auth)/authStore";
 
 interface Title {
-  titleId: bigint;
+  titleId: number;
   name: string;
   description: string;
   color: string;
@@ -16,11 +16,11 @@ interface Title {
 interface UserInfo {
   userEmail: string;
   userName: string;
-  main_title: bigint;
+  main_title: number;
 }
 
 interface UserCategory {
-  categoryId: bigint;
+  categoryId: number;
   categoryName: string;
   color: string;
 }
@@ -39,10 +39,10 @@ const Profile: React.FC = () => {
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
     // Calculate the new ID
-    const maxId = userCategories.reduce((max, category) => (category.categoryId > max ? category.categoryId : max), BigInt(0));
-    const newCategoryId = maxId + BigInt(1);
+    const maxId = userCategories.reduce((max, category) => (category.categoryId > max ? category.categoryId : max), 0);
+    const newCategoryId = maxId + 1;
 
-    const newCategory: { categoryId: bigint; color: string; categoryName: string } = {
+    const newCategory: { categoryId: number; color: string; categoryName: string } = {
       categoryId: newCategoryId,
       categoryName: category.categoryName,
       color: category.color,
@@ -99,25 +99,25 @@ const Profile: React.FC = () => {
       setUserInfo({
         userEmail: email,
         userName: username,
-        main_title: BigInt(1),
+        main_title: 1,
       });
 
       const testTitleData = [
-        { titleId: BigInt(1), name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: BigInt(2), name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: BigInt(3), name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: BigInt(4), name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: BigInt(5), name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-        { titleId: BigInt(6), name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: BigInt(7), name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: BigInt(8), name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: BigInt(9), name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: BigInt(10), name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-        { titleId: BigInt(11), name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: BigInt(12), name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: BigInt(13), name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: BigInt(14), name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: BigInt(15), name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
+        { titleId: 1, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
+        { titleId: 2, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
+        { titleId: 3, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
+        { titleId: 4, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
+        { titleId: 5, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
+        { titleId: 6, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
+        { titleId: 7, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
+        { titleId: 8, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
+        { titleId: 9, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
+        { titleId: 10, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
+        { titleId: 11, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
+        { titleId: 12, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
+        { titleId: 13, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
+        { titleId: 14, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
+        { titleId: 15, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
       ];
       setTitles(testTitleData);
       fetchCategoriesInfo();

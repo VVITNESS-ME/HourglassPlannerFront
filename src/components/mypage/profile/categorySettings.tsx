@@ -5,7 +5,7 @@ import CardLayout from '../../cardLayout';
 import CategoryModal from './categoryModal';
 
 interface Category {
-  categoryId: bigint;
+  categoryId: number;
   categoryName: string;
   color: string;
 }
