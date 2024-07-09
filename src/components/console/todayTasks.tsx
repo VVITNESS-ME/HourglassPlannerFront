@@ -148,17 +148,17 @@ const TodayTasks: React.FC = () => {
           + 할 일 추가
         </button>
       </div>
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onAddCategory={handleAddCategory}
+      />
       <TodoModal
         isOpen={isTodoModalOpen}
         onClose={() => setIsTodoModalOpen(false)}
         onAddTask={handleAddTask}
         userCategories={userCategories}
         onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
-      />
-      <CategoryModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        onAddCategory={handleAddCategory}
       />
     </div>
   );
