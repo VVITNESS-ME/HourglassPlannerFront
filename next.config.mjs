@@ -3,7 +3,7 @@ const nextConfig = {
     async rewrites() {
         return [{
             source: '/api/:path*',
-            destination: 'http://localhost:8082/:path*'
+            destination: 'http://hourglass.ninja:10000/:path*'
         }]
     }
 };
