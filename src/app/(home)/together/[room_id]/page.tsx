@@ -99,10 +99,10 @@ const VideoPage: React.FC = () => {
     return;
   }
   return (
-    <div className="max-w-fit">
+    <div className="container mx-auto max-w-fit">
       <h1>WebRTC Video Chat Room #{roomId}</h1>
       <button onClick={createOffer}>Start Call</button>
-      <div className="flex flex-wrap md:flex-row justify-between">
+      <div className="flex flex-col md:flex-row justify-evenly">
         <div className="flex flex-col w-full md:w-1/4 space-y-4">
           <PeerVideo stream={remoteStream} />
         </div>
