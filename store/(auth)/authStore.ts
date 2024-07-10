@@ -19,6 +19,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
   error: null,
   isInitialized: false,  // 초기화 상태 추가
+
   login: async (email, password) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/login`, {
@@ -54,11 +55,13 @@ const useAuthStore = create<AuthState>((set, get) => ({
       }
     }
   },
+
   logout: () => {
     Cookies.remove(process.env.NEXT_ACCESS_TOKEN_KEY || 'token'); // 기본값 'token' 설정
     set({ username: "", email: "", token: null, error: null });
     Cookies.remove('authState');
   },
+
   initialize: () => {
     const authState = Cookies.get('authState');
     if (authState) {

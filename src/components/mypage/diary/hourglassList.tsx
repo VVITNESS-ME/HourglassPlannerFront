@@ -71,7 +71,7 @@ const HourglassList: React.FC = () => {
               <p className={styles.taskName} title={task.taskName}>{task.taskName}</p>
               <p className={styles.description} title={task.description}>{task.description}</p>
               <div className={styles.timeRangeContainer}>
-                <p className={styles.time}>{task.timeBurst}분</p>
+                <p className={styles.time}>{Math.floor(task.timeBurst/60)}분</p>
                 <p className={styles.timeRange}>{formatTime(task.timeStart)} ~ {formatTime(task.timeEnd)}</p>
                 <div className={styles.satisfaction}>
                   {'★'.repeat(task.rating).split('').map((star, i) => (
@@ -89,5 +89,4 @@ const HourglassList: React.FC = () => {
     </div>
   );
 };
-
 export default HourglassList;

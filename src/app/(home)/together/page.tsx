@@ -6,7 +6,6 @@ const room_id = 2;
 export default function Together() {
     return (
       <div>
-        <FaceLandmarkerPage/>
         <RoomList />
       </div>
     );

@@ -1,28 +1,22 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useDrag } from 'react-dnd';
 import CardLayout from '../cardLayout';
 import TodoModal from './todoModal';
 import CategoryModal from '../mypage/profile/categoryModal';
+import { Task, UserCategory } from '@/type/types';
 
-const TodayTasks: React.FC = () => {
+interface TodayTasksProps {
+  tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  onTaskComplete: (taskId: number) => void;
+}
 
-  interface Task {
-    color: string;
-    taskId: bigint;
-    title: string;
-    userCategoryName: string;
-  }
-  interface UserCategory {
-    userCategoryId: number;
-    categoryName: string;
-    color: string;
-  }
-
-  const [tasks, setTasks] = useState<Task[]>([]);
+const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete }) => {
   const [isTodoModalOpen, setIsTodoModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<bigint | null>(null);
+  const [selectedTask, setSelectedTask] = useState<number | null>(null);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
 
   const fetchTasks = useCallback(async () => {
@@ -37,14 +31,19 @@ const TodayTasks: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setTasks(data.data.schedules);
+        setTasks(data.data.schedules.map((task: any) => ({
+          color: task.color,
+          taskId: task.taskId,
+          title: task.title,
+          userCategoryName: task.userCategoryName,
+        })));
       } else {
         console.error('Failed to fetch schedules');
       }
     } catch (error) {
       console.error('Error fetching schedules', error);
     }
-  }, []);
+  }, [setTasks]);
 
   const fetchUserCategories = useCallback(async () => {
     try {
@@ -58,7 +57,11 @@ const TodayTasks: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setUserCategories(data.data.userCategoriesWithName);
+        setUserCategories(data.data.userCategoriesWithName.map((category: any) => ({
+          userCategoryId: category.userCategoryId,
+          categoryName: category.categoryName,
+          color: category.color,
+        })));
       } else {
         console.error('Failed to fetch user categories');
       }
@@ -68,8 +71,8 @@ const TodayTasks: React.FC = () => {
   }, []);
 
   const handleAddTask = (task: { text: string; color: string; categoryName: string }) => {
-    const maxId = tasks.reduce((max, task) => Math.max(max, Number(task.taskId)), 0);
-    const newTaskId: bigint = BigInt(maxId + 1);
+    const maxId = tasks.reduce((max, task) => Math.max(max, task.taskId), 0);
+    const newTaskId = maxId + 1;
     const newTask: Task = {
       color: task.color,
       taskId: newTaskId,
@@ -80,27 +83,24 @@ const TodayTasks: React.FC = () => {
   };
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
-    // Calculate the new ID
     const maxId = userCategories.reduce((max, category) => Math.max(max, category.userCategoryId), 0);
     const newCategoryId = maxId + 1;
 
-    const newCategory = {
+    const newCategory: UserCategory = {
       userCategoryId: newCategoryId,
       categoryName: category.categoryName,
       color: category.color,
     };
 
-    // Optimistically update the UI
     setUserCategories((prevCategories) => [...prevCategories, newCategory]);
 
-    // Attempt to add the category to the server
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(category),
+        body: JSON.stringify(newCategory),
       });
 
       if (response.ok) {
@@ -113,7 +113,7 @@ const TodayTasks: React.FC = () => {
     }
   };
 
-  const handleTaskClick = (taskId: bigint) => {
+  const handleTaskClick = (taskId: number) => {
     setSelectedTask(taskId === selectedTask ? null : taskId);
   };
 
@@ -127,16 +127,12 @@ const TodayTasks: React.FC = () => {
       <CardLayout title="오늘의 할일">
         <ul>
           {tasks.map((task) => (
-            <li
-              key={task.taskId.toString()}
-              className={`flex justify-between items-center mb-2 p-2 border rounded-lg cursor-pointer ${
-                selectedTask === task.taskId ? 'bg-gray-300' : ''
-              }`}
-              onClick={() => handleTaskClick(task.taskId)}
-            >
-              <span>{task.title}</span>
-              <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>
-            </li>
+            <DraggableTask
+              key={task.taskId}
+              task={task}
+              selectedTask={selectedTask}
+              onTaskClick={handleTaskClick}
+            />
           ))}
         </ul>
       </CardLayout>
@@ -148,6 +144,11 @@ const TodayTasks: React.FC = () => {
           + 할 일 추가
         </button>
       </div>
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onAddCategory={handleAddCategory}
+      />
       <TodoModal
         isOpen={isTodoModalOpen}
         onClose={() => setIsTodoModalOpen(false)}
@@ -155,12 +156,38 @@ const TodayTasks: React.FC = () => {
         userCategories={userCategories}
         onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
       />
-      <CategoryModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        onAddCategory={handleAddCategory}
-      />
     </div>
+  );
+};
+
+const DraggableTask: React.FC<{
+  task: Task;
+  selectedTask: number | null;
+  onTaskClick: (taskId: number) => void;
+}> = ({ task, selectedTask, onTaskClick }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'task',
+    item: { taskId: task.taskId },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  const ref = useRef<HTMLLIElement>(null);
+  drag(ref);
+
+  return (
+    <li
+      ref={ref}
+      key={task.taskId}
+      className={`flex justify-between items-center mb-2 p-2 border rounded-lg cursor-pointer ${
+        selectedTask === task.taskId ? 'bg-gray-300' : ''
+      } ${isDragging ? 'opacity-50' : ''}`}
+      onClick={() => onTaskClick(task.taskId)}
+    >
+      <span>{task.title}</span>
+      <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>
+    </li>
   );
 };
 

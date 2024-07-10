@@ -10,8 +10,8 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 const httpsOptions = {
-  key: fs.readFileSync('./server.key'),
-  cert: fs.readFileSync('./server.crt'),
+  key: fs.readFileSync('./server-key.pem'),
+  cert: fs.readFileSync('./server.pem'),
   // key: fs.readFileSync('./localhost-key.pem'),
   // cert: fs.readFileSync('./localhost.pem'),
 };
@@ -22,7 +22,7 @@ app.prepare().then(() => {
   // API 프록시 설정 (http-proxy-middleware 사용)
   const { createProxyMiddleware } = require('http-proxy-middleware');
   server.use('/api', createProxyMiddleware({
-    target: 'http://192.168.1.44:8082',
+    target: 'http://hourglass.ninja:10000',
     changeOrigin: true,
     pathRewrite: {
       '^/api': '', // URL에서 /api를 제거합니다.

@@ -4,15 +4,16 @@ import React, { useState } from 'react';
 import NicknameModal from './NicknameModal';
 import PasswordModal from './PasswordModal';
 import SignOutModal from './SignOutModal';
+import useAuthStore from '../../../../store/(auth)/authStore';
+import { redirect, useRouter } from 'next/navigation';
 
 interface UserInfo {
   userEmail: string;
   userName: string;
-  main_title: bigint;
 }
 
 interface Title {
-  titleId: bigint;
+  titleId: number;
   name: string;
   description: string;
   color: string;
@@ -27,6 +28,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, mainTitle }) => {
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
+  const logout = useAuthStore((state) => state.logout);
+
+  const router = useRouter()
+  const handleLogout = () => {
+    logout();
+    router.push("/")
+  }
 
   const handleNicknameChange = () => {
     setIsNicknameModalOpen(true);
@@ -49,8 +57,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, mainTitle }) => {
 
   return (
     <div className="relative box-border flex-1 min-w-[400px] max-w-[700px] bg-[#EEEEEE] border shadow-lg rounded-lg p-6 mb-4">
-      <div className="font-MangoDdobak text-3xl leading-[60px] text-black mb-4">
-        나의 정보
+      <div className=''>
+        <div className="flex flex-wrap w-full justify-between font-MangoDdobak text-3xl leading-[60px] text-black mb-4">
+          나의 정보
+        <button
+          onClick={handleLogout}
+          className="w-[150px] h-[51px] bg-red-500 rounded-lg text-white text-2xl font-MangoDdobak flex items-center justify-center"
+        >
+          로그아웃
+        </button>
+        </div>
       </div>
       <div className="w-full bg-[rgba(223,208,179,0.5)] rounded-2xl p-6">
         <div className="font-MangoDdobak text-2xl leading-[40px] text-black mb-4">
@@ -84,21 +100,19 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, mainTitle }) => {
         </div>
       </div>
 
-      {/*<NicknameModal*/}
-      {/*  isOpen={isNicknameModalOpen}*/}
-      {/*  onClose={() => setIsNicknameModalOpen(false)}*/}
-      {/*/>*/}
-      {/*<PasswordModal*/}
-      {/*  isOpen={isPasswordModalOpen}*/}
-      {/*  onClose={() => setIsPasswordModalOpen(false)}*/}
-      {/*/>*/}
-      {/*<SignOutModal*/}
-      {/*  isOpen={isSignOutModalOpen}*/}
-      {/*  onClose={() => setIsSignOutModalOpen(false)}*/}
-      {/*  onSignOut={() => console.log('User signed out')}*/}
-      {/*/>*/}
-
-
+      <NicknameModal
+        isOpen={isNicknameModalOpen}
+        onClose={() => setIsNicknameModalOpen(false)}
+      />
+      <PasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
+      <SignOutModal
+        isOpen={isSignOutModalOpen}
+        onClose={() => setIsSignOutModalOpen(false)}
+        onSignOut={() => console.log('User signed out')}
+      />
     </div>
   );
 };

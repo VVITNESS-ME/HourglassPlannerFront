@@ -3,18 +3,19 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Button from '../mypage/profile/button';
+import { UserCategory } from "@/type/types";
 
 interface TodoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTask: (task: { text: string; color: string; categoryName: string; }) => void;
-  userCategories: { userCategoryId: number; categoryName: string; color: string }[];
-  onOpenCategoryModal: () => void; // 카테고리 모달 열기 함수
+  onAddTask: (task: { text: string; color: string; categoryName: string }) => void;
+  userCategories: UserCategory[];
+  onOpenCategoryModal: () => void;
 }
 
 const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, userCategories, onOpenCategoryModal }) => {
   const [taskText, setTaskText] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<{ userCategoryId: number; categoryName: string; color: string } | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<UserCategory | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -25,12 +26,16 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, userC
 
   const handleAddTask = async () => {
     if (taskText.trim() && selectedCategory) {
+      console.log(taskText);
+      console.log(selectedCategory.userCategoryId);
+
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             title: taskText,
             userCategoryId: selectedCategory.userCategoryId,
@@ -38,7 +43,7 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, userC
         });
 
         if (response.ok) {
-          onAddTask({ text: taskText, color: selectedCategory.color, categoryName:selectedCategory.categoryName });
+          onAddTask({ text: taskText, color: selectedCategory.color, categoryName: selectedCategory.categoryName });
           onClose();
         } else {
           throw new Error('Network response was not ok');

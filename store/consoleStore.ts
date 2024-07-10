@@ -1,8 +1,8 @@
-import create from 'zustand';
+import {create} from 'zustand';
 
 interface Schedule {
   description: string;
-  dDay: number;
+  dday: number;
 }
 
 interface ConsoleStore {

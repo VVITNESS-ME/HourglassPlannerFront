@@ -90,7 +90,7 @@ const LocalVideo: React.FC<VideoProps> = ({stream}) => {
   }, [stream, animate])
 
   return (
-      <div className="flex justify-center">
+    <div className="flex justify-center">
     <video
       className="w-full h-auto"
       ref={videoRef}
