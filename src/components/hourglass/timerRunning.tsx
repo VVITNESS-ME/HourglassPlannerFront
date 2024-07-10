@@ -36,7 +36,7 @@ const TimerRunning: React.FC = () => {
     const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
     if (token) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
