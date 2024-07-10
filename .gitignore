@@ -37,3 +37,5 @@ yarn-error.log*
 next-env.d.ts
 
 yarn.lock
+server.js
+next.config.mjs
