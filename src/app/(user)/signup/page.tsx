@@ -1,13 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Cookies from "js-cookie";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
+  const router = useRouter();
   const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
-  if (token) redirect('/');
+
+  useEffect(() => {
+    if (token) {
+      router.push('/');
+    }
+  }, [token, router]);
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -16,6 +22,12 @@ const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (success === 'Sign up successful!') {
+      router.push('/');
+    }
+  }, [success, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +58,7 @@ const SignUp = () => {
       setEmail('');
       setName('');
       setPassword('');
-      setVerifyPassword('');
-      redirect('/');
+      setVerifyPassword('')
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message || 'Sign up failed');

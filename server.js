@@ -22,7 +22,7 @@ app.prepare().then(() => {
   // API 프록시 설정 (http-proxy-middleware 사용)
   const { createProxyMiddleware } = require('http-proxy-middleware');
   server.use('/api', createProxyMiddleware({
-    target: 'https://localhost:8082',
+    target: 'http://localhost:8082',
     changeOrigin: true,
     pathRewrite: {
       '^/api': '', // URL에서 /api를 제거합니다.
