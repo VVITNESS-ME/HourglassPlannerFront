@@ -92,10 +92,17 @@ const formatDate = (date: Date): string => {
 
 export const fetchDailyData = async (date: Date) => {
   const formattedDate = formatDate(date);
+  let day = 0;
+  if (date.getDay() === 7){
+    day = 0;
+  }else {
+    day -= 1;
+  }
   const responseData = await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/daily-statistics?date=${formattedDate}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/statistics/daily-statistics?date=${formattedDate}&day=${day}`,
     'Failed to fetch dailyStatistics'
   );
+  console.log(responseData);
   const { pieData, dailyStatistics } = responseData;
   return { pieData, dailyStatistics };
 };
