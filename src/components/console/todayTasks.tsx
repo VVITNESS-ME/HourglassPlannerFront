@@ -6,6 +6,7 @@ import CardLayout from '../cardLayout';
 import TodoModal from './todoModal';
 import CategoryModal from '../mypage/profile/categoryModal';
 import { Task, UserCategory } from '@/type/types';
+import { useHourglassStore } from '../../../store/hourglassStore';
 
 interface TodayTasksProps {
   tasks: Task[];
@@ -18,10 +19,20 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+  const setTid = useHourglassStore(state => state.setTid);
+
+  useEffect(() => {
+    if (selectedTask != null) {
+      setTid(selectedTask);
+    }else {
+      setTid(null);
+    }
+    console.log(selectedTask);
+  }, [selectedTask, setTid]);
 
   const fetchTasks = useCallback(async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

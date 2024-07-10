@@ -10,6 +10,7 @@ interface TimeState {
   bbMode: boolean;
   pause: boolean;
   hId: number | null;
+  tId: number | null;
   isInitialized: boolean;
   modalOpen: boolean;
   setTimeStart: (time: Date) => void;
@@ -27,9 +28,9 @@ interface TimeState {
   stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
-
   setPause: () => void;
   setResume: () => void;
+  setTid: (tId: number | null) => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -47,30 +48,52 @@ const getToken = (): string | undefined => {
 const sendStartDataToServer = async (data: {
   timeStart: string | undefined;
   timeGoal: number | null;
+  tId: number | null;
 }): Promise<number | null> => {
   const token = getToken();
   if (!token) {
     return null;
   }
-
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        ...data,
-        timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
-      }),
-    });
-    const responseData = await response.json();
-    console.log(responseData);
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Failed to start timer');
+    console.log(JSON.stringify({
+      timeStart: data.timeStart,
+      timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+    }));
+    if (data.tId === null){
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          timeStart: data.timeStart,
+          timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+        }),
+      });
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Failed to start timer');
+      }
+      return responseData.data.hid;
+    }else{
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start/${data.tId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          timeStart: data.timeStart,
+          timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
+        }),
+      });
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Failed to start timer');
+      }
+      return responseData.data.hid;
     }
-    return responseData.data.hid;
   } catch (error) {
     console.error('Error:', error);
     return null;
@@ -120,8 +143,9 @@ const sendPauseSignalToServer = async (data: {
   hId: number | null;
   timeBurst: number | null;
 }) => {
+  const token = getToken();
+  if (!token) return null;
   try {
-    const token = getToken();
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
       method: 'POST',
       headers: {
@@ -191,6 +215,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   pause: false,
   modalOpen: false,
   hId: null,
+  tId: null,
   isInitialized: false,
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
@@ -295,6 +320,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       bbMode: get().bbMode,
       pause: false,
       hId: null,
+      tId: get().tId
     };
     set(initialState);
     saveStateToCookies(initialState);
@@ -303,6 +329,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       const hId = await sendStartDataToServer({
         timeStart: currentTime.toISOString(),
         timeGoal: initialState.timeGoal,
+        tId: initialState.tId,
       });
       if (hId) {
         const newState = { ...get(), hId };
@@ -357,6 +384,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeEnd: parsedState.timeEnd ? new Date(parsedState.timeEnd) : null,
         isRunning: parsedState.isRunning || false,
         bbMode: parsedState.bbMode || false,
+        tId: parsedState.tId || null,
         pause: parsedState.pause || false,
         hId: parsedState.hId || null,
         modalOpen: parsedState.modalOpen || false,
@@ -372,9 +400,15 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         bbMode: false,
         pause: false,
         hId: null,
+        tId: null,
         modalOpen: false,
         isInitialized: true,
       });
     }
   },
+  setTid: (tId: number | null) => set((state) => {
+    const newState = { ...state, tId };
+    saveStateToCookies(newState);
+    return newState;
+  }),
 }));
