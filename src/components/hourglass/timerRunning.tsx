@@ -82,7 +82,7 @@ const TimerRunning: React.FC = () => {
       } else if (isRunning && now >= endTime) {
         setTimeEnd(new Date());
         stopTimerWithNOAuth();
-        alert('Time is up!');
+        // alert('Time is up!');
       }
     }
   }, [setTimeEnd, stopTimer, incrementTimeBurst]);
