@@ -127,6 +127,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   const handleTaskClick = (taskId: number) => {
     setSelectedTask(taskId === selectedTask ? null : taskId);
   };
+  
 
   useEffect(() => {
     fetchTasks();

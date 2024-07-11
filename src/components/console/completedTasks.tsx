@@ -40,7 +40,7 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTask
 
   useEffect(() => {
     fetchCompletedTasks();
-  }, []);
+  }, [fetchCompletedTasks, onTaskComplete]);
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'task',
