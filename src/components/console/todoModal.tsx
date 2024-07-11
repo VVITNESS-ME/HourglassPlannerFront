@@ -27,9 +27,8 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, fetch
 
   const handleAddTask = async () => {
     if (taskText.trim() && selectedCategory) {
-      console.log(taskText);
-      console.log(selectedCategory.userCategoryId);
-
+      onAddTask({ text: taskText, color: selectedCategory.color, categoryName: selectedCategory.categoryName });
+      onClose();
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo`, {
           method: 'POST',
@@ -43,9 +42,7 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, fetch
           }),
         });
         if (response.ok) {
-          onAddTask({ text: taskText, color: selectedCategory.color, categoryName: selectedCategory.categoryName });
           fetchTasks();
-          onClose();
         } else {
           throw new Error('Network response was not ok');
         }
