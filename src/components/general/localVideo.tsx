@@ -43,18 +43,18 @@ const LocalVideo: React.FC<VideoProps> = ({stream}) => {
       const faceStatus = faceLandmarkManager.drawLandmarks(drawCanvasRef.current);
       if (faceStatus == 1) { // 눈감음
           timeDoze++;
-          console.log("timeDoze: " + timeDoze);
+          // console.log("timeDoze: " + timeDoze);
           if (timeDoze > 50) {setPause(); timeSober = 0;}
       }
       else if (faceStatus == 2) { // 자리이탈
           timeMia++;
-          console.log("timeMia: " + timeMia);
+          // console.log("timeMia: " + timeMia);
           if (timeMia > 50) {setPause(); timeSober = 0}
       }
       else { // 정상상태
         {
           timeSober++;
-          console.log("timesober: " + timeSober);
+          // console.log("timesober: " + timeSober);
           if (timeSober > 25) {
             setResume();
             timeSober = 0;

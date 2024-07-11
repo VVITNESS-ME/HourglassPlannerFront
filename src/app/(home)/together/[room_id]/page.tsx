@@ -5,19 +5,22 @@ import LocalVideo from "@/components/general/localVideo";
 import PeerVideo from "@/components/general/peerVideo";
 import Hourglass from "@/components/hourglass/hourglass";
 
-const socketURL = "wss://hourglass.ninja:8889";
-const signalingServer = new WebSocket(socketURL);
-const sendToServer = (message: any) => {
-  signalingServer.send(JSON.stringify(message));
-};
-
-signalingServer.onopen = () => {
-  console.log('WebSocket connection established.');
-};
 
 const VideoPage: React.FC = () => {
   const params = useParams();
   const roomId = params?.room_id;
+
+  // 시그널링 서버에 소켓 연결
+  const socketURL = "wss://jungle5105.xyz:8889/";
+  const signalingServer = new WebSocket(socketURL+roomId);
+  const sendToServer = (message: any) => {
+    signalingServer.send(JSON.stringify(message));
+  };
+
+  signalingServer.onopen = () => {
+    console.log('WebSocket connection established.');
+  };
+
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
