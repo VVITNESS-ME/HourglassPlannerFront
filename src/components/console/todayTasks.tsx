@@ -24,7 +24,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   useEffect(() => {
     if (selectedTask != null) {
       setTid(selectedTask);
-    }else {
+    } else {
       setTid(null);
     }
     console.log(selectedTask);
@@ -127,7 +127,6 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   const handleTaskClick = (taskId: number) => {
     setSelectedTask(taskId === selectedTask ? null : taskId);
   };
-  
 
   useEffect(() => {
     fetchTasks();
@@ -165,6 +164,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
         isOpen={isTodoModalOpen}
         onClose={() => setIsTodoModalOpen(false)}
         onAddTask={handleAddTask}
+        fetchTasks={fetchTasks}
         userCategories={userCategories}
         onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
       />
