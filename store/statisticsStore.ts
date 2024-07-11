@@ -17,7 +17,7 @@ interface MonthData {
 }
 
 interface MonthlyData {
-  month: string;
+  month: number;
   totalBurst: number;
 }
 
@@ -33,14 +33,14 @@ interface StatisticsStore {
   pieData: PieData[];
   dailyData: DailyData[];
   weeklyData: MonthData[];
-  monthlyData: MonthlyData[];
+  monthlyData: MonthData[];
   grasses: Grass[];
   rangeSelection: RangeSelection;
   setSelectedDate: (date: Date) => void;
   setPieData: (data: PieData[]) => void;
   setDailyData: (data: DailyData[]) => void;
   setWeeklyData: (data: MonthData[]) => void;
-  setMonthlyData: (data: MonthlyData[]) => void;
+  setMonthlyData: (data: MonthData[]) => void;
   setGrasses: (data: Grass[]) => void;
   setRangeSelection: (range: RangeSelection) => void;
 }

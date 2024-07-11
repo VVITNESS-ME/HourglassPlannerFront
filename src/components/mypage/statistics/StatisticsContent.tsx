@@ -9,14 +9,8 @@ import useStatisticsStore, { fetchDailyData, fetchWeeklyData, fetchMonthlyData }
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement, ArcElement);
 
-interface PieData {
-  label: string;
-  value: number;
-  backgroundColor: string;
-}
-
-interface DailyData {
-  weekDay: string;
+interface MonthlyData {
+  month: number;
   totalBurst: number;
 }
 
@@ -25,18 +19,20 @@ interface MonthData {
   totalBurst: number;
 }
 
-interface MonthlyData {
-  month: string;
-  totalBurst: number;
-}
-
-const fillMissingMonthlyData = (data: MonthlyData[]): MonthlyData[] => {
-  const months = Array.from({ length: 12 }, (_, i) => `${i + 1}`);
-  return months.map(month => data.find(item => item.month === month) || { month, totalBurst: 0 });
+const fillMissingMonthlyData = (data: MonthlyData[]): MonthData[] => {
+  console.log(data);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1); // 숫자로 된 월 배열 생성
+  return months.map(month => {
+    const found = data.find(item => item.month === month);
+    return {
+      date: `${month}월`,
+      totalBurst: found ? found.totalBurst : 0,
+    };
+  });
 };
 
 const StatisticsContent: React.FC = () => {
-  const { pieData, dailyData, weeklyData, monthlyData, setPieData, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
+  const { dailyData, weeklyData, monthlyData, setPieData, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
   const [selectedTab, setSelectedTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
 
   useEffect(() => {
@@ -63,7 +59,7 @@ const StatisticsContent: React.FC = () => {
             data = await fetchMonthlyData(state);
             if (data) {
               setPieData(data.data.byCategory || []);
-              setMonthlyData(fillMissingMonthlyData(data.data.byMonths || []));
+              setMonthlyData(fillMissingMonthlyData(data.data.byDays || []));
             }
             break;
         }
@@ -105,7 +101,7 @@ const StatisticsContent: React.FC = () => {
   };
 
   const monthlyChartData = {
-    labels: monthlyData.map(item => `${item.month}월`),
+    labels: monthlyData.map(item => item.date),
     datasets: [
       {
         label: '공부 시간',
