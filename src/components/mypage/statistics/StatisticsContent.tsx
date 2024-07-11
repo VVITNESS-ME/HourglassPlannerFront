@@ -32,9 +32,8 @@ const fillMissingMonthlyData = (data: MonthlyData[]): MonthData[] => {
 };
 
 const StatisticsContent: React.FC = () => {
-  const { dailyData, weeklyData, monthlyData, setPieData, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
+  const { dailyData, weeklyData, monthlyData, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
   const [selectedTab, setSelectedTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-
   useEffect(() => {
     const fetchDataAndSetState = async () => {
       try {
@@ -69,7 +68,7 @@ const StatisticsContent: React.FC = () => {
     };
 
     fetchDataAndSetState();
-  }, [selectedTab, setPieData, setDailyData, setWeeklyData, setMonthlyData]);
+  }, [selectedTab, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData]);
 
   const handleTabSelect = (index: number) => {
     const tabMapping = ['daily', 'weekly', 'monthly'];
@@ -116,9 +115,9 @@ const StatisticsContent: React.FC = () => {
       <div className="w-full">
         <Tabs onSelect={handleTabSelect}>
           <TabList>
-            <Tab>일간 통계</Tab>
             <Tab>주간 통계</Tab>
             <Tab>월간 통계</Tab>
+            <Tab>년간 통계</Tab>
           </TabList>
 
           <TabPanel>
