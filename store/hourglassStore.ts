@@ -24,7 +24,7 @@ interface TimeState {
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
-  stopTimer: (categoryName: string, rating: number, content: string) => void;
+  stopTimer: (categoryName: string, rating: number, content: string) => Promise<any[]>;
   stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
@@ -59,7 +59,7 @@ const sendStartDataToServer = async (data: {
       timeStart: data.timeStart,
       timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
     }));
-    if (data.tId === null){
+    if (data.tId === null) {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
         method: 'POST',
         headers: {
@@ -76,7 +76,7 @@ const sendStartDataToServer = async (data: {
         throw new Error(responseData.message || 'Failed to start timer');
       }
       return responseData.data.hid;
-    }else{
+    } else {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start/${data.tId}`, {
         method: 'POST',
         headers: {
@@ -108,7 +108,7 @@ const sendTimeDataToServer = async (data: {
   categoryName: string;
   rating: number;
   content: string;
-}) => {
+}): Promise<any[]> => {
   const token = getToken();
   if (token) {
     try {
@@ -128,13 +128,14 @@ const sendTimeDataToServer = async (data: {
       if (!response.ok) {
         throw new Error(responseData.message || 'Failed to end timer');
       }
-
+      console.log(responseData);
       return responseData;
     } catch (error) {
       console.error('Error:', error);
-      return null;
+      return [];
     }
   }
+  return [];
 };
 
 const sendPauseSignalToServer = async (data: {
@@ -350,12 +351,15 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     removeStateFromCookies();
     return newState;
   }),
-  stopTimer: (categoryName: string, rating: number, content: string) => set((state) => {
+  stopTimer: async (categoryName: string, rating: number, content: string): Promise<any[]> => {
+    const state = get();
     const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
+    set(newState);
     removeStateFromCookies();
     const token = getToken();
+    let studyResult: any[] = [];
     if (token) {
-      sendTimeDataToServer({
+      studyResult = await sendTimeDataToServer({
         timeStart: state.timeStart?.toISOString(),
         timeBurst: state.timeBurst,
         timeEnd: newState.timeEnd?.toISOString(),
@@ -365,8 +369,8 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         content,
       });
     }
-    return newState;
-  }),
+    return studyResult;
+  },
   checkAndStopTimer: () => {
     const { timeBurst, timeGoal } = get();
     if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {

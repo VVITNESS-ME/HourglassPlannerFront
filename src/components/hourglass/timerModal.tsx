@@ -79,8 +79,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
     setRating(newRating);
   };
 
-  const handleSubmit = () => {
-    stopTimer(selectedActivity, rating, description);
+  const handleSubmit = async () => {
+    try {
+      const result = await stopTimer(selectedActivity, rating, description);
+      console.log(result);
+    } catch (error) {
+      console.error('Error stopping timer:', error);
+    }
   };
 
   const isValidInput = !!selectedActivity;
