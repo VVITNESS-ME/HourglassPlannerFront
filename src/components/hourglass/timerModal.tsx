@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   const [selectedActivity, setSelectedActivity] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
-  const { closeModal, stopTimer } = useHourglassStore();
+  const {dailyData, setDailyData, closeModal, stopTimer, setResultModalOpen } = useHourglassStore();
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
     // Calculate the new ID
@@ -82,6 +82,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   const handleSubmit = async () => {
     try {
       const result = await stopTimer(selectedActivity, rating, description);
+      console.log(result);
+      setResultModalOpen(true);
+      setDailyData(result);
       console.log(result);
     } catch (error) {
       console.error('Error stopping timer:', error);
