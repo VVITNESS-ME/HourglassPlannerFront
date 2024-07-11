@@ -14,11 +14,11 @@ const PieGraph: React.FC = () => {
   };
 
   const pieChartData = {
-    labels: pieData.map(item => item.label),
+    labels: pieData.map(item => item.categoryName),
     datasets: [
       {
-        data: pieData.map(item => item.value),
-        backgroundColor: pieData.map(item => item.backgroundColor),
+        data: pieData.map(item => item.ratio),
+        backgroundColor: pieData.map(item => item.color),
       },
     ],
   };
