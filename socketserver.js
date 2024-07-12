@@ -6,8 +6,8 @@ const cors = require('cors');
 
 const app = express();
 const server = https.createServer({
-    key: fs.readFileSync('./server.key'),
-    cert: fs.readFileSync('./server.crt'),
+  key: fs.readFileSync('./server-key.pem'),
+  cert: fs.readFileSync('./server.pem'),
 }, app);
 
 
