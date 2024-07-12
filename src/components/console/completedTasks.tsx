@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { useDrop } from 'react-dnd';
 import CardLayout from '../cardLayout';
 import { Task } from '@/type/types';
@@ -12,7 +12,7 @@ interface CompletedTasksProps {
 }
 
 const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTaskComplete }) => {
-  const fetchCompletedTasks = async () => {
+  const fetchCompletedTasks = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo/completion`, {
         method: 'GET',
@@ -36,19 +36,11 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTask
     } catch (error) {
       console.error('Error fetching completed tasks', error);
     }
-  };
+  }, [setTasks]);
 
   useEffect(() => {
     fetchCompletedTasks();
-  }, []);
-
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: 'task',
-    drop: (item: any) => handleDrop(item.taskId),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  }));
+  }, [fetchCompletedTasks]);
 
   const handleDrop = async (taskId: number) => {
     console.log(`Dropped task with ID: ${taskId}`);
@@ -65,6 +57,7 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTask
       if (response.ok) {
         console.log('Task completed successfully');
         onTaskComplete(taskId);
+        fetchCompletedTasks();
       } else {
         console.error('Failed to complete task');
       }
@@ -72,6 +65,14 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTask
       console.error('Error completing task', error);
     }
   };
+
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'task',
+    drop: (item: any) => handleDrop(item.taskId),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
 
   const ref = useRef<HTMLUListElement>(null);
   drop(ref);

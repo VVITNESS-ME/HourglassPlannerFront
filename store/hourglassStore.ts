@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
 
+interface DailyData {
+  categoryName : string;
+  start : Date;
+  end : Date;
+  burst : number;
+  color : string;
+}
+
 interface TimeState {
   timeStart: Date | null;
   timeBurst: number | null;
@@ -13,6 +21,9 @@ interface TimeState {
   tId: number | null;
   isInitialized: boolean;
   modalOpen: boolean;
+  resultModalOpen: boolean;
+  dailyData: DailyData[];
+  taskName: string | '';
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
@@ -24,13 +35,17 @@ interface TimeState {
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
-  stopTimer: (categoryName: string, rating: number, content: string) => void;
+  stopTimer: (categoryName: string, rating: number, content: string) => Promise<any[]>;
   stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
   setPause: () => void;
   setResume: () => void;
   setTid: (tId: number | null) => void;
+  openResultModal: () => void;
+  closeResultModal: () => void;
+  setDailyData: (dailyData: DailyData[]) => void;
+  setTaskName: (taskName : string) => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -59,7 +74,7 @@ const sendStartDataToServer = async (data: {
       timeStart: data.timeStart,
       timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
     }));
-    if (data.tId === null){
+    if (data.tId === null) {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
         method: 'POST',
         headers: {
@@ -76,7 +91,7 @@ const sendStartDataToServer = async (data: {
         throw new Error(responseData.message || 'Failed to start timer');
       }
       return responseData.data.hid;
-    }else{
+    } else {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start/${data.tId}`, {
         method: 'POST',
         headers: {
@@ -101,41 +116,75 @@ const sendStartDataToServer = async (data: {
 };
 
 const sendTimeDataToServer = async (data: {
-  timeStart: string | undefined;
-  timeBurst: number | null;
   timeEnd: string | undefined;
-  hId: number | null;
-  categoryName: string;
+  hId: any;
+  timeStart: string | undefined;
+  timeBurst: any;
   rating: number;
-  content: string;
-}) => {
+  categoryName: string;
+  tId: number | null;
+  content: string
+}): Promise<any[]> => {
   const token = getToken();
+  console.log(JSON.stringify({
+    ...data,
+    timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+  }));
   if (token) {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...data,
-          timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
-        }),
-      });
+    if (data.tId === null){
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            ...data,
+            timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+          }),
+        });
 
-      const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to end timer');
+        const responseData = await response.json();
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Failed to end timer');
+        }
+        console.log(responseData);
+        return responseData.data.todaySummery;
+      } catch (error) {
+        console.error('Error:', error);
+        return [];
       }
+    }else{
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end/${data.tId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            ...data,
+            timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+          }),
+        });
 
-      return responseData;
-    } catch (error) {
-      console.error('Error:', error);
-      return null;
+        const responseData = await response.json();
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Failed to end timer');
+        }
+        console.log(responseData);
+        return responseData.data.todaySummery;
+      } catch (error) {
+        console.error('Error:', error);
+        return [];
+      }
     }
+
   }
+  return [];
 };
+
 
 const sendPauseSignalToServer = async (data: {
   timeStart: string | undefined;
@@ -217,6 +266,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   hId: null,
   tId: null,
   isInitialized: false,
+  resultModalOpen: false,
+  dailyData: [],
+  taskName: '',
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -350,27 +402,31 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     removeStateFromCookies();
     return newState;
   }),
-  stopTimer: (categoryName: string, rating: number, content: string) => set((state) => {
+  stopTimer: async (categoryName: string, rating: number, content: string): Promise<any[]> => {
+    const state = get();
     const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
+    set(newState);
     removeStateFromCookies();
     const token = getToken();
+    let studyResult: any[] = [];
     if (token) {
-      sendTimeDataToServer({
+      studyResult = await sendTimeDataToServer({
         timeStart: state.timeStart?.toISOString(),
         timeBurst: state.timeBurst,
         timeEnd: newState.timeEnd?.toISOString(),
         hId: state.hId,
+        tId: state.tId,
         categoryName,
         rating,
         content,
       });
     }
-    return newState;
-  }),
+    return studyResult;
+  },
   checkAndStopTimer: () => {
     const { timeBurst, timeGoal } = get();
     if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
-      get().popUpModal();
+      get().openResultModal(); // 결과 모달을 열도록 설정
     }
   },
   initialize: () => {
@@ -389,6 +445,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         hId: parsedState.hId || null,
         modalOpen: parsedState.modalOpen || false,
         isInitialized: true,
+        resultModalOpen: false,
+        dailyData: [],
+        taskName: parsedState.taskName || '',
       });
     } else {
       set({
@@ -403,11 +462,34 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         tId: null,
         modalOpen: false,
         isInitialized: true,
+        resultModalOpen: false,
+        dailyData: [],
+        taskName: '',
       });
     }
   },
   setTid: (tId: number | null) => set((state) => {
     const newState = { ...state, tId };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  openResultModal: () => set((state) => {
+    const newState = { ...state, resultModalOpen: true};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  closeResultModal: () => set((state) => {
+    const newState = { ...state, resultModalOpen: false};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  setDailyData: (dailyData: DailyData[]) => set((state) => {
+    const newState = { ...state, dailyData: dailyData};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  setTaskName: (taskName: string) => set((state) => {
+    const newState = { ...state, taskName: taskName};
     saveStateToCookies(newState);
     return newState;
   }),

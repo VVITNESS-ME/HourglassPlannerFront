@@ -5,10 +5,8 @@ import useDiaryState, { Hourglass } from '../../../../store/diaryStore'; // Hour
 import styles from './hourglassList.module.css';
 import { format, parseISO } from 'date-fns';
 
-
-
 const HourglassList: React.FC = () => {
-  const { hourglasses, setSelectedHourglass } = useDiaryState();
+  const { hourglasses, setSelectedHourglass, selectedHourglass } = useDiaryState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,8 +19,9 @@ const HourglassList: React.FC = () => {
       setLoading(false);
     } else {
       setLoading(false);
+      setSelectedHourglass(hourglasses[0]);
     }
-  }, [hourglasses]);
+  }, [hourglasses, setSelectedHourglass]);
 
   const formatTime = (time: string) => {
     const date = parseISO(time);
@@ -63,28 +62,34 @@ const HourglassList: React.FC = () => {
   return (
     <div className={styles.hourglassList}>
       <h3>일간 작업 목록</h3>
-      <div className={styles.list}>
-        {hourglasses.map((task) => (
-          <div key={task.hid} className={styles.task} onClick={() => handleTaskClick(task)}>
-            <div className={styles.category} style={{ backgroundColor: task.color }}>{task.categoryName}</div>
-            <div className={styles.details}>
-              <p className={styles.taskName} title={task.taskName}>{task.taskName}</p>
-              <p className={styles.description} title={task.description}>{task.description}</p>
-              <div className={styles.timeRangeContainer}>
-                <p className={styles.time}>{Math.floor(task.timeBurst/60)}분</p>
-                <p className={styles.timeRange}>{formatTime(task.timeStart)} ~ {formatTime(task.timeEnd)}</p>
-                <div className={styles.satisfaction}>
-                  {'★'.repeat(task.rating).split('').map((star, i) => (
-                    <span key={i} className={styles.star}>{star}</span>
-                  ))}
-                  {'☆'.repeat(5 - task.rating).split('').map((star, i) => (
-                    <span key={i} className={styles.star}>{star}</span>
-                  ))}
+      <div className={styles.border}>
+        <div className={styles.list}>
+          {hourglasses.map((task) => (
+            <div
+              key={task.hid}
+              className={`${styles.task} ${selectedHourglass && selectedHourglass.hid === task.hid ? styles.selected : ''}`}
+              onClick={() => handleTaskClick(task)}
+            >
+              <div className={styles.category} style={{ backgroundColor: task.color }}>{task.categoryName}</div>
+              <div className={styles.details}>
+                <p className={styles.taskName} title={task.taskName}>{task.taskName}</p>
+                <p className={styles.description} title={task.content}>{task.content}</p>
+                <div className={styles.timeRangeContainer}>
+                  <p className={styles.time}>{Math.floor(task.timeBurst / 60)}분</p>
+                  <p className={styles.timeRange}>{formatTime(task.timeStart)} ~ {formatTime(task.timeEnd)}</p>
+                  <div className={styles.satisfaction}>
+                    {'★'.repeat(task.rating).split('').map((star, i) => (
+                      <span key={i} className={styles.star}>{star}</span>
+                    ))}
+                    {'☆'.repeat(5 - task.rating).split('').map((star, i) => (
+                      <span key={i} className={styles.star}>{star}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

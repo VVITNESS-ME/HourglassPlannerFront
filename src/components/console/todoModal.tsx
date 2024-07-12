@@ -3,17 +3,18 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Button from '../mypage/profile/button';
-import { UserCategory } from "@/type/types";
+import { UserCategory } from '@/type/types';
 
 interface TodoModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddTask: (task: { text: string; color: string; categoryName: string }) => void;
+  fetchTasks: () => void;
   userCategories: UserCategory[];
   onOpenCategoryModal: () => void;
 }
 
-const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, userCategories, onOpenCategoryModal }) => {
+const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, fetchTasks, userCategories, onOpenCategoryModal }) => {
   const [taskText, setTaskText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<UserCategory | null>(null);
 
@@ -26,9 +27,8 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, userC
 
   const handleAddTask = async () => {
     if (taskText.trim() && selectedCategory) {
-      console.log(taskText);
-      console.log(selectedCategory.userCategoryId);
-
+      onAddTask({ text: taskText, color: selectedCategory.color, categoryName: selectedCategory.categoryName });
+      onClose();
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/todo`, {
           method: 'POST',
@@ -41,10 +41,8 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, userC
             userCategoryId: selectedCategory.userCategoryId,
           }),
         });
-
         if (response.ok) {
-          onAddTask({ text: taskText, color: selectedCategory.color, categoryName: selectedCategory.categoryName });
-          onClose();
+          fetchTasks();
         } else {
           throw new Error('Network response was not ok');
         }

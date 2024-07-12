@@ -9,105 +9,56 @@ import useStatisticsStore, { fetchDailyData, fetchWeeklyData, fetchMonthlyData }
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement, ArcElement);
 
-interface PieData {
-  label: string;
-  value: number;
-  backgroundColor: string;
-}
-
-interface DailyData {
-  day: string;
-  studyTime: number;
-}
-
-interface WeeklyData {
-  week: string;
-  studyTime: number;
-}
-
 interface MonthlyData {
-  month: string;
-  studyTime: number;
+  month: number;
+  totalBurst: number;
 }
 
-const transformedPieData: PieData[] = [
-  { label: '핀토스', value: 30, backgroundColor: '#FF4500' },
-  { label: '운동', value: 15, backgroundColor: '#FFD700' },
-  { label: '알고리즘', value: 20, backgroundColor: '#808080' },
-  { label: '기타', value: 35, backgroundColor: '#D3D3D3' },
-];
+interface MonthData {
+  date: string;
+  totalBurst: number;
+}
 
-const transformedDailyData: DailyData[] = [
-  { day: '월', studyTime: 120 },
-  { day: '화', studyTime: 150 },
-  { day: '수', studyTime: 180 },
-  { day: '목', studyTime: 200 },
-];
-
-const transformedWeeklyData: WeeklyData[] = [
-  { week: '1주', studyTime: 400 },
-  { week: '2주', studyTime: 500 },
-  { week: '3주', studyTime: 450 },
-  { week: '4주', studyTime: 600 },
-];
-
-const transformedMonthlyData: MonthlyData[] = [
-  { month: '1', studyTime: 400 },
-  { month: '2', studyTime: 500 },
-  { month: '3', studyTime: 600 },
-  { month: '4', studyTime: 550 },
-  { month: '5', studyTime: 650 },
-  { month: '6', studyTime: 700 },
-  { month: '7', studyTime: 800 },
-];
-
-const fillMissingDailyData = (data: DailyData[]): DailyData[] => {
-  const days = ['월', '화', '수', '목', '금', '토', '일'];
-  return days.map(day => data.find(item => item.day === day) || { day, studyTime: 0 });
-};
-
-const fillMissingWeeklyData = (data: WeeklyData[]): WeeklyData[] => {
-  const weeks = ['1주', '2주', '3주', '4주', '5주'];
-  return weeks.map(week => data.find(item => item.week === week) || { week, studyTime: 0 });
-};
-
-const fillMissingMonthlyData = (data: MonthlyData[]): MonthlyData[] => {
-  const months = Array.from({ length: 12 }, (_, i) => `${i + 1}`);
-  return months.map(month => data.find(item => item.month === month) || { month, studyTime: 0 });
+const fillMissingMonthlyData = (data: MonthlyData[]): MonthData[] => {
+  console.log(data);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1); // 숫자로 된 월 배열 생성
+  return months.map(month => {
+    const found = data.find(item => item.month === month);
+    return {
+      date: `${month}월`,
+      totalBurst: found ? found.totalBurst : 0,
+    };
+  });
 };
 
 const StatisticsContent: React.FC = () => {
-  const { pieData, dailyData, weeklyData, monthlyData, setPieData, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
+  const { dailyData, weeklyData, monthlyData, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
   const [selectedTab, setSelectedTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-
-  // Fetch data on mount and when selectedTab changes
   useEffect(() => {
     const fetchDataAndSetState = async () => {
       try {
         let data;
+        const state = useStatisticsStore.getState();
         switch (selectedTab) {
           case 'daily':
-            // data = { pieData: transformedPieData, dailyStatistics: fillMissingDailyData(await fetchDailyData()) }; // 실제 데이터 사용
-            data = { pieData: transformedPieData, dailyStatistics: fillMissingDailyData(transformedDailyData) }; // 테스트 데이터 사용
+            data = await fetchDailyData(state);
             if (data) {
-              setPieData(data.pieData);
-              setDailyData(data.dailyStatistics);
+              setPieData(data.data.byCategory || []);
+              setDailyData(data.data.byDays || []);
             }
             break;
           case 'weekly':
-            // data = { pieData: transformedPieData, weeklyStatistics: fillMissingWeeklyData(await fetchWeeklyData()) }; // 실제 데이터 사용
-            data = { pieData: transformedPieData, weeklyStatistics: fillMissingWeeklyData(transformedWeeklyData) }; // 테스트 데이터 사용
+            data = await fetchWeeklyData(state);
             if (data) {
-              setPieData(data.pieData);
-              setWeeklyData(data.weeklyStatistics);
+              setPieData(data.data.byCategory || []);
+              setWeeklyData(data.data.byDays || []);
             }
             break;
           case 'monthly':
-            // data = { pieData: transformedPieData, monthlyStatistics: fillMissingMonthlyData(await fetchMonthlyData()) }; // 실제 데이터 사용
-            data = { pieData: transformedPieData, monthlyStatistics: fillMissingMonthlyData(transformedMonthlyData) }; // 테스트 데이터 사용
+            data = await fetchMonthlyData(state);
             if (data) {
-              setPieData(data.pieData);
-              setMonthlyData(data.monthlyStatistics);
+              setPieData(data.data.byCategory || []);
+              setMonthlyData(fillMissingMonthlyData(data.data.byDays || []));
             }
             break;
         }
@@ -117,7 +68,7 @@ const StatisticsContent: React.FC = () => {
     };
 
     fetchDataAndSetState();
-  }, [selectedTab, setPieData, setDailyData, setWeeklyData, setMonthlyData]);
+  }, [selectedTab, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData]);
 
   const handleTabSelect = (index: number) => {
     const tabMapping = ['daily', 'weekly', 'monthly'];
@@ -125,11 +76,11 @@ const StatisticsContent: React.FC = () => {
   };
 
   const dailyChartData = {
-    labels: dailyData.map(item => item.day),
+    labels: dailyData.map(item => item.weekDay),
     datasets: [
       {
         label: '공부 시간',
-        data: dailyData.map(item => item.studyTime),
+        data: dailyData.map(item => item.totalBurst),
         borderColor: '#1E90FF',
         fill: false,
       },
@@ -137,11 +88,11 @@ const StatisticsContent: React.FC = () => {
   };
 
   const weeklyChartData = {
-    labels: weeklyData.map(item => item.week),
+    labels: weeklyData.map(item => item.date),
     datasets: [
       {
         label: '공부 시간',
-        data: weeklyData.map(item => item.studyTime),
+        data: weeklyData.map(item => item.totalBurst),
         borderColor: '#1E90FF',
         fill: false,
       },
@@ -149,39 +100,40 @@ const StatisticsContent: React.FC = () => {
   };
 
   const monthlyChartData = {
-    labels: monthlyData.map(item => `${item.month}월`),
+    labels: monthlyData.map(item => item.date),
     datasets: [
       {
         label: '공부 시간',
-        data: monthlyData.map(item => item.studyTime),
+        data: monthlyData.map(item => item.totalBurst),
         backgroundColor: '#1E90FF',
       },
     ],
   };
+
   return (
     <div className="p-8 bg-gray-100 min-w-[400px] h-[600px] flex flex-col items-center">
       <div className="w-full">
         <Tabs onSelect={handleTabSelect}>
           <TabList>
-            <Tab>일간 통계</Tab>
             <Tab>주간 통계</Tab>
             <Tab>월간 통계</Tab>
+            <Tab>년간 통계</Tab>
           </TabList>
 
           <TabPanel>
-            <h3 className="text-xl font-bold mb-4">총 공부시간: {dailyData.reduce((acc, cur) => acc + cur.studyTime, 0)}분</h3>
+            <h3 className="text-xl font-bold mb-4">총 공부시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Line data={dailyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-xl font-bold mb-4">총 공부시간: {weeklyData.reduce((acc, cur) => acc + cur.studyTime, 0)}분</h3>
+            <h3 className="text-xl font-bold mb-4">총 공부시간: {weeklyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
-              <Line data={weeklyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+              <Bar data={weeklyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-xl font-bold mb-4">총 공부시간: {monthlyData.reduce((acc, cur) => acc + cur.studyTime, 0)}분</h3>
+            <h3 className="text-xl font-bold mb-4">총 공부시간: {monthlyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={monthlyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>

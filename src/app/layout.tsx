@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="ko">
     <body className={mango.className}>
     <Navbar />
-    <div className="pt-20 flex flex-col h-screen">
+    <div className="pt-10 flex flex-col">
       {children}
     </div>
     </body>

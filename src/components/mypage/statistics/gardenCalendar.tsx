@@ -48,7 +48,7 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
       console.log(data);
       const convertedEntries = data.data.entries.map((entry: Grass) => ({
         ...entry,
-        timeBurst: Math.floor(entry.totalBurst / 60), // 초를 분으로 변환
+        timeBurst: Math.floor(entry.totalBurst), // 초를 분으로 변환
       }));
       setGrasses(convertedEntries);
     } catch (error) {
