@@ -23,10 +23,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   const [selectedActivity, setSelectedActivity] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
-  const {dailyData, setDailyData, closeModal, stopTimer, openResultModal } = useHourglassStore();
+  const { tId, setDailyData, closeModal, stopTimer, openResultModal } = useHourglassStore();
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
-    // Calculate the new ID
     const maxId = userCategories.reduce((max, category) => Math.max(max, category.userCategoryId), 0);
     const newCategoryId = maxId + 1;
 
@@ -36,10 +35,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
       color: category.color,
     };
 
-    // Optimistically update the UI
     setUserCategories((prevCategories) => [...prevCategories, newCategory]);
 
-    // Attempt to add the category to the server
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
         method: 'POST',
@@ -91,7 +88,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
     }
   };
 
-  const isValidInput = !!selectedActivity;
+  const isValidInput = tId !== null || !!selectedActivity;
 
   if (!isOpen) return null;
 
@@ -108,22 +105,24 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
               </svg>
             </div>
           </div>
-          <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
-            {userCategories.map((category) => (
-              <label key={category.userCategoryId} className="block p-2 border-b border-gray-300" style={{ backgroundColor: category.color }}>
-                <input
-                  type="radio"
-                  name="activity"
-                  value={category.categoryName}
-                  checked={selectedActivity === category.categoryName}
-                  onChange={handleActivityChange}
-                  className="mr-2"
-                  style={{ backgroundColor: category.color }}
-                />
-                {category.categoryName}
-              </label>
-            ))}
-          </div>
+          {tId === null && (
+            <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
+              {userCategories.map((category) => (
+                <label key={category.userCategoryId} className="block p-2 border-b border-gray-300" style={{ backgroundColor: category.color }}>
+                  <input
+                    type="radio"
+                    name="activity"
+                    value={category.categoryName}
+                    checked={selectedActivity === category.categoryName}
+                    onChange={handleActivityChange}
+                    className="mr-2"
+                    style={{ backgroundColor: category.color }}
+                  />
+                  {category.categoryName}
+                </label>
+              ))}
+            </div>
+          )}
           <button
             className="text-gray-500 mt-2"
             onClick={() => setIsModalOpen(true)}

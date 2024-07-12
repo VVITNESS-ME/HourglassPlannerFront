@@ -114,42 +114,75 @@ const sendStartDataToServer = async (data: {
 };
 
 const sendTimeDataToServer = async (data: {
-  timeStart: string | undefined;
-  timeBurst: number | null;
   timeEnd: string | undefined;
-  hId: number | null;
-  categoryName: string;
+  hId: any;
+  timeStart: string | undefined;
+  timeBurst: any;
   rating: number;
-  content: string;
+  categoryName: string;
+  tId: number | null;
+  content: string
 }): Promise<any[]> => {
   const token = getToken();
+  console.log(JSON.stringify({
+    ...data,
+    timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+  }));
   if (token) {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...data,
-          timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
-        }),
-      });
+    if (data.tId === null){
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            ...data,
+            timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+          }),
+        });
 
-      const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to end timer');
+        const responseData = await response.json();
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Failed to end timer');
+        }
+        console.log(responseData);
+        return responseData.data.todaySummery;
+      } catch (error) {
+        console.error('Error:', error);
+        return [];
       }
-      console.log(responseData);
-      return responseData.data.todaySummery;
-    } catch (error) {
-      console.error('Error:', error);
-      return [];
+    }else{
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end/${data.tId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            ...data,
+            timeBurst: data.timeBurst ? Math.floor(data.timeBurst / 1000) : null,
+          }),
+        });
+
+        const responseData = await response.json();
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Failed to end timer');
+        }
+        console.log(responseData);
+        return responseData.data.todaySummery;
+      } catch (error) {
+        console.error('Error:', error);
+        return [];
+      }
     }
+
   }
   return [];
 };
+
 
 const sendPauseSignalToServer = async (data: {
   timeStart: string | undefined;
@@ -379,6 +412,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeBurst: state.timeBurst,
         timeEnd: newState.timeEnd?.toISOString(),
         hId: state.hId,
+        tId: state.tId,
         categoryName,
         rating,
         content,
