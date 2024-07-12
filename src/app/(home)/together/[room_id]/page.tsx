@@ -1,11 +1,9 @@
-'use client'
-import { useParams } from "next/navigation";
+'use client';
+import { useParams } from 'next/navigation';
 import React, { useState, useEffect, useRef } from 'react';
-import LocalVideo from "@/components/general/localVideo";
-import PeerVideo from "@/components/general/peerVideo";
-import Hourglass from "@/components/hourglass/hourglass";
-import VideoChatRoom from "@/components/together/videoChatRoom";
-
+import LocalVideo from '@/components/general/localVideo';
+import PeerVideo from '@/components/general/peerVideo';
+import Hourglass from '@/components/hourglass/hourglass';
 
 const VideoPage: React.FC = () => {
   const params = useParams();
@@ -20,64 +18,51 @@ const VideoPage: React.FC = () => {
     signalingServerRef.current?.send(JSON.stringify(message));
   };
 
-  const closeExistingPeerConnection = () => {
-    if (peerConnection) {
-      peerConnection.close();
-      setPeerConnection(null);
-      setRemoteStream(null);
-      console.log('Existing peer connection closed.');
-    }
-  };
-
   useEffect(() => {
     const startMedia = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         setLocalStream(stream);
-        const pc = new RTCPeerConnection(
-          {
-          iceServers: [
-          {urls: 'stun:stun.l.google.com:19302',},
-          ],
-        }
-        );
-
-        pc.onicecandidate = (event) => {
-          if (event.candidate) {
-            sendToServer({ type: 'candidate', candidate: event.candidate });
-          }
-        };
-
-        pc.ontrack = (event) => {
-          setRemoteStream(event.streams[0]);
-        };
-
-        stream.getTracks().forEach(track => pc.addTrack(track, stream));
-        setPeerConnection(pc);
-        console.log(peerConnection)
       } catch (error) {
         console.error('Error accessing media devices.', error);
       }
     };
 
     if (!signalingServerRef.current) {
-      // const socketURL = "wss://jungle5105.xyz:8889/";/
-      const socketURL = "wss://localhost:3001/";
+      const socketURL = 'wss://jungle5105.xyz:8889/';
       const signalingServer = new WebSocket(socketURL + roomId);
       signalingServerRef.current = signalingServer;
 
       signalingServer.onopen = () => {
         console.log('WebSocket connection established.');
       };
-      startMedia();
-    }
-    else {
-      closeExistingPeerConnection();
-      startMedia();
     }
 
-  }, []);
-  
+    startMedia();
+  }, [roomId]);
+
+  useEffect(() => {
+    if (localStream) {
+      const pc = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+        ],
+      });
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          sendToServer({ type: 'candidate', candidate: event.candidate });
+        }
+      };
+
+      pc.ontrack = (event) => {
+        setRemoteStream(event.streams[0]);
+      };
+
+      setPeerConnection(pc);
+    }
+  }, [localStream]);
+
   const createOffer = async () => {
     if (peerConnection) {
       const offer = await peerConnection.createOffer();
@@ -97,7 +82,6 @@ const VideoPage: React.FC = () => {
 
   // Handle messages from signaling server
   useEffect(() => {
-    console.log(peerConnection)
     const handleMessage = (message: any) => {
       const data = JSON.parse(message.data);
 
@@ -111,15 +95,22 @@ const VideoPage: React.FC = () => {
       }
     };
     if (signalingServerRef.current) signalingServerRef.current.onmessage = handleMessage;
-
   }, [peerConnection]);
+
+  const handleStreamReady = (stream: MediaStream) => {
+    if (peerConnection) {
+      stream.getTracks().forEach((track) => {
+        if (!peerConnection.getSenders().find((sender) => sender.track === track)) {
+          peerConnection.addTrack(track, stream);
+        }
+      });
+    }
+  };
 
   function logpeer() {
     console.log(peerConnection);
     return;
   }
-
-  // return (<VideoChatRoom />)
 
   return (
     <div className="container mx-auto max-w-fit">
@@ -130,12 +121,11 @@ const VideoPage: React.FC = () => {
           <PeerVideo stream={remoteStream} />
         </div>
         <div className="flex flex-col w-full md:w-2/4 p-4 justify-center">
-          <LocalVideo stream={localStream} />
+          <LocalVideo stream={localStream} onStreamReady={handleStreamReady} />
         </div>
         <div className="flex flex-col w-full md:w-1/4 p-4 space-y-4"><Hourglass/></div>
       </div>
       <button onClick={logpeer}>check console to see peerConnection</button>
-
     </div>
   );
 };
