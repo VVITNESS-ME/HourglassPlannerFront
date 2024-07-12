@@ -7,10 +7,11 @@ import styles from './hourglassDetail.module.css';
 const HourglassDetail: React.FC = () => {
   const { selectedHourglass, description, setDescription, updateHourglass } = useDiaryStore();
   const [text, setText] = useState(description);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (selectedHourglass) {
-      setDescription(selectedHourglass.description);
+      setDescription(selectedHourglass.content);
     }
   }, [selectedHourglass, setDescription]);
 
@@ -28,7 +29,10 @@ const HourglassDetail: React.FC = () => {
         });
 
         if (response.ok) {
+          const updatedHourglass = { ...selectedHourglass, content };
+          updateHourglass(updatedHourglass);
           setText(content);
+          setIsEditing(false);
         } else {
           console.error('Failed to update task');
         }
@@ -38,20 +42,42 @@ const HourglassDetail: React.FC = () => {
     }
   };
 
-
   useEffect(() => {
     setText(description);
   }, [description]);
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelClick = () => {
+    setText(description);
+    setIsEditing(false);
+  };
+
   return (
-    <div className={styles.hourglassDetail}>
+    <div className={styles.outerContainer}>
       <h3>작업 기록</h3>
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        className={styles.textarea}
-      />
-      <button onClick={handleSave} className={styles.saveButton}>수정</button>
+      <div className={styles.hourglassDetail}>
+        {isEditing ? (
+          <div>
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className={styles.textarea}
+            />
+            <div className={styles.buttonContainer}>
+              <button onClick={handleSave} className={styles.saveButton}>저장</button>
+              <button onClick={handleCancelClick} className={styles.cancelButton}>취소</button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p className={styles.textDisplay}>{text}</p>
+            <button onClick={handleEditClick} className={styles.editButton}>수정</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
