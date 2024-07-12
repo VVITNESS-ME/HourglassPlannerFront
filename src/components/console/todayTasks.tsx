@@ -29,6 +29,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
       setTaskName(selectedTaskName);
     } else {
       setTid(null);
+      setTaskName('');
     }
     console.log(selectedTask);
   }, [selectedTask, setTid, setTaskName, selectedTaskName]);

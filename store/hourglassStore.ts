@@ -268,7 +268,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   isInitialized: false,
   resultModalOpen: false,
   dailyData: [],
-  taskName: "",
+  taskName: '',
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);

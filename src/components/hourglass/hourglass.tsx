@@ -27,8 +27,8 @@ const Hourglass: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <h2>{taskName}</h2>
-      <HourglassAni/>
+      <h2 className="min-h-[24px]">{taskName}</h2>
+      <HourglassAni />
       {isRunning ? <TimerRunning /> : <TimerSelector />}
       <button onClick={toggleBBMode}>외쳐 BB!!</button>
       <DailyDataModal isOpen={resultModalOpen} onClose={closeResultModal} />
