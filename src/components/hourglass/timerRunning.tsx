@@ -20,7 +20,7 @@ const TimerRunning: React.FC = () => {
   const timeEnd = useHourglassStore((state) => state.timeEnd);
   const isRunning = useHourglassStore((state) => state.isRunning);
   const pause = useHourglassStore((state) => state.pause);
-  const modalOpen = useHourglassStore((state) => state.modalOpen);
+    const modalOpen = useHourglassStore((state) => state.modalOpen);
   const setTimeEnd = useHourglassStore((state) => state.setTimeEnd);
   const togglePause = useHourglassStore((state) => state.togglePause);
   const stopTimer = useHourglassStore((state) => state.stopTimer);

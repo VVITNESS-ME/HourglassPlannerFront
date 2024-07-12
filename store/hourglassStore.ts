@@ -2,8 +2,11 @@ import { create } from 'zustand';
 import Cookies from 'js-cookie';
 
 interface DailyData {
-  date: string;
-  totalBurst: number;
+  categoryName : string;
+  start : Date;
+  end : Date;
+  burst : number;
+  color : string;
 }
 
 interface TimeState {
@@ -38,7 +41,8 @@ interface TimeState {
   setPause: () => void;
   setResume: () => void;
   setTid: (tId: number | null) => void;
-  setResultModalOpen: (modalState: boolean) => void;
+  openResultModal: () => void;
+  closeResultModal: () => void;
   setDailyData: (dailyData: DailyData[]) => void;
 }
 
@@ -385,7 +389,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   checkAndStopTimer: () => {
     const { timeBurst, timeGoal } = get();
     if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
-      get().setResultModalOpen(true); // 결과 모달을 열도록 설정
+      get().openResultModal(); // 결과 모달을 열도록 설정
     }
   },
   initialize: () => {
@@ -430,8 +434,13 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     saveStateToCookies(newState);
     return newState;
   }),
-  setResultModalOpen: (modalState: boolean) => set((state) => {
-    const newState = { ...state, resultModalOpen: modalState};
+  openResultModal: () => set((state) => {
+    const newState = { ...state, resultModalOpen: true};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  closeResultModal: () => set((state) => {
+    const newState = { ...state, resultModalOpen: false};
     saveStateToCookies(newState);
     return newState;
   }),

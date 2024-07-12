@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   const [selectedActivity, setSelectedActivity] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
-  const {dailyData, setDailyData, closeModal, stopTimer, setResultModalOpen } = useHourglassStore();
+  const {dailyData, setDailyData, closeModal, stopTimer, openResultModal } = useHourglassStore();
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
     // Calculate the new ID
@@ -83,7 +83,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
     try {
       const result = await stopTimer(selectedActivity, rating, description);
       console.log(result);
-      setResultModalOpen(true);
+      openResultModal();
       setDailyData(result);
       console.log(result);
     } catch (error) {
