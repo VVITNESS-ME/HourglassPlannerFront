@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
+import {useCallback} from "react";
 
 interface DailyData {
   categoryName : string;
@@ -24,6 +25,7 @@ interface TimeState {
   resultModalOpen: boolean;
   dailyData: DailyData[];
   taskName: string | '';
+  checkHourglassInProgress: boolean;
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
@@ -46,6 +48,7 @@ interface TimeState {
   closeResultModal: () => void;
   setDailyData: (dailyData: DailyData[]) => void;
   setTaskName: (taskName : string) => void;
+  setCheckHourglassInProgress: (isChecked: boolean)=>void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -112,6 +115,29 @@ const sendStartDataToServer = async (data: {
   } catch (error) {
     console.error('Error:', error);
     return null;
+  }
+};
+
+export const fetchHourglassInProgress = async () => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/progress`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if(data.message !== "hourglass is not in progress"){
+
+      }
+      console.log(data);
+    } else {
+      console.error('Failed to fetch user categories');
+    }
+  } catch (error) {
+    console.error('Error fetching user categories', error);
   }
 };
 
@@ -269,6 +295,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   resultModalOpen: false,
   dailyData: [],
   taskName: '',
+  checkHourglassInProgress: false,
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -448,6 +475,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         resultModalOpen: false,
         dailyData: [],
         taskName: parsedState.taskName || '',
+        checkHourglassInProgress: parsedState.taskName || false,
       });
     } else {
       set({
@@ -465,6 +493,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         resultModalOpen: false,
         dailyData: [],
         taskName: '',
+        checkHourglassInProgress: false,
       });
     }
   },
@@ -490,6 +519,11 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   }),
   setTaskName: (taskName: string) => set((state) => {
     const newState = { ...state, taskName: taskName};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  setCheckHourglassInProgress: (isChecked: boolean) => set((state) => {
+    const newState = { ...state, checkHourglassInProgress: isChecked};
     saveStateToCookies(newState);
     return newState;
   }),

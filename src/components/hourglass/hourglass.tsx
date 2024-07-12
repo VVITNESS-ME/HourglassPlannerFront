@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import TimerSelector from './timerSelector';
 import HourglassAni from './hourglassAni';
 import TimerRunning from './timerRunning';
-import { useHourglassStore } from '../../../store/hourglassStore';
+import { useHourglassStore, fetchHourglassInProgress } from '../../../store/hourglassStore';
 import DailyDataModal from "@/components/hourglass/dailyDataModal";
 
 const Hourglass: React.FC = () => {
@@ -17,10 +17,15 @@ const Hourglass: React.FC = () => {
   const toggleBBMode = useHourglassStore((state) => state.toggleBBMode);
   const resultModalOpen = useHourglassStore((state) => state.resultModalOpen);
   const closeResultModal = useHourglassStore((state) => state.closeResultModal);
+  const checkHourglassInProgress = useHourglassStore((state) => state.checkHourglassInProgress);
+  const setCheckHourglassInProgress = useHourglassStore(state => state.setCheckHourglassInProgress);
   useEffect(() => {
     initialize();
+    if(!checkHourglassInProgress){
+      fetchHourglassInProgress();
+      setCheckHourglassInProgress(true);
+    }
   }, [initialize]);
-
   if (!isInitialized) {
     return <div>Loading...</div>; // 초기화 중일 때 로딩 상태 표시
   }
