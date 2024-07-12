@@ -7,6 +7,7 @@ import TodoModal from './todoModal';
 import CategoryModal from '../mypage/profile/categoryModal';
 import { Task, UserCategory } from '@/type/types';
 import { useHourglassStore } from '../../../store/hourglassStore';
+import Cookies from 'js-cookie';
 
 interface TodayTasksProps {
   tasks: Task[];
@@ -15,13 +16,17 @@ interface TodayTasksProps {
 }
 
 const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete }) => {
+  const timerState = Cookies.get('timerState');
+  const parsedState = timerState ? JSON.parse(timerState) : {};
+  const initialTaskId = parsedState.tId || null;
+  const initialTaskName = parsedState.taskName || '';
   const [isTodoModalOpen, setIsTodoModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [selectedTaskName, setSelectedTaskName] = useState('');
-  const [selectedTask, setSelectedTask] = useState<number | null>(null);
+  const [selectedTaskName, setSelectedTaskName] = useState(initialTaskName);
+  const [selectedTask, setSelectedTask] = useState<number | null>(initialTaskId);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
-  const setTid = useHourglassStore(state => state.setTid);
-  const setTaskName =  useHourglassStore(state => state.setTaskName);
+  const setTid = useHourglassStore((state) => state.setTid);
+  const setTaskName = useHourglassStore((state) => state.setTaskName);
 
   useEffect(() => {
     if (selectedTask != null) {
@@ -41,17 +46,19 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
-        setTasks(data.data.schedules.map((task: any) => ({
-          color: task.color,
-          taskId: task.taskId,
-          title: task.title,
-          userCategoryName: task.userCategoryName,
-        })));
+        setTasks(
+          data.data.schedules.map((task: any) => ({
+            color: task.color,
+            taskId: task.taskId,
+            title: task.title,
+            userCategoryName: task.userCategoryName,
+          }))
+        );
       } else {
         console.error('Failed to fetch schedules');
       }
@@ -67,21 +74,23 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
-        setUserCategories(data.data.userCategoriesWithName.map((category: any) => ({
-          userCategoryId: category.userCategoryId,
-          categoryName: category.categoryName,
-          color: category.color,
-        })));
+        setUserCategories(
+          data.data.userCategoriesWithName.map((category: any) => ({
+            userCategoryId: category.userCategoryId,
+            categoryName: category.categoryName,
+            color: category.color,
+          }))
+        );
       } else {
         console.error('Failed to fetch user categories');
       }
     } catch (error) {
-      console.error('Error fetching user categories:', error);
+      console.error('Error fetching user categories', error);
     }
   }, []);
 
@@ -130,7 +139,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
 
   const handleTaskClick = (taskId: number, taskName: string) => {
     setSelectedTask(taskId === selectedTask ? null : taskId);
-    setSelectedTaskName(taskName);
+    setSelectedTaskName(taskId === selectedTask ? '' : taskName);
   };
 
   useEffect(() => {
@@ -139,7 +148,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   }, [fetchTasks, fetchUserCategories]);
 
   return (
-    <div className='border rounded-lg bg-white p-4'>
+    <div className="border rounded-lg bg-white p-4">
       <CardLayout title="오늘의 할일">
         <ul>
           {tasks.map((task) => (
@@ -153,10 +162,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
         </ul>
       </CardLayout>
       <div className="flex justify-center mt-2">
-        <button
-          className="text-gray-500 p-2"
-          onClick={() => setIsTodoModalOpen(true)}
-        >
+        <button className="text-gray-500 p-2" onClick={() => setIsTodoModalOpen(true)}>
           + 할 일 추가
         </button>
       </div>
