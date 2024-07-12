@@ -57,6 +57,7 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTask
       if (response.ok) {
         console.log('Task completed successfully');
         onTaskComplete(taskId);
+        fetchCompletedTasks();
       } else {
         console.error('Failed to complete task');
       }
