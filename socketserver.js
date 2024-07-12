@@ -10,69 +10,64 @@ const server = https.createServer({
     cert: fs.readFileSync('./server.crt'),
 }, app);
 
-
 // CORS 설정
 app.use(cors());
 
 const rooms = {};  // 각 경로별 클라이언트를 저장하기 위한 객체
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ noServer: true });
 
 const createRoom = (path) => {
     if (!rooms[path]) {
-        rooms[path] = new WebSocket.Server({server})
-        rooms[path].on('connection', function connection(ws) {
-            // 웹소켓 연결 처리 로직
-            ws.on('message', (data, isBinary) => {
-                // Broadcast to everyone else.
-                const message = isBinary ? data : data.toString();
-                console.log("you've got message!");
-                console.log(message);
-                wss.clients.forEach((client) => {
-                  if (client !== ws && client.readyState === WebSocket.OPEN) {
-                    client.send(message);
-                  }
-                });
-              });
-            console.log("연결됐음")
-        });
-
+        rooms[path] = new Set();
     }
-}
+};
 
-const PORT = process.env.PORT || 3001;
-
-server.on('upgrade', (request, socket, head) => {
-    const pathname = request.url;
+const handleWebSocketConnection = (ws, request) => {
+    const pathname = new URL(request.url, `https://${request.headers.host}`).pathname;
 
     if (!rooms[pathname]) {
         createRoom(pathname);
     }
 
-    rooms[pathname].handleUpgrade(request, socket, head, (ws) => {
-        rooms[pathname].emit('connection', ws, request);
+    rooms[pathname].add(ws);
+
+    ws.on('message', (data, isBinary) => {
+        const message = isBinary ? data : data.toString();
+        console.log(message);
+        // 동일 경로의 모든 클라이언트에게 메시지를 브로드캐스트
+        rooms[pathname].forEach((client) => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+
+    ws.on('close', () => {
+        rooms[pathname].delete(ws);
+        if (rooms[pathname].size === 0) {
+            delete rooms[pathname];
+        }
+    });
+};
+
+// WebSocket 서버 연결 처리
+wss.on('connection', handleWebSocketConnection);
+
+server.on('upgrade', (request, socket, head) => {
+    const pathname = new URL(request.url, `https://${request.headers.host}`).pathname;
+
+    if (!rooms[pathname]) {
+        createRoom(pathname);
+    }
+
+    wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+        console.log("연결됐음")
     });
 });
 
+const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, function() {
     console.log(`HTTPS 서버가 포트 ${PORT}에서 실행 중입니다.`);
 });
-
-
-
-setInterval(() => {
-  server.getConnections((err, count) => {
-      if (err) {
-          console.error('Error getting connections:', err);
-      } else {
-          console.log(`Current connections: ${count}`);
-      }
-
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(count);
-        }
-      });
-  });
-  
-}, 5000); // 매 5초마다 연결된 소켓 수를 확인
