@@ -1,5 +1,6 @@
-'use client';
-import { useParams } from 'next/navigation';
+'use client'
+
+import { useParams } from "next/navigation";
 import React, { useState, useEffect, useRef } from 'react';
 import LocalVideo from "@/components/general/localVideo";
 import PeerVideo from "@/components/general/peerVideo";
@@ -12,19 +13,24 @@ const VideoPage: React.FC = () => {
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [peerConnections, setPeerConnections] = useState<{[id: string]: RTCPeerConnection}>({});
-  const [myId, setMyId] = useState<string>('');
-  const [peerId, setPeerId] = useState<string>('');
+  const [myId, setMyId] = useState<string | null>(null);
   const [remoteStreams, setRemoteStreams] = useState<{[id: string]: MediaStream}>({});
   const signalingServerRef = useRef<WebSocket | null>(null);
+  const myIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    myIdRef.current = myId;
+    console.log('myId has been updated:', myId);  // 상태 업데이트 확인을 위해 로그 추가
+  }, [myId]);
 
   const sendToServer = (message: any) => {
-    signalingServerRef.current?.send(JSON.stringify(message));
+    signalingServerRef.current?.send(JSON.stringify({ ...message, peerId: myIdRef.current }));
   };
 
   useEffect(() => {
     const startMedia = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         setLocalStream(stream);
 
         if (!signalingServerRef.current) {
@@ -34,12 +40,14 @@ const VideoPage: React.FC = () => {
 
           signalingServer.onopen = () => {
             console.log('WebSocket connection established.');
-            // sendToServer({ type: 'join', roomId });
           };
 
-          signalingServerRef.current.onmessage = (message) => {
+          signalingServer.onmessage = (message) => {
             const data = JSON.parse(message.data);
-    
+
+            // 디버깅을 위해 로그 추가
+            console.log('Received message:', data);
+
             switch (data.type) {
               case 'offer':
                 handleOffer(data.peerId, data.offer);
@@ -54,10 +62,9 @@ const VideoPage: React.FC = () => {
                 handleJoin(data.peerId);
                 break;
               case 'peerId':
+                // 디버깅을 위해 로그 추가
+                console.log('Setting myId:', data.peerId);
                 setMyId(data.peerId);
-                // setPeerId(data.peerId)
-                console.log(`in function ${peerId}`);
-                console.log("got myId: " + data.peerId);
                 break;
               default:
                 break;
@@ -70,14 +77,7 @@ const VideoPage: React.FC = () => {
     };
 
     startMedia();
-  }, []);
-
-
-  useEffect(() => {
-    if (myId) {
-      console.log("myId has been set: " + myId);
-    }
-  }, [myId]);
+  }, []);  // roomId 제거
 
   const createPeerConnection = (peerId: string) => {
     const pc = new RTCPeerConnection({
@@ -88,7 +88,7 @@ const VideoPage: React.FC = () => {
 
     pc.onicecandidate = (event) => {
       if (event.candidate) {
-        sendToServer({ type: 'candidate', candidate: event.candidate, peerId: myId });
+        sendToServer({ type: 'candidate', candidate: event.candidate });
       }
     };
 
@@ -106,9 +106,7 @@ const VideoPage: React.FC = () => {
     await pc.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    sendToServer({ type: 'answer', answer, peerId: myId});
-    console.log("answer sent. myId is")
-    console.log(myId);
+    sendToServer({ type: 'answer', answer });
     setPeerConnections(prevConnections => ({ ...prevConnections, [peerId]: pc }));
   };
 
@@ -130,14 +128,23 @@ const VideoPage: React.FC = () => {
     const pc = createPeerConnection(peerId);
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    sendToServer({ type: 'offer', offer, peerId: myId});
-    console.log("offer sent. myId is")
-    console.log(myId);
+    sendToServer({ type: 'offer', offer });
     setPeerConnections(prevConnections => ({ ...prevConnections, [peerId]: pc }));
   };
 
-  const checkMyId = () => {
+  // 상태 업데이트 예제 추가
+  const handleButtonClick = () => {
     setMyId('examplePeerId');
+  };
+
+  const handleStreamReady = (stream: MediaStream) => {
+    if (peerConnections) {
+      // stream.getTracks().forEach((track) => {
+      //   if (!peerConnection.getSenders().find((sender) => sender.track === track)) {
+      //     peerConnection.addTrack(track, stream);
+      //   }
+      // });
+    }
   };
 
   return (
@@ -150,11 +157,11 @@ const VideoPage: React.FC = () => {
           ))}
         </div>
         <div className="flex flex-col w-full md:w-2/4 p-4 justify-center">
-          {/* <LocalVideo stream={localStream} onStreamReady={handleStreamReady} /> */}
+          <LocalVideo stream={localStream} onStreamReady={handleStreamReady}/>
         </div>
         <div className="flex flex-col w-full md:w-1/4 p-4 space-y-4"><Hourglass/></div>
       </div>
-      <button onClick={checkMyId}>Set Example Peer ID</button>
+      <button onClick={handleButtonClick}>Set Example Peer ID</button>  {/* 상태 업데이트 예제 버튼 */}
     </div>
   );
 };
