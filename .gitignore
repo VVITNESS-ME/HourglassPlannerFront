@@ -39,3 +39,10 @@ next-env.d.ts
 yarn.lock
 server.js
 next.config.mjs
+
+# local 
+dev.cert
+dev.key
+server.key
+server.cert
+server-local.js
