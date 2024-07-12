@@ -7,6 +7,7 @@ import { useHourglassStore } from '../../../store/hourglassStore';
 
 // Register the elements
 Chart.register(ArcElement, Tooltip, Legend);
+
 interface DailyData {
   categoryName: string;
   start: Date;
@@ -49,31 +50,35 @@ const DailyDataModal: React.FC<DailyDataModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="flex flex-col items-center mb-8 w-full relative">
-      <button
-        className="absolute top-0 right-0 mt-4 mr-4 text-gray-500 hover:text-gray-700"
-        onClick={onClose}
-      >
-        X
-      </button>
-      <div className="flex flex-col items-center mb-4">
-        <h2 className="text-2xl font-bold mb-2">Daily Data Summary</h2>
-        <div className="flex space-x-2">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-10">
+      <div className="bg-white rounded-lg overflow-hidden shadow-lg w-96">
+        <div className="p-6">
+          <div className='flex w-full justify-between'>
+            <div className="text-lg font-bold mb-4">Daily Data Summary</div>
+            <button
+              className="text-gray-500 hover:text-gray-700"
+              onClick={onClose}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" color='#aaaaaa' viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div className="flex flex-col items-center mb-4">
+            <h3 className="text-xl font-bold mb-4">오늘의 학습시간: {totalBurst}</h3>
+            <p className="text-lg font-medium mb-4">카테고리별 통계</p>
+            <div className="w-80">
+              <Pie data={pieChartData} />
+            </div>
+          </div>
+          <button
+            className="mt-4 px-4 py-2 bg-sandy-2 text-white rounded hover:bg-sandy-3 w-full"
+            onClick={onClose}
+          >
+            확인
+          </button>
         </div>
       </div>
-      <div className="flex flex-col items-center">
-        <h3 className="text-xl font-bold mb-4">오늘의 학습시간: {totalBurst}</h3>
-        <p className="text-lg font-medium mb-4">카테고리별 통계</p>
-        <div className="w-80">
-          <Pie data={pieChartData}/>
-        </div>
-      </div>
-      <button
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        onClick={onClose}
-      >
-        확인
-      </button>
     </div>
   );
 };
