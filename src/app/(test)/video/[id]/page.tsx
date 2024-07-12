@@ -1,40 +1,50 @@
 'use client'
 import { useParams } from "next/navigation";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LocalVideo from "@/components/general/localVideo";
 import PeerVideo from "@/components/general/peerVideo";
 import Hourglass from "@/components/hourglass/hourglass";
+import VideoChatRoom from "@/components/together/videoChatRoom";
 
-const socketURL = "wss://hourglass.ninja:8889/";
-const signalingServer = new WebSocket(socketURL);
-const sendToServer = (message: any) => {
-  signalingServer.send(JSON.stringify(message));
-};
-
-signalingServer.onopen = () => {
-  console.log('WebSocket connection established.');
-};
 
 const VideoPage: React.FC = () => {
   const params = useParams();
-  const roomId = params?.id;
+  const roomId = params?.room_id;
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
+  const signalingServerRef = useRef<WebSocket | null>(null);
+
+
+  // 시그널 서버에 메시지 전송하는 함수
+  const sendToServer = (message: any) => {
+    signalingServerRef.current?.send(JSON.stringify(message));
+  };
+
+  // peer connection 생성자
+  const pc = new RTCPeerConnection(
+    {
+    iceServers: [
+    {urls: 'stun:stun.l.google.com:19302',},
+    ],
+  }
+  );
+
+  const closeExistingPeerConnection = () => {
+    if (peerConnection) {
+      peerConnection.close();
+      setPeerConnection(null);
+      setRemoteStream(null);
+      console.log('Existing peer connection closed.');
+    }
+  };
 
   useEffect(() => {
     const startMedia = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         setLocalStream(stream);
-        const pc = new RTCPeerConnection(
-          {
-          iceServers: [
-          {urls: 'stun:stun.l.google.com:19302',},
-          ],
-        }
-        );
 
         pc.onicecandidate = (event) => {
           if (event.candidate) {
@@ -54,9 +64,23 @@ const VideoPage: React.FC = () => {
       }
     };
 
-    startMedia();
-  }, []);
+    if (!signalingServerRef.current) {
+      const socketURL = "wss://jungle5105.xyz:8889/";
+      const signalingServer = new WebSocket(socketURL + roomId);
+      signalingServerRef.current = signalingServer;
 
+      signalingServer.onopen = () => {
+        console.log('WebSocket connection established.');
+      };
+      startMedia();
+    }
+    else {
+      closeExistingPeerConnection();
+      startMedia();
+    }
+
+  }, []);
+  
   const createOffer = async () => {
     if (peerConnection) {
       const offer = await peerConnection.createOffer();
@@ -76,6 +100,7 @@ const VideoPage: React.FC = () => {
 
   // Handle messages from signaling server
   useEffect(() => {
+    console.log(peerConnection)
     const handleMessage = (message: any) => {
       const data = JSON.parse(message.data);
 
@@ -88,24 +113,32 @@ const VideoPage: React.FC = () => {
         peerConnection?.addIceCandidate(candidate);
       }
     };
-
-    signalingServer.onmessage = handleMessage;
+    if (signalingServerRef.current) signalingServerRef.current.onmessage = handleMessage;
 
   }, [peerConnection]);
 
+  function logpeer() {
+    console.log(peerConnection);
+    return;
+  }
+
+  // return (<VideoChatRoom />)
+
   return (
-    <div className="items-center justify-center">
+    <div className="container mx-auto max-w-fit">
       <h1>WebRTC Video Chat Room #{roomId}</h1>
       <button onClick={createOffer}>Start Call</button>
-      <div className="items-center justify-between">
-        <div className="flex absolute">
+      <div className="flex flex-col md:flex-row justify-evenly">
+        <div className="flex flex-col w-full md:w-1/4 space-y-4">
           <PeerVideo stream={remoteStream} />
         </div>
-        <div className="flex absolute w-screen items-center justify-center">
+        <div className="flex flex-col w-full md:w-2/4 p-4 justify-center">
           <LocalVideo stream={localStream} />
         </div>
-        <div className="flax absolute right-0"><Hourglass /></div>
+        <div className="flex flex-col w-full md:w-1/4 p-4 space-y-4"><Hourglass/></div>
       </div>
+      <button onClick={logpeer}>check console to see peerConnection</button>
+
     </div>
   );
 };
