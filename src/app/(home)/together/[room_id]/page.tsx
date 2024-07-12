@@ -20,6 +20,15 @@ const VideoPage: React.FC = () => {
     signalingServerRef.current?.send(JSON.stringify(message));
   };
 
+  const closeExistingPeerConnection = () => {
+    if (peerConnection) {
+      peerConnection.close();
+      setPeerConnection(null);
+      setRemoteStream(null);
+      console.log('Existing peer connection closed.');
+    }
+  };
+
   useEffect(() => {
     const startMedia = async () => {
       try {
@@ -59,9 +68,14 @@ const VideoPage: React.FC = () => {
 
       signalingServer.onopen = () => {
         console.log('WebSocket connection established.');
-      };}
+      };
+      startMedia();
+    }
+    else {
+      closeExistingPeerConnection();
+      startMedia();
+    }
 
-    startMedia();
   }, []);
   
   const createOffer = async () => {
