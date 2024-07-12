@@ -17,18 +17,22 @@ interface TodayTasksProps {
 const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete }) => {
   const [isTodoModalOpen, setIsTodoModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [selectedTaskName, setSelectedTaskName] = useState('');
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
   const setTid = useHourglassStore(state => state.setTid);
+  const setTaskName =  useHourglassStore(state => state.setTaskName);
 
   useEffect(() => {
     if (selectedTask != null) {
       setTid(selectedTask);
+      setTaskName(selectedTaskName);
     } else {
       setTid(null);
+      setTaskName('');
     }
     console.log(selectedTask);
-  }, [selectedTask, setTid]);
+  }, [selectedTask, setTid, setTaskName, selectedTaskName]);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -124,8 +128,9 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
     }
   };
 
-  const handleTaskClick = (taskId: number) => {
+  const handleTaskClick = (taskId: number, taskName: string) => {
     setSelectedTask(taskId === selectedTask ? null : taskId);
+    setSelectedTaskName(taskName);
   };
 
   useEffect(() => {
@@ -175,7 +180,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
 const DraggableTask: React.FC<{
   task: Task;
   selectedTask: number | null;
-  onTaskClick: (taskId: number) => void;
+  onTaskClick: (taskId: number, taskName: string) => void;
 }> = ({ task, selectedTask, onTaskClick }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'task',
@@ -191,11 +196,10 @@ const DraggableTask: React.FC<{
   return (
     <li
       ref={ref}
-      key={task.taskId}
       className={`flex justify-between items-center mb-2 p-2 border rounded-lg cursor-pointer ${
         selectedTask === task.taskId ? 'bg-gray-300' : ''
       } ${isDragging ? 'opacity-50' : ''}`}
-      onClick={() => onTaskClick(task.taskId)}
+      onClick={() => onTaskClick(task.taskId, task.title)}
     >
       <span>{task.title}</span>
       <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>

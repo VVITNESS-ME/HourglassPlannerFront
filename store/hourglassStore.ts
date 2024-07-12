@@ -23,6 +23,7 @@ interface TimeState {
   modalOpen: boolean;
   resultModalOpen: boolean;
   dailyData: DailyData[];
+  taskName: string | '';
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
@@ -44,6 +45,7 @@ interface TimeState {
   openResultModal: () => void;
   closeResultModal: () => void;
   setDailyData: (dailyData: DailyData[]) => void;
+  setTaskName: (taskName : string) => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -266,6 +268,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   isInitialized: false,
   resultModalOpen: false,
   dailyData: [],
+  taskName: '',
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -444,6 +447,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         isInitialized: true,
         resultModalOpen: false,
         dailyData: [],
+        taskName: parsedState.taskName || '',
       });
     } else {
       set({
@@ -460,6 +464,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         isInitialized: true,
         resultModalOpen: false,
         dailyData: [],
+        taskName: '',
       });
     }
   },
@@ -480,6 +485,11 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   }),
   setDailyData: (dailyData: DailyData[]) => set((state) => {
     const newState = { ...state, dailyData: dailyData};
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  setTaskName: (taskName: string) => set((state) => {
+    const newState = { ...state, taskName: taskName};
     saveStateToCookies(newState);
     return newState;
   }),
