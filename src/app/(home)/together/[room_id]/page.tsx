@@ -13,6 +13,7 @@ const VideoPage: React.FC = () => {
   let myId: string = "";
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [peerConnections, setPeerConnections] = useState<{[peerId: string]:RTCPeerConnection}>({});
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
   const signalingServerRef = useRef<WebSocket | null>(null);
 
@@ -20,14 +21,14 @@ const VideoPage: React.FC = () => {
     signalingServerRef.current?.send(JSON.stringify(message));
   };
 
-  const closeExistingPeerConnection = () => {
-    if (peerConnection) {
-      peerConnection.close();
-      setPeerConnection(null);
-      setRemoteStream(null);
-      console.log('Existing peer connection closed.');
-    }
-  };
+  // const closeExistingPeerConnection = () => {
+  //   if (peerConnection) {
+  //     peerConnection.close();
+  //     setPeerConnection(null);
+  //     setRemoteStream(null);
+  //     console.log('Existing peer connection closed.');
+  //   }
+  // };
 
   useEffect(() => {
     const startMedia = async () => {
@@ -70,10 +71,10 @@ const VideoPage: React.FC = () => {
       };
       startMedia();
     }
-    else {
-      closeExistingPeerConnection();
-      startMedia();
-    }
+    // else {
+    //   closeExistingPeerConnection();
+    //   startMedia();
+    // }
 
   }, []);
   

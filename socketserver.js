@@ -36,12 +36,13 @@ const handleWebSocketConnection = (ws, request) => {
     rooms[pathname].add(ws);
 
     ws.on('message', (data, isBinary) => {
-        const message = isBinary ? data : data.toString();
-        console.log(message);
+        const message = isBinary ? data : JSON.parse(data);
+        // console.log(message);
+        console.log(JSON.stringify({...message, peerId: clients.get(ws)}))
         // 동일 경로의 모든 클라이언트에게 메시지를 브로드캐스트
         rooms[pathname].forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(message);
+                client.send(JSON.stringify({...message, peerId: clients.get(ws)}));
             }
         });
     });
@@ -67,12 +68,12 @@ server.on('upgrade', (request, socket, head) => {
         wss.emit('connection', ws, request);
         const peerId = uuidv4();
         clients.set(ws, peerId);
-        console.log("연결됐음. peerID: " + peerId);
+        console.log("연결됐음. peerID: " + clients.get(ws));
         ws.send(JSON.stringify({ type: 'peerId', peerId }));
 
         rooms[pathname].forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({ type: 'join', peerId }));
+                client.send(JSON.stringify({ type: 'join', peerId: clients.get(ws) }));
             }
         });
     });
