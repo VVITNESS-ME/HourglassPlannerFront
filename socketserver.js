@@ -3,6 +3,8 @@ const https = require('https');
 const WebSocket = require('ws');
 const fs = require('fs');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
+
 
 const app = express();
 const server = https.createServer({
@@ -15,6 +17,8 @@ app.use(cors());
 
 const rooms = {};  // 각 경로별 클라이언트를 저장하기 위한 객체
 const wss = new WebSocket.Server({ noServer: true });
+
+const clients = new Map();
 
 const createRoom = (path) => {
     if (!rooms[path]) {
@@ -55,14 +59,22 @@ wss.on('connection', handleWebSocketConnection);
 
 server.on('upgrade', (request, socket, head) => {
     const pathname = new URL(request.url, `https://${request.headers.host}`).pathname;
-
     if (!rooms[pathname]) {
         createRoom(pathname);
     }
 
     wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
-        console.log("연결됐음")
+        const peerId = uuidv4();
+        clients.set(ws, peerId);
+        console.log("연결됐음. peerID: " + peerId);
+        ws.send(JSON.stringify({ type: 'peerId', peerId }));
+
+        rooms[pathname].forEach((client) => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({ type: 'join', peerId }));
+            }
+        });
     });
 });
 
