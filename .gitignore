@@ -46,3 +46,6 @@ dev.key
 server.key
 server.cert
 server-local.js
+
+server.ts
+server.js
