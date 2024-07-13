@@ -10,7 +10,7 @@ import VideoChatRoom from "@/components/together/videoChatRoom";
 const VideoPage: React.FC = () => {
   const params = useParams();
   const roomId = params?.room_id;
-
+  let myId: string = "";
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
@@ -107,6 +107,8 @@ const VideoPage: React.FC = () => {
       } else if (data.type === 'candidate') {
         const candidate = new RTCIceCandidate(data.candidate);
         peerConnection?.addIceCandidate(candidate);
+      } else if (data.type === 'peerId') {
+        myId = data.peerId;
       }
     };
     if (signalingServerRef.current) signalingServerRef.current.onmessage = handleMessage;
@@ -117,8 +119,6 @@ const VideoPage: React.FC = () => {
     console.log(peerConnection);
     return;
   }
-
-  // return (<VideoChatRoom />)
 
   return (
     <div className="container mx-auto max-w-fit">
