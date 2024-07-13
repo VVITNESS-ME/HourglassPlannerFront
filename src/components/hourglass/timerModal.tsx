@@ -105,7 +105,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
               </svg>
             </div>
           </div>
-          {tId === null && (
+          {(tId === null || tId === undefined) && (
             <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
               {userCategories.map((category) => (
                 <label key={category.userCategoryId} className="block p-2 border-b border-gray-300" style={{ backgroundColor: category.color }}>
