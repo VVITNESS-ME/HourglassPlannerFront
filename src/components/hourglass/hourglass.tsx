@@ -22,16 +22,12 @@ const Hourglass: React.FC = () => {
 
   useEffect(() => {
     const beforeCondition = Cookies.get('timerState');
+    console.log(beforeCondition)
     if (beforeCondition) {
       try {
         const parsedState = JSON.parse(beforeCondition);
-        if (parsedState.hId) {
-          initialize();
-        } else {
-          fetchHourglassInProgress();
-        }
+        initialize();
       } catch (e) {
-        console.error("Failed to parse timer state from cookies:", e);
         fetchHourglassInProgress();
       }
     } else {
