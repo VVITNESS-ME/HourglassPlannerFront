@@ -37,6 +37,9 @@ const DailyDataModal: React.FC<DailyDataModalProps> = ({ isOpen, onClose }) => {
 
   const totalBurst = aggregatedData.reduce((sum, item) => sum + item.burst, 0);
 
+  const hours = Math.floor(totalBurst / 3600);
+  const minutes = Math.floor((totalBurst % 3600) / 60);
+
   const pieChartData = {
     labels: aggregatedData.map(item => item.categoryName),
     datasets: [
@@ -65,7 +68,9 @@ const DailyDataModal: React.FC<DailyDataModalProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
           <div className="flex flex-col items-center mb-4">
-            <h3 className="text-xl font-bold mb-4">오늘의 학습시간: {totalBurst} 분</h3>
+            <h3 className="text-xl font-bold mb-4">
+              오늘의 학습시간: {hours} 시간 {minutes} 분
+            </h3>
             <p className="text-lg font-medium mb-4">카테고리별 통계</p>
             <div className="w-80">
               <Pie data={pieChartData} />
