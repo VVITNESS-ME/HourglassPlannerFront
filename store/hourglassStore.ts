@@ -461,7 +461,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
 
       if (response.ok) {
         const data = await response.json();
-        if (data.data.hid !== null) {
+        if (data.data && data.data.hid !== null) {
           let timeDifference = 0;
           if (data.data.timeBurst !== null) {
             timeDifference = data.data.timeResume
@@ -486,6 +486,25 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
             isInitialized: true,
           }));
           console.log(get()); // Log the current state
+        }
+        else {
+          set({
+            timeStart: null,
+            timeBurst: null,
+            timeGoal: null,
+            timeEnd: null,
+            isRunning: false,
+            bbMode: false,
+            pause: false,
+            hId: null,
+            tId: null,
+            modalOpen: false,
+            isInitialized: true,
+            resultModalOpen: false,
+            dailyData: [],
+            taskName: '',
+            checkHourglassInProgress: false,
+          });
         }
       } else {
         console.error('Failed to fetch hourglass progress');

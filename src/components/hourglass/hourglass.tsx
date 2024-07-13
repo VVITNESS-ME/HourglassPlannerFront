@@ -26,6 +26,7 @@ const Hourglass: React.FC = () => {
     if (beforeCondition) {
       try {
         const parsedState = JSON.parse(beforeCondition);
+        console.log(parsedState);
         initialize();
       } catch (e) {
         fetchHourglassInProgress();
