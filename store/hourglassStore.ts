@@ -464,7 +464,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         if (data.data && data.data.hid !== null) {
           let timeDifference = 0;
           if (data.data.timeBurst !== null) {
-            timeDifference = data.data.timeResume
+            timeDifference = data.data.timeBurst
           } else {
             if (data.data.timeResume !== null) {
               const resumeTime = new Date(data.data.timeResume);
@@ -479,13 +479,14 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           set((state) => ({
             ...state,
             hId: data.data.hid,
-            timeGoal: data.data.timeGoal * 1000,
+            tId: data.data.tId,
+            timeGoal: data.data.timeGaol * 1000,
             timeStart: new Date(data.data.timeStart),
             timeBurst: timeDifference,
             isRunning: true,
             isInitialized: true,
           }));
-          console.log(get()); // Log the current state
+          console.log(get());// Log the current state
         }
         else {
           set({
