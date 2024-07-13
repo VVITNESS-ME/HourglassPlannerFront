@@ -5,7 +5,7 @@ export interface Hourglass {
   categoryName: string;
   color: string;
   taskName: string;
-  description: string;
+  content: string;
   timeStart: string;
   timeEnd: string;
   timeBurst: number;

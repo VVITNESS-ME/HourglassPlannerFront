@@ -14,10 +14,8 @@ interface UserCategory {
 }
 
 const TimerRunning: React.FC = () => {
-  const timeStart = useHourglassStore((state) => state.timeStart);
   const timeBurst = useHourglassStore((state) => state.timeBurst);
   const timeGoal = useHourglassStore((state) => state.timeGoal);
-  const timeEnd = useHourglassStore((state) => state.timeEnd);
   const isRunning = useHourglassStore((state) => state.isRunning);
   const pause = useHourglassStore((state) => state.pause);
   const modalOpen = useHourglassStore((state) => state.modalOpen);

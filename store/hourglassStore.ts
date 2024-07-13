@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
 
+interface DailyData {
+  categoryName: string;
+  start: Date;
+  end: Date;
+  burst: number;
+  color: string;
+}
+
 interface TimeState {
   timeStart: Date | null;
   timeBurst: number | null;
@@ -10,8 +18,13 @@ interface TimeState {
   bbMode: boolean;
   pause: boolean;
   hId: number | null;
+  tId: number | null;
   isInitialized: boolean;
   modalOpen: boolean;
+  resultModalOpen: boolean;
+  dailyData: DailyData[];
+  taskName: string | '';
+  checkHourglassInProgress: boolean;
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
@@ -23,13 +36,19 @@ interface TimeState {
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
-  stopTimer: (categoryName: string, rating: number, content: string) => void;
+  stopTimer: (categoryName: string, rating: number, content: string) => Promise<any[]>;
   stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
   initialize: () => void;
-
   setPause: () => void;
   setResume: () => void;
+  setTid: (tId: number | null) => void;
+  openResultModal: () => void;
+  closeResultModal: () => void;
+  setDailyData: (dailyData: DailyData[]) => void;
+  setTaskName: (taskName: string) => void;
+  setCheckHourglassInProgress: (isChecked: boolean) => void;
+  fetchHourglassInProgress: () => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -47,49 +66,52 @@ const getToken = (): string | undefined => {
 const sendStartDataToServer = async (data: {
   timeStart: string | undefined;
   timeGoal: number | null;
+  tId: number | null;
+  fetchHourglassInProgress: () => void;
 }): Promise<number | null> => {
   const token = getToken();
   if (!token) {
     return null;
   }
-
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/start${data.tId ? `/${data.tId}` : ''}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
       body: JSON.stringify({
-        ...data,
+        timeStart: data.timeStart,
         timeGoal: data.timeGoal ? Math.floor(data.timeGoal / 1000) : null,
       }),
     });
     const responseData = await response.json();
-    console.log(responseData);
     if (!response.ok) {
       throw new Error(responseData.message || 'Failed to start timer');
     }
     return responseData.data.hid;
   } catch (error) {
     console.error('Error:', error);
+    data.fetchHourglassInProgress();
     return null;
   }
 };
 
 const sendTimeDataToServer = async (data: {
-  timeStart: string | undefined;
-  timeBurst: number | null;
   timeEnd: string | undefined;
-  hId: number | null;
-  categoryName: string;
+  hId: any;
+  timeStart: string | undefined;
+  timeBurst: any;
   rating: number;
+  categoryName: string;
+  tId: number | null;
   content: string;
-}) => {
+}): Promise<any[]> => {
+  console.log(data);
   const token = getToken();
   if (token) {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/end${data.tId ? `/${data.tId}` : ''}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,13 +127,13 @@ const sendTimeDataToServer = async (data: {
       if (!response.ok) {
         throw new Error(responseData.message || 'Failed to end timer');
       }
-
-      return responseData;
+      return responseData.data.todaySummery;
     } catch (error) {
       console.error('Error:', error);
-      return null;
+      return [];
     }
   }
+  return [];
 };
 
 const sendPauseSignalToServer = async (data: {
@@ -120,8 +142,9 @@ const sendPauseSignalToServer = async (data: {
   hId: number | null;
   timeBurst: number | null;
 }) => {
+  const token = getToken();
+  if (!token) return null;
   try {
-    const token = getToken();
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/pause`, {
       method: 'POST',
       headers: {
@@ -191,7 +214,12 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   pause: false,
   modalOpen: false,
   hId: null,
+  tId: null,
   isInitialized: false,
+  resultModalOpen: false,
+  dailyData: [],
+  taskName: '',
+  checkHourglassInProgress: false,
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -233,14 +261,14 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
 
-  setPause: () => set((state) =>  {
-    const newState = {...state , pause: true};
+  setPause: () => set((state) => {
+    const newState = { ...state, pause: true };
     saveStateToCookies(newState);
     return newState;
   }),
 
-  setResume: () => set((state) =>  {
-    const newState = {...state , pause: false};
+  setResume: () => set((state) => {
+    const newState = { ...state, pause: false };
     saveStateToCookies(newState);
     return newState;
   }),
@@ -257,7 +285,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeStart: state.timeStart?.toISOString(),
           timeGoal: state.timeGoal,
           hId: state.hId,
-          timeBurst: state.timeBurst
+          timeBurst: state.timeBurst,
         });
         if (hId) {
           const newState = { ...state, hId };
@@ -269,7 +297,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeStart: state.timeStart?.toISOString(),
           timeGoal: state.timeGoal,
           hId: state.hId,
-          timeBurst: state.timeBurst
+          timeBurst: state.timeBurst,
         });
         if (hId) {
           const newState = { ...state, hId };
@@ -295,6 +323,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       bbMode: get().bbMode,
       pause: false,
       hId: null,
+      tId: get().tId,
     };
     set(initialState);
     saveStateToCookies(initialState);
@@ -303,6 +332,8 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       const hId = await sendStartDataToServer({
         timeStart: currentTime.toISOString(),
         timeGoal: initialState.timeGoal,
+        tId: initialState.tId,
+        fetchHourglassInProgress: get().fetchHourglassInProgress,
       });
       if (hId) {
         const newState = { ...get(), hId };
@@ -318,32 +349,36 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     get().checkAndStopTimer();
     return newState;
   }),
-  stopTimerWithNOAuth:() => set((state) => {
+  stopTimerWithNOAuth: () => set((state) => {
     const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
     removeStateFromCookies();
     return newState;
   }),
-  stopTimer: (categoryName: string, rating: number, content: string) => set((state) => {
+  stopTimer: async (categoryName: string, rating: number, content: string): Promise<any[]> => {
+    const state = get();
     const newState = { ...state, isRunning: false, timeEnd: new Date(), modalOpen: false };
+    set(newState);
     removeStateFromCookies();
     const token = getToken();
+    let studyResult: any[] = [];
     if (token) {
-      sendTimeDataToServer({
+      studyResult = await sendTimeDataToServer({
         timeStart: state.timeStart?.toISOString(),
         timeBurst: state.timeBurst,
         timeEnd: newState.timeEnd?.toISOString(),
         hId: state.hId,
+        tId: state.tId,
         categoryName,
         rating,
         content,
       });
     }
-    return newState;
-  }),
+    return studyResult;
+  },
   checkAndStopTimer: () => {
     const { timeBurst, timeGoal } = get();
     if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
-      get().popUpModal();
+      get().openResultModal(); // 결과 모달을 열도록 설정
     }
   },
   initialize: () => {
@@ -357,10 +392,15 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeEnd: parsedState.timeEnd ? new Date(parsedState.timeEnd) : null,
         isRunning: parsedState.isRunning || false,
         bbMode: parsedState.bbMode || false,
+        tId: parsedState.tId || null,
         pause: parsedState.pause || false,
         hId: parsedState.hId || null,
         modalOpen: parsedState.modalOpen || false,
         isInitialized: true,
+        resultModalOpen: false,
+        dailyData: [],
+        taskName: parsedState.taskName || '',
+        checkHourglassInProgress: parsedState.taskName || false,
       });
     } else {
       set({
@@ -372,9 +412,109 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         bbMode: false,
         pause: false,
         hId: null,
+        tId: null,
         modalOpen: false,
         isInitialized: true,
+        resultModalOpen: false,
+        dailyData: [],
+        taskName: '',
+        checkHourglassInProgress: false,
       });
+    }
+  },
+  setTid: (tId: number | null) => set((state) => {
+    const newState = { ...state, tId };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  openResultModal: () => set((state) => {
+    const newState = { ...state, resultModalOpen: true };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  closeResultModal: () => set((state) => {
+    const newState = { ...state, resultModalOpen: false };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  setDailyData: (dailyData: DailyData[]) => set((state) => {
+    const newState = { ...state, dailyData: dailyData };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  setTaskName: (taskName: string) => set((state) => {
+    const newState = { ...state, taskName: taskName };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  setCheckHourglassInProgress: (isChecked: boolean) => set((state) => {
+    const newState = { ...state, checkHourglassInProgress: isChecked };
+    saveStateToCookies(newState);
+    return newState;
+  }),
+  fetchHourglassInProgress: async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/progress`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.data && data.data.hid !== null) {
+          let timeDifference = 0;
+          if (data.data.timeBurst !== null) {
+            timeDifference = data.data.timeBurst
+          } else {
+            if (data.data.timeResume !== null) {
+              const resumeTime = new Date(data.data.timeResume);
+              const nowTime = new Date();
+              timeDifference = Math.abs(nowTime.getTime() - resumeTime.getTime());
+            } else {
+              const startTime = new Date(data.data.timeStart);
+              const nowTime = new Date();
+              timeDifference = Math.abs(nowTime.getTime() - startTime.getTime());
+            }
+          }
+          set((state) => ({
+            ...state,
+            hId: data.data.hid,
+            tId: data.data.tId,
+            timeGoal: data.data.timeGaol * 1000,
+            timeStart: new Date(data.data.timeStart),
+            timeBurst: timeDifference,
+            isRunning: true,
+            isInitialized: true,
+          }));
+          console.log(get());// Log the current state
+        }
+        else {
+          set({
+            timeStart: null,
+            timeBurst: null,
+            timeGoal: null,
+            timeEnd: null,
+            isRunning: false,
+            bbMode: false,
+            pause: false,
+            hId: null,
+            tId: null,
+            modalOpen: false,
+            isInitialized: true,
+            resultModalOpen: false,
+            dailyData: [],
+            taskName: '',
+            checkHourglassInProgress: false,
+          });
+        }
+      } else {
+        console.error('Failed to fetch hourglass progress');
+      }
+    } catch (error) {
+      console.error('Error fetching hourglass progress', error);
     }
   },
 }));

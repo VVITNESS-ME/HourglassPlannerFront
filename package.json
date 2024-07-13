@@ -5,9 +5,8 @@
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
-    "lint": "next lint",
-    "local": "env-cmd -f .env.localhost next dev -p 3000",
-    "start": "next start -p 3000"
+    "start": "node server.js",
+    "local": "env-cmd -f .env.localhost node server.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.2",
