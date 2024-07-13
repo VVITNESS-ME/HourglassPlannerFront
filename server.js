@@ -1,5 +1,7 @@
 const express = require('express');
+const https = require('https');
 const WebSocket = require('ws');
+const fs = require('fs');
 const cors = require('cors');
 const next = require('next');
 const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -8,12 +10,20 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+const httpsOptions = dev ? {
+  key: fs.readFileSync('./server-key.pem'),
+  cert: fs.readFileSync('./server.pem'),
+} : {
+  key: fs.readFileSync('./server-key.pem'),
+  cert: fs.readFileSync('./server.pem'),
+};
+
 app.prepare().then(() => {
   const server = express();
 
   // API 프록시 설정
   server.use('/api', createProxyMiddleware({
-    target: 'http://localhost:8080',
+    target: 'http://localhost:8082',
     changeOrigin: true,
     pathRewrite: {
       '^/api': '', // URL에서 /api를 제거합니다.
@@ -21,9 +31,10 @@ app.prepare().then(() => {
   }));
 
   server.use('/socket', createProxyMiddleware({
-    target: 'ws://localhost:3001',
+    target: 'wss://localhost:3001',
     ws: true,
     changeOrigin: true,
+    secure: false, // 로컬 인증서를 사용할 때, 필요에 따라 이 옵션을 설정
     pathRewrite: {
       '^/socket': '', // URL에서 /socket를 제거합니다.
     },
@@ -35,10 +46,11 @@ app.prepare().then(() => {
   server.all('*', (req, res) => handle(req, res));
 
   const PORT = process.env.PORT || 3000;
-  server.listen(PORT, (err) => {
+  https.createServer(httpsOptions, server).listen(PORT, (err) => {
     if (err) throw err;
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on https://localhost:${PORT}`);
   });
+
 
 // const wss = new WebSocket.Server({ server });
 
