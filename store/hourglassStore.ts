@@ -67,6 +67,7 @@ const sendStartDataToServer = async (data: {
   timeStart: string | undefined;
   timeGoal: number | null;
   tId: number | null;
+  fetchHourglassInProgress: () => void;
 }): Promise<number | null> => {
   const token = getToken();
   if (!token) {
@@ -91,6 +92,7 @@ const sendStartDataToServer = async (data: {
     return responseData.data.hid;
   } catch (error) {
     console.error('Error:', error);
+    data.fetchHourglassInProgress();
     return null;
   }
 };
@@ -331,6 +333,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeStart: currentTime.toISOString(),
         timeGoal: initialState.timeGoal,
         tId: initialState.tId,
+        fetchHourglassInProgress: get().fetchHourglassInProgress,
       });
       if (hId) {
         const newState = { ...get(), hId };
