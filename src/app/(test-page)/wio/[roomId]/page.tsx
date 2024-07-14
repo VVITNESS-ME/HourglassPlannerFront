@@ -5,83 +5,120 @@ import io, { Socket } from 'socket.io-client';
 
 export default function VideoChat() {
     const params = useParams();
-
     const localVideoRef = useRef<HTMLVideoElement>(null);
-    const remoteVideoRef = useRef<HTMLVideoElement>(null);
+    const remoteVideoRefs = useRef<HTMLDivElement>(null);
     const socketRef = useRef<Socket | null>(null);
-    const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+    const peerConnections = useRef<{ [key: string]: RTCPeerConnection }>({});
+    const localStreamRef = useRef<MediaStream | null>(null);
     const roomId = params.roomId as string;
-    const [isCaller, setIsCaller] = useState(false);
+    const [users, setUsers] = useState<string[]>([]);
 
-    const createPeerConnection = useCallback(() => {
+    const createPeerConnection = useCallback((userId: string) => {
         const pc = new RTCPeerConnection({
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
         });
 
         pc.onicecandidate = (event) => {
             if (event.candidate) {
-                socketRef.current?.emit('candidate', { roomId, candidate: event.candidate });
+                socketRef.current?.emit('candidate', { roomId, userId, candidate: event.candidate });
             }
         };
 
         pc.ontrack = (event) => {
-            console.log("Remote track received");
-            if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = event.streams[0];
+            console.log("Remote track received from", userId);
+            if (remoteVideoRefs.current) {
+                let remoteVideo = document.getElementById(`remoteVideo-${userId}`) as HTMLVideoElement;
+                if (!remoteVideo) {
+                    remoteVideo = document.createElement('video');
+                    remoteVideo.id = `remoteVideo-${userId}`;
+                    remoteVideo.autoplay = true;
+                    remoteVideo.className = "remote-video w-40 h-40";
+                    remoteVideoRefs.current.appendChild(remoteVideo);
+                }
+                remoteVideo.srcObject = event.streams[0];
             }
         };
 
-        peerConnectionRef.current = pc;
+        if (localStreamRef.current) {
+            localStreamRef.current.getTracks().forEach(track => pc.addTrack(track, localStreamRef.current!));
+        }
+
+        peerConnections.current[userId] = pc;
+        return pc;
     }, [roomId]);
 
-    const handleOffer = useCallback(async (offer: RTCSessionDescriptionInit) => {
-        if (!peerConnectionRef.current) {
-            createPeerConnection();
+    const handleOffer = useCallback(async ({ fromUserId, offer }: { fromUserId: string, offer: RTCSessionDescriptionInit }) => {
+        console.log('Received offer from', fromUserId);
+        let pc = peerConnections.current[fromUserId];
+        if (!pc) {
+            pc = createPeerConnection(fromUserId);
         }
         try {
-            console.log('received offer');
-            console.log(offer);
-            await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnectionRef.current?.createAnswer();
-            await peerConnectionRef.current?.setLocalDescription(answer);
-            socketRef.current?.emit('answer', { roomId, answer });
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            socketRef.current?.emit('answer', { roomId, toUserId: fromUserId, answer });
         } catch (error) {
             console.error('Error handling offer:', error);
         }
     }, [roomId, createPeerConnection]);
 
-    const handleAnswer = useCallback(async (answer: RTCSessionDescriptionInit) => {
-        try {
-            console.log('received answer');
-            console.log(answer);
-            await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(answer));
-        } catch (error) {
-            console.error('Error handling answer:', error);
+    const handleAnswer = useCallback(async ({ fromUserId, answer }: { fromUserId: string, answer: RTCSessionDescriptionInit }) => {
+        console.log('Received answer from', fromUserId);
+        const pc = peerConnections.current[fromUserId];
+        if (pc) {
+            try {
+                await pc.setRemoteDescription(new RTCSessionDescription(answer));
+            } catch (error) {
+                console.error('Error handling answer:', error);
+            }
         }
     }, []);
 
-    const handleCandidate = useCallback(async (candidate: RTCIceCandidateInit) => {
-        try {
-            await peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
-        } catch (error) {
-            console.error('Error handling ICE candidate:', error);
+    const handleCandidate = useCallback(async ({ fromUserId, candidate }: { fromUserId: string, candidate: RTCIceCandidateInit }) => {
+        const pc = peerConnections.current[fromUserId];
+        if (pc) {
+            try {
+                await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (error) {
+                console.error('Error handling ICE candidate:', error);
+            }
         }
     }, []);
 
     const startCall = useCallback(async () => {
-        if (!peerConnectionRef.current) {
-            createPeerConnection();
+        console.log('Starting call with users:', users);
+        for (const userId of users) {
+            if (userId !== socketRef.current?.id) {
+                let pc = peerConnections.current[userId];
+                if (!pc) {
+                    pc = createPeerConnection(userId);
+                }
+                try {
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+                    socketRef.current?.emit('offer', { roomId, toUserId: userId, offer });
+                } catch (error) {
+                    console.error('Error starting call with', userId, error);
+                }
+            }
         }
+    }, [roomId, users, createPeerConnection]);
+
+    const connectVideo = useCallback(async () => {
         try {
-            console.log('Starting call');
-            const offer = await peerConnectionRef.current?.createOffer();
-            await peerConnectionRef.current?.setLocalDescription(offer);
-            socketRef.current?.emit('offer', { roomId, offer });
-            setIsCaller(true);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            localStreamRef.current = stream;
+            if (localVideoRef.current) {
+                localVideoRef.current.srcObject = stream;
+            }
+            Object.values(peerConnections.current).forEach(pc => {
+                stream.getTracks().forEach(track => pc.addTrack(track, stream));
+            });
         } catch (error) {
-            console.error('Error starting call:', error);
+            console.error('Error accessing media devices:', error);
         }
-    }, [roomId, createPeerConnection]);
+    }, []);
 
     useEffect(() => {
         if (!roomId) return;
@@ -94,9 +131,32 @@ export default function VideoChat() {
             newSocket.emit('join', roomId);
         });
 
+        newSocket.on('users', (userList: string[]) => {
+            console.log('Received user list:', userList);
+            setUsers(userList);
+        });
+
         newSocket.on('offer', handleOffer);
         newSocket.on('answer', handleAnswer);
         newSocket.on('candidate', handleCandidate);
+
+        newSocket.on('userJoined', (userId: string) => {
+            console.log('User joined:', userId);
+            setUsers(prevUsers => [...prevUsers, userId]);
+        });
+
+        newSocket.on('userLeft', (userId: string) => {
+            console.log('User left:', userId);
+            setUsers(prevUsers => prevUsers.filter(id => id !== userId));
+            if (peerConnections.current[userId]) {
+                peerConnections.current[userId].close();
+                delete peerConnections.current[userId];
+            }
+            const remoteVideo = document.getElementById(`remoteVideo-${userId}`);
+            if (remoteVideo) {
+                remoteVideo.remove();
+            }
+        });
 
         newSocket.on('disconnect', () => {
             console.log('Socket.IO connection closed');
@@ -107,43 +167,19 @@ export default function VideoChat() {
         };
     }, [roomId, handleOffer, handleAnswer, handleCandidate]);
 
-    useEffect(() => {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then((stream) => {
-                if (localVideoRef.current) {
-                    localVideoRef.current.srcObject = stream;
-                }
-                stream.getTracks().forEach(track => peerConnectionRef.current?.addTrack(track, stream));
-            })
-            .catch(error => {
-                console.error('Error accessing media devices:', error);
-            });
-    }, []);
-
-    const connectVideo = useCallback(() => {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then((stream) => {
-                if (localVideoRef.current) {
-                    localVideoRef.current.srcObject = stream;
-                }
-                stream.getTracks().forEach(track => peerConnectionRef.current?.addTrack(track, stream));
-            })
-            .catch(error => {
-                console.error('Error accessing media devices:', error);
-            });
-    }, []);
-
     return (
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Video Chat - Room {roomId}</h1>
             <div className="video-container">
-                <video ref={localVideoRef} autoPlay muted className="local-video w-10 h-10" />
-                <video ref={remoteVideoRef} autoPlay className="remote-video w-10 h-10" />
+                <video ref={localVideoRef} autoPlay muted className="local-video w-40 h-40" />
+                <div ref={remoteVideoRefs} className="remote-videos"></div>
             </div>
-            <button onClick={startCall} className="px-4 py-2 border border-black mr-2">
+            <button onClick={connectVideo} className="px-4 py-2 border border-black mr-2">
+                Connect Video
+            </button>
+            <button onClick={startCall} className="px-4 py-2 border border-black">
                 Start Call
             </button>
-            <button onClick={connectVideo} className="px-4 py-2 border border-black" >Connect Video</button>
         </div>
     );
 }
