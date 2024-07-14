@@ -39,6 +39,8 @@ export default function VideoChat() {
             createPeerConnection();
         }
         try {
+            console.log('received offer');
+            console.log(offer);
             await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnectionRef.current?.createAnswer();
             await peerConnectionRef.current?.setLocalDescription(answer);
@@ -50,6 +52,8 @@ export default function VideoChat() {
 
     const handleAnswer = useCallback(async (answer: RTCSessionDescriptionInit) => {
         try {
+            console.log('received answer');
+            console.log(answer);
             await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(answer));
         } catch (error) {
             console.error('Error handling answer:', error);
@@ -82,7 +86,7 @@ export default function VideoChat() {
     useEffect(() => {
         if (!roomId) return;
 
-        const newSocket: Socket = io('https://localhost:3000');
+        const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
         socketRef.current = newSocket;
 
         newSocket.on('connect', () => {
@@ -116,6 +120,19 @@ export default function VideoChat() {
             });
     }, []);
 
+    const connectVideo = useCallback(() => {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then((stream) => {
+                if (localVideoRef.current) {
+                    localVideoRef.current.srcObject = stream;
+                }
+                stream.getTracks().forEach(track => peerConnectionRef.current?.addTrack(track, stream));
+            })
+            .catch(error => {
+                console.error('Error accessing media devices:', error);
+            });
+    }, []);
+
     return (
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Video Chat - Room {roomId}</h1>
@@ -126,6 +143,7 @@ export default function VideoChat() {
             <button onClick={startCall} className="px-4 py-2 border border-black mr-2">
                 Start Call
             </button>
+            <button onClick={connectVideo} className="px-4 py-2 border border-black" >Connect Video</button>
         </div>
     );
 }
