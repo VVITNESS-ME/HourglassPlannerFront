@@ -6,7 +6,8 @@
     "dev": "node server.js",
     "build": "next build",
     "start": "node server.js",
-    "local": "env-cmd -f .env.localhost node server.js"
+    "local": "env-cmd -f .env.localhost node server-local.js",
+    "io": "env-cmd -f .env.localhost node socketio.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.2",
@@ -31,6 +32,8 @@
     "react-dom": "^18",
     "react-icons": "^5.2.1",
     "react-tabs": "^6.0.2",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "three": "^0.166.1",
     "ws": "^8.18.0",
     "yarn": "^1.22.22",
