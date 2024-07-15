@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const fs = require('fs');
 const cors = require('cors');
 const next = require('next');
 const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -32,37 +33,50 @@ app.prepare().then(() => {
   const io = socketIo(httpServer, {
     cors: {
       origin: "*", // 모든 도메인 허용
-      methods: "*" // 모든 HTTP 메서드 허용
+      methods: ["GET", "POST"]
     }
   });
 
-  io.on('connection', (socket) => {
-    console.log('New client connected');
+  const rooms = new Map();
 
+  io.on('connection', (socket) => {
     socket.on('join', (roomId) => {
       socket.join(roomId);
-      console.log(`Client joined room ${roomId}, total clients: ${io.sockets.adapter.rooms.get(roomId).size}`);
+      const room = rooms.get(roomId) || new Set();
+      room.add(socket.id);
+      rooms.set(roomId, room);
+  
+      // Send the list of users to the newly joined user
+      socket.emit('users', Array.from(room));
+  
+      // Notify others in the room that a new user has joined
+      socket.to(roomId).emit('userJoined', socket.id);
     });
-
-    socket.on('offer', (data) => {
-      const { roomId, offer } = data;
-      console.log(offer);
-      socket.to(roomId).emit('offer', offer);
+  
+    socket.on('offer', ({ roomId, toUserId, offer }) => {
+      socket.to(toUserId).emit('offer', { fromUserId: socket.id, offer });
     });
-
-    socket.on('answer', (data) => {
-      const { roomId, answer } = data;
-      console.log(answer);
-      socket.to(roomId).emit('answer', answer);
+  
+    socket.on('answer', ({ roomId, toUserId, answer }) => {
+      socket.to(toUserId).emit('answer', { fromUserId: socket.id, answer });
     });
-
-    socket.on('candidate', (data) => {
-      const { roomId, candidate } = data;
-      socket.to(roomId).emit('candidate', candidate);
+  
+    socket.on('candidate', ({ roomId, userId, candidate }) => {
+      socket.to(userId).emit('candidate', { fromUserId: socket.id, candidate });
     });
-
-    socket.on('disconnect', () => {
-      console.log('Client disconnected');
+  
+    socket.on('disconnecting', () => {
+      for (const room of socket.rooms) {
+        if (rooms.has(room)) {
+          const users = rooms.get(room);
+          users.delete(socket.id);
+          if (users.size === 0) {
+            rooms.delete(room);
+          } else {
+            socket.to(room).emit('userLeft', socket.id);
+          }
+        }
+      }
     });
   });
 
