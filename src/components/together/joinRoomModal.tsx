@@ -4,18 +4,38 @@ import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import Button from '../mypage/profile/button';
+import { useRouter } from 'next/navigation';
 
 interface JoinRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
   roomName: string;
+  roomId: number;
 }
 
-const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName }) => {
+const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName, roomId }) => {
   const [password, setPassword] = useState('');
-
-  const handleJoinRoom = () => {
+  const router = useRouter();
+  const handleJoinRoom = async () => {
     console.log(`Joining room ${roomName} with password: ${password}`);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({password: password}),
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        router.push("/together/"+roomId);
+      }
+    } catch (error) {
+      // alert(error);
+      console.error(error);
+    }
     onClose();
   };
 

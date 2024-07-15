@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeftIcon, ChevronRightIcon, LockClosedIcon, EyeIcon } from '@heroicons/react/24/outline';
 import JoinRoomModal from './joinRoomModal';
@@ -8,24 +8,25 @@ import JoinRoomModal from './joinRoomModal';
 interface Room {
   roomId: number;
   title: string;
-  status: string;
-  participants: string;
-  path: string;
+  isSecretRoom: boolean;
+  limit: number
+  participants: number;
 }
 
-const rooms: Room[] = [
-  {roomId: 1,title: '그래프 알고리즘 공부하실분~', status: 'locked', participants: '3/4', path: '/together/graph-algorithm' },
-  {roomId: 2,title: '같이 청소년 상어 푸실실 비법: 문제풀이', status: 'open', participants: '3/4', path: '/together/youth-study' },
-  {roomId: 3, title: '서로 감시하는 스터디 카페 (결과만 봄)', status: 'locked', participants: '3/4', path: '/together/study-cafe' },
-  {roomId: 4, title: '질문/취업 고민 공유방', status: 'open', participants: '3/4', path: '/together/job-discussion' },
-  {roomId: 5, title: 'ALL DAY 공부방', status: 'locked', participants: '3/4', path: '/together/all-day-study' },
-  {roomId: 6, title: '마지막까지 남으실분 기프티콘 드려요', status: 'open', participants: '3/4', path: '/together/gifticon' },
-  {roomId: 7,title: '아무거나 모각코 하는 방', status: 'locked', participants: '3/4', path: '/together/anything' },
-  {roomId: 8, title: '추가 방 1', status: 'open', participants: '3/4', path: '/together/additional-room-1' },
-  {roomId: 9, title: '추가 방 2', status: 'locked', participants: '3/4', path: '/together/additional-room-2' },
-  {roomId: 10, title: '추가 방 3', status: 'open', participants: '3/4', path: '/together/additional-room-3' },
-  {roomId: 11, title: '추가 방 4', status: 'locked', participants: '3/4', path: '/together/additional-room-4' },
-  {roomId: 12, title: '추가 방 5', status: 'open', participants: '3/4', path: '/together/12' },
+const defaultRooms: Room[] = [
+  // try get: /together/list => if response success, JSON.parse(data), else redirect to rootpage
+  {roomId: 1,title: '그래프 알고리즘 공부하실분~', isSecretRoom: true, limit: 4, participants: 3},
+  {roomId: 2,title: '같이 청소년 상어 푸실실 비법: 문제풀이', isSecretRoom: false, limit: 4, participants: 1},
+  {roomId: 3, title: '서로 감시하는 스터디 카페 (결과만 봄)', isSecretRoom: true, limit: 4, participants: 3},
+  {roomId: 4, title: '질문/취업 고민 공유방', isSecretRoom: false, limit: 4, participants: 3},
+  {roomId: 5, title: 'ALL DAY 공부방', isSecretRoom: true, limit: 4, participants: 2},
+  {roomId: 6, title: '마지막까지 남으실분 기프티콘 드려요', isSecretRoom: true, limit: 4, participants: 4},
+  {roomId: 7,title: '아무거나 모각코 하는 방', isSecretRoom: true, limit: 4, participants: 1},
+  {roomId: 8, title: '추가 방 1', isSecretRoom: false, limit: 4, participants: 3},
+  {roomId: 9, title: '추가 방 2', isSecretRoom: true, limit: 4, participants: 2},
+  {roomId: 10, title: '추가 방 3', isSecretRoom:false, limit: 4, participants: 3},
+  {roomId: 11, title: '추가 방 4', isSecretRoom: true, limit: 4, participants: 3},
+  {roomId: 12, title: '추가 방 5', isSecretRoom: false, limit: 3, participants: 3},
 ];
 
 const RoomList: React.FC = () => {
@@ -33,15 +34,39 @@ const RoomList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-
+  const [rooms, setRooms] = useState<Room[]>(defaultRooms);
   const roomsPerPage = 10;
 
+  // 서버에 방 리스트 요청
+  const getRoomList = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/together/list`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        setRooms(data.data.rooms);
+      }
+    } catch (error) {
+      console.error('Error fetching room list', error);
+    }
+  };
+
+  useEffect(()=>{
+    getRoomList();
+  })
+
   const handleRoomClick = (room: Room) => {
-    if (room.status === 'locked') {
+    if (room.isSecretRoom) {
       setSelectedRoom(room);
       setIsJoinModalOpen(true);
     } else {
-      router.push(room.path);
+      router.push("/together/"+room.roomId);
     }
   };
 
@@ -70,7 +95,7 @@ const RoomList: React.FC = () => {
             <div
               key={index}
               className={`flex items-center justify-between p-4 bg-yellow-300 rounded-lg shadow-lg cursor-pointer h-20 ${!paginatedRooms[index] ? 'invisible' : ''}`}
-              onClick={() => paginatedRooms[index] && handleRoomClick(paginatedRooms[index])}
+              onClick={() => paginatedRooms[index].participants !== paginatedRooms[index].limit && handleRoomClick(paginatedRooms[index])}
             >
               {paginatedRooms[index] && (
                 <>
@@ -78,10 +103,10 @@ const RoomList: React.FC = () => {
                     <EyeIcon className="h-6 w-6 mr-2" />
                     <div>
                       <div>{paginatedRooms[index].title}</div>
-                      <div className="text-sm text-gray-600">{paginatedRooms[index].participants}</div>
+                      <div className="text-sm text-gray-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>
                     </div>
                   </div>
-                  {paginatedRooms[index].status === 'locked' && <LockClosedIcon className="h-6 w-6 text-gray-600" />}
+                  {paginatedRooms[index].isSecretRoom && <LockClosedIcon className="h-6 w-6 text-gray-600" />}
                 </>
               )}
             </div>
@@ -100,6 +125,7 @@ const RoomList: React.FC = () => {
           isOpen={isJoinModalOpen}
           onClose={() => setIsJoinModalOpen(false)}
           roomName={selectedRoom.title}
+          roomId={selectedRoom.roomId}
         />
       )}
     </div>
