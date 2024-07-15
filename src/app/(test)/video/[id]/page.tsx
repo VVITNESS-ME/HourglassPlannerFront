@@ -68,7 +68,7 @@ const VideoPage: React.FC = () => {
   };
 
   const createAnswer = async (offer: RTCSessionDescriptionInit, pc: RTCPeerConnection) => {
-      await pc.setRemoteDescription(offer);
+      pc.setRemoteDescription(offer);
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       sendToServer({ type: 'answer', answer });
@@ -81,32 +81,7 @@ const VideoPage: React.FC = () => {
       const data = JSON.parse(message.data);
 
       if (data.type === 'offer') {
-        if (!peerConnections[data.peerId]) {
-          const pc = new RTCPeerConnection(
-            {
-            iceServers: [
-            {urls: 'stun:stun.l.google.com:19302',},
-            ],
-          }
-          );
-      
-          pc.onicecandidate = (event) => {
-            if (event.candidate) {
-              sendToServer({ type: 'candidate', candidate: event.candidate });
-            }
-          };
-      
-          pc.ontrack = (event) => {
-            setRemoteStream(event.streams[0]);
-          };
-      
-          if (localStream) {
-          localStream.getTracks().forEach(track => pc.addTrack(track, localStream));}
-      
-          setPeerConnections(prevConn => ({...prevConn, [data.peerId]: pc}))
-          createAnswer(data.offer, pc);
-        }
-        else {createAnswer(data.offer, peerConnections[data.peerId])}
+        createAnswer(data.offer, peerConnections[data.peerId])
       }
       // answer를 받았을때
       else if (data.type === 'answer') {
@@ -141,7 +116,33 @@ const VideoPage: React.FC = () => {
         localStream.getTracks().forEach(track => pc.addTrack(track, localStream));}
     
         setPeerConnections(prevConn => ({...prevConn, [data.peerId]: pc}))
-    
+        sendToServer({ type: 'welcome', peerId: myId})
+      }
+      else if (data.type === 'welcome') {
+        if (!peerConnections[data.peerId]) {
+          const pc = new RTCPeerConnection(
+            {
+            iceServers: [
+            {urls: 'stun:stun.l.google.com:19302',},
+            ],
+          }
+          );
+      
+          pc.onicecandidate = (event) => {
+            if (event.candidate) {
+              sendToServer({ type: 'candidate', candidate: event.candidate });
+            }
+          };
+      
+          pc.ontrack = (event) => {
+            setRemoteStream(event.streams[0]);
+          };
+      
+          if (localStream) {
+          localStream.getTracks().forEach(track => pc.addTrack(track, localStream));}
+      
+          setPeerConnections(prevConn => ({...prevConn, [data.peerId]: pc}))
+        }
       }
     };
     if (signalingServerRef.current) signalingServerRef.current.onmessage = handleMessage;
