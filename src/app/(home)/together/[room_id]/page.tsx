@@ -34,8 +34,11 @@ const VideoPage: React.FC = () => {
         setLocalStream(stream);
 
         if (!signalingServerRef.current) {
-          const socketURL = "wss://jungle5105.xyz:8889/";
+          // const socketURL = "wss://jungle5105.xyz:8889/";
+          const socketURL = "wss://jungle5105.xyz:12346/socket/";
+          // const socketURL:any = process.env.NEXT_PUBLIC_SOCKET_URL;
           const signalingServer = new WebSocket(socketURL + roomId);
+          console.log('Connecting to signaling server:', signalingServer.url);
           signalingServerRef.current = signalingServer;
 
           signalingServer.onopen = () => {

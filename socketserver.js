@@ -1,3 +1,4 @@
+// 필요한 라이브러리 불러오기
 const express = require('express');
 const https = require('https');
 const WebSocket = require('ws');
@@ -5,6 +6,7 @@ const fs = require('fs');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 
+// Express 애플리케이션 생성
 const app = express();
 const server = https.createServer({
   key: fs.readFileSync('./server-key.pem'),
@@ -17,14 +19,18 @@ app.use(cors());
 const rooms = {};  // 각 경로별 클라이언트를 저장하기 위한 객체
 const wss = new WebSocket.Server({ noServer: true });
 
-const clients = new Map();
+const clients = new Map(); // 클라이언트의 WebSocket 연결을 저장하기 위한 Map
 
+// 채팅방 생성 
 const createRoom = (path) => {
+    // 이미 존재하는 채팅방인지 확인
     if (!rooms[path]) {
         rooms[path] = new Set();
     }
 };
 
+// WebSocket 연결 처리 함수
+// ws는 클라이언트의 WebSocket 연결 객체
 const handleWebSocketConnection = (ws, request) => {
     const pathname = new URL(request.url, `https://${request.headers.host}`).pathname;
 
@@ -77,7 +83,7 @@ server.on('upgrade', (request, socket, head) => {
     });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, function() {
     console.log(`HTTPS 서버가 포트 ${PORT}에서 실행 중입니다.`);
