@@ -453,68 +453,89 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
   fetchHourglassInProgress: async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/progress`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
+    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token')
+    if(token){
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/progress`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.data && data.data.hid !== null) {
-          let timeDifference = 0;
-          if (data.data.timeBurst !== null) {
-            timeDifference = data.data.timeBurst
-          } else {
-            if (data.data.timeResume !== null) {
-              const resumeTime = new Date(data.data.timeResume);
-              const nowTime = new Date();
-              timeDifference = Math.abs(nowTime.getTime() - resumeTime.getTime());
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data && data.data.hid !== null) {
+            let timeDifference = 0;
+            if (data.data.timeBurst !== null) {
+              timeDifference = data.data.timeBurst
             } else {
-              const startTime = new Date(data.data.timeStart);
-              const nowTime = new Date();
-              timeDifference = Math.abs(nowTime.getTime() - startTime.getTime());
+              if (data.data.timeResume !== null) {
+                const resumeTime = new Date(data.data.timeResume);
+                const nowTime = new Date();
+                timeDifference = Math.abs(nowTime.getTime() - resumeTime.getTime());
+              } else {
+                const startTime = new Date(data.data.timeStart);
+                const nowTime = new Date();
+                timeDifference = Math.abs(nowTime.getTime() - startTime.getTime());
+              }
             }
+            set((state) => ({
+              ...state,
+              hId: data.data.hid,
+              tId: data.data.tId,
+              timeGoal: data.data.timeGaol * 1000,
+              timeStart: new Date(data.data.timeStart),
+              timeBurst: timeDifference,
+              isRunning: true,
+              isInitialized: true,
+            }));
+            console.log(get());// Log the current state
           }
-          set((state) => ({
-            ...state,
-            hId: data.data.hid,
-            tId: data.data.tId,
-            timeGoal: data.data.timeGaol * 1000,
-            timeStart: new Date(data.data.timeStart),
-            timeBurst: timeDifference,
-            isRunning: true,
-            isInitialized: true,
-          }));
-          console.log(get());// Log the current state
+          else {
+            set({
+              timeStart: null,
+              timeBurst: null,
+              timeGoal: null,
+              timeEnd: null,
+              isRunning: false,
+              bbMode: false,
+              pause: false,
+              hId: null,
+              tId: null,
+              modalOpen: false,
+              isInitialized: true,
+              resultModalOpen: false,
+              dailyData: [],
+              taskName: '',
+              checkHourglassInProgress: false,
+            });
+          }
+        } else {
+          console.error('Failed to fetch hourglass progress');
         }
-        else {
-          set({
-            timeStart: null,
-            timeBurst: null,
-            timeGoal: null,
-            timeEnd: null,
-            isRunning: false,
-            bbMode: false,
-            pause: false,
-            hId: null,
-            tId: null,
-            modalOpen: false,
-            isInitialized: true,
-            resultModalOpen: false,
-            dailyData: [],
-            taskName: '',
-            checkHourglassInProgress: false,
-          });
-        }
-      } else {
-        console.error('Failed to fetch hourglass progress');
+      } catch (error) {
+        console.error('Error fetching hourglass progress', error);
       }
-    } catch (error) {
-      console.error('Error fetching hourglass progress', error);
+    }else{
+      set({
+        timeStart: null,
+        timeBurst: null,
+        timeGoal: null,
+        timeEnd: null,
+        isRunning: false,
+        bbMode: false,
+        pause: false,
+        hId: null,
+        tId: null,
+        modalOpen: false,
+        isInitialized: true,
+        resultModalOpen: false,
+        dailyData: [],
+        taskName: '',
+        checkHourglassInProgress: false,
+      });
     }
   },
 }));
