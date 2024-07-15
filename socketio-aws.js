@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-const fs = require('fs');
 const cors = require('cors');
 const next = require('next');
 const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -15,7 +14,7 @@ app.prepare().then(() => {
 
   // API 프록시 설정
   server.use('/api', createProxyMiddleware({
-    target: 'http://jungle5105.xyz:12345',
+    target: 'http://localhost:8000', // API 서버 주소
     changeOrigin: true,
     pathRewrite: {
       '^/api': '', // URL에서 /api를 제거합니다.
