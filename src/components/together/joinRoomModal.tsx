@@ -4,24 +4,47 @@ import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import Button from '../mypage/profile/button';
+import { useRouter } from 'next/navigation';
+import useRoomStore from '../../../store/roomStore';
 
 interface JoinRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
   roomName: string;
+  roomId: number;
 }
 
-const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName }) => {
+const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName, roomId }) => {
   const [password, setPassword] = useState('');
-
-  const handleJoinRoom = () => {
+  const { setPw } = useRoomStore(state => ({setPw: state.setPw}));
+  const router = useRouter();
+  const handleJoinRoom = async () => {
     console.log(`Joining room ${roomName} with password: ${password}`);
-    onClose();
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({password: password}),
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        setPw(password);
+        router.push("/together/"+roomId);
+      }
+    } catch (error) {
+      // alert(error);
+      console.error(error);
+    }
+    // onClose();
   };
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog as="div" className="relative z-10" onClose={() => {setPassword("");onClose()}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -59,19 +82,20 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName
                   />
                 </div>
 
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-center">
                   <Button
                     label="취소"
-                    onClick={onClose}
+                    onClick={()=>{setPassword("");onClose()}}
                     isActive={false}
-                    width="w-auto"
+                    width="w-20"
                     height="h-10"
                   />
                   <Button
                     label="입장"
                     onClick={handleJoinRoom}
                     isActive={true}
-                    width="w-auto"
+                    disabled={password===''}
+                    width="w-20"
                     height="h-10"
                   />
                 </div>

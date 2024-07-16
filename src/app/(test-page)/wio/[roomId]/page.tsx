@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
+import Image from 'next/image';
 
 export default function VideoChat() {
     const params = useParams();
@@ -12,6 +13,10 @@ export default function VideoChat() {
     const localStreamRef = useRef<MediaStream | null>(null);
     const roomId = params.roomId as string;
     const [users, setUsers] = useState<string[]>([]);
+
+    const [videoOn, setVideoOn] = useState(false);
+    const [micOn, setMicOn] = useState(false);
+    const [audioOn, setAudioOn] = useState(false);
 
     const createPeerConnection = useCallback((userId: string) => {
         const pc = new RTCPeerConnection({
@@ -109,6 +114,11 @@ export default function VideoChat() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localStreamRef.current = stream;
+
+            setVideoOn(true);
+            setMicOn(true);
+            setAudioOn(true);
+            
             if (localVideoRef.current) {
                 localVideoRef.current.srcObject = stream;
             }
@@ -118,6 +128,11 @@ export default function VideoChat() {
         } catch (error) {
             console.error('Error accessing media devices:', error);
         }
+    }, []);
+
+    // TODO: 처음 입장할 때 유효한 사용자인지 백엔드에 요청해서 검증
+    useEffect(() => {
+        // validUser();
     }, []);
 
     useEffect(() => {
@@ -167,11 +182,81 @@ export default function VideoChat() {
         };
     }, [roomId, handleOffer, handleAnswer, handleCandidate]);
 
+    const OnVideo = () => {
+        if (localStreamRef.current) {
+            localStreamRef.current.getVideoTracks().forEach(track => track.enabled = true);
+            setVideoOn(true);
+        }
+    };
+
+    const OffVideo = () => {
+        if (localStreamRef.current) {
+            localStreamRef.current.getVideoTracks().forEach(track => track.enabled = false);
+            setVideoOn(false);
+        }
+    };
+
+    const OnMic = () => {
+        if (localStreamRef.current) {
+            localStreamRef.current.getAudioTracks().forEach(track => track.enabled = true);
+            setMicOn(true);
+        }
+    };
+
+    const OffMic = () => {
+        if (localStreamRef.current) {
+            localStreamRef.current.getAudioTracks().forEach(track => track.enabled = false);
+            setMicOn(false);
+        }
+    };
+
+    const OnAudio = () => {
+        setAudioOn(true);
+        Object.values(peerConnections.current).forEach(pc => {
+            pc.getReceivers().forEach(receiver => {
+                if (receiver.track.kind === 'audio') {
+                    receiver.track.enabled = true;
+                }
+            });
+        });
+    };
+
+    const OffAudio = () => {
+        setAudioOn(false);
+        Object.values(peerConnections.current).forEach(pc => {
+            pc.getReceivers().forEach(receiver => {
+                if (receiver.track.kind === 'audio') {
+                    receiver.track.enabled = false;
+                }
+            });
+        });
+    };
+
     return (
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Video Chat - Room {roomId}</h1>
             <div className="video-container">
-                <video ref={localVideoRef} autoPlay muted className="local-video w-40 h-40" />
+                <div>
+                    <video ref={localVideoRef} autoPlay muted className="local-video w-40 h-40" />
+                    {
+                        videoOn ?
+                            <Image src={"/img/videochat/video-on.png"} alt="Video On" width={40} height={40} onClick={OffVideo}/>
+                            :
+                            <Image src={"/img/videochat/video-off.png"} alt="Video Off" width={40} height={40} onClick={OnVideo} />
+                    }
+                    {
+                        micOn ?
+                            <Image src={"/img/videochat/mic-on.png"} alt="Mic On" width={40} height={40} onClick={OffMic} />
+                            :
+                            <Image src={"/img/videochat/mic-off.png"} alt="Mic Off" width={40} height={40} onClick={OnMic} />
+                    }
+                    {
+                        audioOn ?
+                            <Image src={"/img/videochat/volume-on.png"} alt="Audio On" width={40} height={40} onClick={OffAudio} />
+                            :
+                            <Image src={"/img/videochat/volume-mute.png"} alt="Audio Off" width={40} height={40} onClick={OnAudio} />
+                    }
+                </div>
                 <div ref={remoteVideoRefs} className="remote-videos"></div>
             </div>
             <button onClick={connectVideo} className="px-4 py-2 border border-black mr-2">
