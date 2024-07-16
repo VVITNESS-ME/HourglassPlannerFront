@@ -18,6 +18,8 @@ export default function VideoChat() {
   const [micOn, setMicOn] = useState(false);
   const [audioOn, setAudioOn] = useState(false);
 
+  const [remoteVideoAdded, setRemoteVideoAdded] = useState(false); // 원격 접속자가 있을 때만 remote video 추가
+
   const createPeerConnection = useCallback(
     (userId: string) => {
       const pc = new RTCPeerConnection({
@@ -46,6 +48,7 @@ export default function VideoChat() {
             remoteVideo.autoplay = true;
             remoteVideo.className = "remote-video w-40 h-40";
             remoteVideoRefs.current.appendChild(remoteVideo);
+            setRemoteVideoAdded(true);
           }
           remoteVideo.srcObject = event.streams[0];
         }
@@ -183,6 +186,15 @@ export default function VideoChat() {
   useEffect(() => {
     if (!roomId) return;
 
+    // 새로고침시 방 들어갔다 다시 들어오는 경우 방에서 나가게 처리
+    const handleBefreUnload = () => {
+      if(socketRef.current) {
+        socketRef.current.emit("leave", roomId);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBefreUnload);
+
     const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
     socketRef.current = newSocket;
 
@@ -207,7 +219,14 @@ export default function VideoChat() {
 
     newSocket.on("userLeft", (userId: string) => {
       console.log("User left:", userId);
-      setUsers((prevUsers) => prevUsers.filter((id) => id !== userId));
+      setUsers((prevUsers) => {
+        const updatedUsers = prevUsers.filter((id) => id !== userId);
+        // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
+        if (updatedUsers.length === 1) {
+          setRemoteVideoAdded(false);
+        }
+        return updatedUsers;
+      });
       if (peerConnections.current[userId]) {
         peerConnections.current[userId].close();
         delete peerConnections.current[userId];
@@ -223,7 +242,12 @@ export default function VideoChat() {
     });
 
     return () => {
-      newSocket.disconnect();
+      // 새로고침 시 방에서 나가게 처리
+      window.removeEventListener("beforeunload", handleBefreUnload);
+      if(newSocket) {
+        newSocket.emit("leave", roomId);
+        newSocket.disconnect();
+      }
     };
   }, [roomId, handleOffer, handleAnswer, handleCandidate]);
 
@@ -288,12 +312,23 @@ export default function VideoChat() {
   return (
     <div className="p-4">
       <div className="flex">
-        <div ref={remoteVideoRefs} className="remote-videos"></div>
-        <div className="flex-1 flex flex-col items-center">
+        <div
+          ref={remoteVideoRefs}
+          className="remote-videos"
+          style={remoteVideoAdded ? { border: "10px solid #F2CD88" } : {}}
+        ></div>
+        <div
+          className="flex-1 flex flex-col items-center"
+          style={{
+            border: "10px solid #F2CD88",
+            marginLeft: "30vh",
+            marginRight: "30vh",
+          }}
+        >
+          <h1 className="text-xl font-bold mt-3 mb-4 flex justify-center items-center">
+            Video Chat - Room {roomId}
+          </h1>
           <div className="local-video-container flex justify-center items-center h-full">
-            <h1 className="text-xl font-bold mb-4 flex justify-center items-center">
-              Video Chat - Room {roomId}
-            </h1>
             <video
               ref={localVideoRef}
               autoPlay
@@ -354,18 +389,22 @@ export default function VideoChat() {
               />
             )}
           </div>
+          <div className="call-menu py-5">
+            <button
+              onClick={connectVideo}
+              className="px-4 py-2 border border-black mr-2"
+            >
+              Connect Video
+            </button>
+            <button
+              onClick={startCall}
+              className="px-4 py-2 border border-black"
+            >
+              Start Call
+            </button>
+          </div>
         </div>
       </div>
-
-      <button
-        onClick={connectVideo}
-        className="px-4 py-2 border border-black mr-2"
-      >
-        Connect Video
-      </button>
-      <button onClick={startCall} className="px-4 py-2 border border-black">
-        Start Call
-      </button>
     </div>
   );
 }
