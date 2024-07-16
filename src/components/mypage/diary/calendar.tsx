@@ -25,7 +25,6 @@ const Calendar: React.FC = () => {
         throw new Error('Network response was not ok');
       }
       setHourglasses(data.data.records);
-      setTil(data.til);
     } catch (error) {
       console.error('Error fetching data', error);
       // 데이터 로딩 실패 시 사용자에게 알림 (옵션)

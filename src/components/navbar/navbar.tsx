@@ -15,9 +15,9 @@ const Navbar = () => {
 
     useEffect(() => {
         initialize();
-    }, [initialize]);
+    }, []);
 
-    if (!isInitialized) return null;
+    // if (!isInitialized) return null;
 
     return (
       <div className="w-full mt-8 h-50 top-5">
@@ -29,7 +29,7 @@ const Navbar = () => {
                       </Link>
                       <Link href="/" className="py-2 ml-2 text-xl hidden sm:block">모래시계 플래너</Link>
                   </div>
-                  {username === "" ? <LoginMenu /> : <UserMenu username={username} />}
+                  {!isInitialized?null:username === "" ? <LoginMenu /> : <UserMenu username={username} />}
               </div>
           </div>
       </div>

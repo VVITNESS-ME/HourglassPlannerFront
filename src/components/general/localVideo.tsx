@@ -22,8 +22,10 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const drawCanvasRef = useRef<HTMLCanvasElement>(null);
   const combinedCanvasRef = useRef<HTMLCanvasElement>(null);
-
   const [videoSize, setVideoSize] = useState<{ width: number; height: number }>();
+  
+  const imgRef = useRef<HTMLImageElement>(null); // 이미지 참조 추가
+  const [showImage, setShowImage] = useState(false); // 이미지 표시 상태
 
   const animate = useCallback(() => {
     if (videoRef.current && videoRef.current.currentTime !== lastVideoTimeRef.current) {
@@ -44,14 +46,19 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             ctx.clearRect(0, 0, combinedCanvasRef.current.width, combinedCanvasRef.current.height);
             ctx.drawImage(videoRef.current, 0, 0, videoSize!.width, videoSize!.height);
             ctx.drawImage(drawCanvasRef.current, 0, 0, videoSize!.width, videoSize!.height);
+
+            // 이미지 그리기
+            if (showImage && imgRef.current) {
+              ctx.drawImage(imgRef.current, 0, 0, videoSize!.width, videoSize!.height);
+            }
           }
 
           if (faceStatus == 1) { // 눈감음
             timeDoze++;
-            if (timeDoze > 50) { setPause(); timeSober = 0; }
+            if (timeDoze > 50) { setPause(); timeSober = 0; setShowImage(true); }
           } else if (faceStatus == 2) { // 자리이탈
             timeMia++;
-            if (timeMia > 50) { setPause(); timeSober = 0; }
+            if (timeMia > 50) { setPause(); timeSober = 0; setShowImage(true); }
           } else { // 정상상태
             timeSober++;
             if (timeSober > 25) {
@@ -59,6 +66,7 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
               timeSober = 0;
               timeDoze = 0;
               timeMia = 0;
+              setShowImage(false); // 정상 상태로 돌아가면 이미지 숨김
             }
           }
         }
@@ -67,7 +75,7 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       }
     }
     requestRef.current = requestAnimationFrame(animate);
-  }, [videoSize?.width, videoSize?.height]);
+  }, [videoSize?.width, videoSize?.height, showImage]);
 
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -117,6 +125,12 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             style={{ width: videoSize.width, height: videoSize.height }}
             ref={combinedCanvasRef}
           ></canvas>
+          <img
+            ref={imgRef}
+            src="/img/sleep.JPG"
+            alt="Alert"
+            style={{ display: 'none' }}
+          />
         </>
       )}
     </div>
