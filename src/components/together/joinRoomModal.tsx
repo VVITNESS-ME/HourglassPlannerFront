@@ -5,6 +5,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import Button from '../mypage/profile/button';
 import { useRouter } from 'next/navigation';
+import useRoomStore from '../../../store/roomStore';
 
 interface JoinRoomModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface JoinRoomModalProps {
 
 const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName, roomId }) => {
   const [password, setPassword] = useState('');
+  const { setPw } = useRoomStore(state => ({setPw: state.setPw}));
   const router = useRouter();
   const handleJoinRoom = async () => {
     console.log(`Joining room ${roomName} with password: ${password}`);
@@ -30,6 +32,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName
       const data = await response.json();
       console.log(data);
       if (response.ok) {
+        setPw(password);
         router.push("/together/"+roomId);
       }
     } catch (error) {
@@ -91,6 +94,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName
                     label="입장"
                     onClick={handleJoinRoom}
                     isActive={true}
+                    disabled={password===''}
                     width="w-20"
                     height="h-10"
                   />
