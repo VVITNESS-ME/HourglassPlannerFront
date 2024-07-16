@@ -91,12 +91,22 @@ const formatDate = (date: Date): string => {
 };
 
 export const fetchDailyData = async (state: StatisticsStore) => {
-  const formattedDate = formatDate(state.selectedDate!);
-  const day = state.selectedDate!.getDay();
-  return await fetchData(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/statics/statistics-week?date=${formattedDate}&day=${day}`,
-    'Failed to fetch dailyStatistics'
-  );
+  const currentDate = state.selectedDate
+  if (currentDate) {
+    currentDate.setHours(12);
+    const formattedDate = formatDate(currentDate);
+    const day = currentDate.getDay();
+    let weekDay = 0
+    if (day === 0){
+      weekDay = 7;
+    }else{
+     weekDay = day;
+   }
+    return await fetchData(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/statics/statistics-week?date=${formattedDate}&day=${weekDay}`,
+      'Failed to fetch dailyStatistics'
+    );
+  }
 };
 
 export const fetchWeeklyData = async (state: StatisticsStore) => {
