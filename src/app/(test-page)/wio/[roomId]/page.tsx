@@ -287,13 +287,13 @@ export default function VideoChat() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4 flex justify-center items-center">
-        Video Chat - Room {roomId}
-      </h1>
       <div className="flex">
         <div ref={remoteVideoRefs} className="remote-videos"></div>
         <div className="flex-1 flex flex-col items-center">
           <div className="local-video-container flex justify-center items-center h-full">
+            <h1 className="text-xl font-bold mb-4 flex justify-center items-center">
+              Video Chat - Room {roomId}
+            </h1>
             <video
               ref={localVideoRef}
               autoPlay
