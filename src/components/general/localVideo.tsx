@@ -22,9 +22,9 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const drawCanvasRef = useRef<HTMLCanvasElement>(null);
   const combinedCanvasRef = useRef<HTMLCanvasElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null); // 이미지 참조 추가
-
   const [videoSize, setVideoSize] = useState<{ width: number; height: number }>();
+  
+  const imgRef = useRef<HTMLImageElement>(null); // 이미지 참조 추가
   const [showImage, setShowImage] = useState(false); // 이미지 표시 상태
 
   const animate = useCallback(() => {

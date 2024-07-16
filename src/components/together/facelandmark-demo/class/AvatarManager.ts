@@ -1,12 +1,15 @@
 import * as THREE from "three";
+import { loadGltf } from "@/components/together/facelandmark-demo/utils/loaders";
 import { FaceLandmarkerResult } from "@mediapipe/tasks-vision";
 import { decomposeMatrix } from "../utils/decomposeMatrix";
-import { loadGltf } from "../utils/loaders";
 
 class AvatarManager {
   private static instance: AvatarManager = new AvatarManager();
   private scene!: THREE.Scene;
   isModelLoaded = false;
+  private avatarVisible = true;
+  private blinkStartTime: number | null = null;
+  private blinkThreshold = 0.1 * 1000; // 1 second in milliseconds
 
   private constructor() {
     this.scene = new THREE.Scene();
@@ -26,7 +29,7 @@ class AvatarManager {
       this.scene.children[0].removeFromParent();
     }
     const gltf = await loadGltf(url);
-    gltf.scene.traverse((obj: { frustumCulled: boolean; }) => (obj.frustumCulled = false));
+    gltf.scene.traverse((obj) => (obj.frustumCulled = false));
     this.scene.add(gltf.scene);
 
     // make hands invisible
@@ -38,10 +41,62 @@ class AvatarManager {
   };
 
   updateFacialTransforms = (results: FaceLandmarkerResult, flipped = true) => {
-    if (!results || !this.isModelLoaded) return;
+    // 얼굴이 감지되는지 확인
+    if (!results || !this.isModelLoaded  || !results.faceLandmarks?.length) {
+      return 3;
+    };
 
-    this.updateBlendShapes(results, flipped);
-    this.updateTranslation(results, flipped);
+    const isBlinking = this.checkBlinking(results);
+    this.updateBlinkTime(isBlinking);
+
+    const shouldShowAvatar = this.blinkStartTime !== null && (Date.now() - this.blinkStartTime) >= this.blinkThreshold;
+    this.setAvatarVisibility(shouldShowAvatar);
+
+    if (this.avatarVisible) {
+      this.updateBlendShapes(results, flipped);
+      this.updateTranslation(results, flipped);
+    }
+
+    // 눈이 감긴 상태인지 아닌지 확인
+    if (isBlinking) {
+      return 1;
+    } else{
+      return 2;
+    }
+
+  };
+
+  checkBlinking = (results: FaceLandmarkerResult): boolean => {
+    if (!results.faceBlendshapes) return false;
+
+    const blendShapes = results.faceBlendshapes[0]?.categories;
+    if (!blendShapes) return false;
+
+    const leftEyeBlink = blendShapes.find((shape) => shape.categoryName === "eyeBlinkLeft")?.score ?? 0;
+    const rightEyeBlink = blendShapes.find((shape) => shape.categoryName === "eyeBlinkRight")?.score ?? 0;
+
+    // You may need to adjust this threshold value based on your specific use case
+    const blinkThreshold = 0.5;
+    return leftEyeBlink > blinkThreshold && rightEyeBlink > blinkThreshold;
+  };
+
+  updateBlinkTime = (isBlinking: boolean) => {
+    if (isBlinking) {
+      if (this.blinkStartTime === null) {
+        this.blinkStartTime = Date.now();
+      }
+    } else {
+      this.blinkStartTime = null;
+    }
+  };
+
+  setAvatarVisibility = (visible: boolean) => {
+    if (this.avatarVisible !== visible) {
+      this.avatarVisible = visible;
+      this.scene.traverse((obj) => {
+        obj.visible = visible;
+      });
+    }
   };
 
   updateBlendShapes = (results: FaceLandmarkerResult, flipped = true) => {
@@ -52,11 +107,8 @@ class AvatarManager {
 
     this.scene.traverse((obj) => {
       if ("morphTargetDictionary" in obj && "morphTargetInfluences" in obj) {
-        const morphTargetDictionary = obj.morphTargetDictionary as {
-          [key: string]: number;
-        };
-        const morphTargetInfluences =
-          obj.morphTargetInfluences as Array<number>;
+        const morphTargetDictionary = obj.morphTargetDictionary as { [key: string]: number };
+        const morphTargetInfluences = obj.morphTargetInfluences as Array<number>;
 
         for (const { score, categoryName } of blendShapes) {
           let updatedCategoryName = categoryName;
@@ -66,7 +118,9 @@ class AvatarManager {
             updatedCategoryName = categoryName.replace("Right", "Left");
           }
           const index = morphTargetDictionary[updatedCategoryName];
-          morphTargetInfluences[index] = score;
+          if (index !== undefined) {
+            morphTargetInfluences[index] = score;
+          }
         }
       }
     });

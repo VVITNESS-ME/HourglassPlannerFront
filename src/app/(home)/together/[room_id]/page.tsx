@@ -1,11 +1,13 @@
 'use client'
 
 import { useParams } from "next/navigation";
-import React, { useState, useEffect, useRef } from 'react';
-import LocalVideo from "@/components/general/localVideo";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PeerVideo from "@/components/general/peerVideo";
 import Hourglass from "@/components/hourglass/hourglass";
 import VideoChatRoom from "@/components/together/videoChatRoom";
+import AvatarCanvas from "@/components/general/localVideo2";
+import FaceLandmarkManager from "@/components/bbmode/FaceLandmarkManager";
+import LocalVideo from "@/components/general/localVideo";
 
 const VideoPage: React.FC = () => {
   const params = useParams();
@@ -160,7 +162,7 @@ const VideoPage: React.FC = () => {
           ))}
         </div>
         <div className="flex flex-col w-full md:w-2/4 p-4 justify-center">
-          <LocalVideo stream={localStream} onStreamReady={handleStreamReady}/>
+          <LocalVideo stream={localStream} onStreamReady={handleStreamReady} />
         </div>
         <div className="flex flex-col w-full md:w-1/4 p-4 space-y-4"><Hourglass/></div>
       </div>
