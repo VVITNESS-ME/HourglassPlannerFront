@@ -1,6 +1,7 @@
+// AvatarCanvas.tsx
 'use client';
-import * as THREE from 'three'; // THREE 네임스페이스 불러오기
-import { Canvas } from "@react-three/fiber";
+import * as THREE from 'three';
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import AvatarManager from "@/components/together/facelandmark-demo/class/AvatarManager";
@@ -29,6 +30,9 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const [isLoading, setIsLoading] = useState(true);
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const combinedCanvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
@@ -107,7 +111,37 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       });
   }, [url]);
 
+  useEffect(() => {
+    if (combinedCanvasRef.current) {
+      const stream = combinedCanvasRef.current.captureStream();
+      streamRef.current = stream;
+      onStreamReady(stream);
+    }
+  }, [isLoading, onStreamReady]);
 
+  const Renderer = () => {
+    const { gl, scene, camera } = useThree();
+    useEffect(() => {
+      rendererRef.current = gl;
+      const render = () => {
+        if (combinedCanvasRef.current && videoRef.current) {
+          const ctx = combinedCanvasRef.current.getContext('2d');
+          if (ctx) {
+            ctx.save();
+            ctx.scale(-1, 1); // X 축을 반전시킴
+            ctx.translate(-width, 0); // 반전된 X축으로 인해 위치 보정
+            ctx.drawImage(videoRef.current, 0, 0, width, height);
+            ctx.restore();
+            gl.render(scene, camera);
+            ctx.drawImage(gl.domElement, 0, 0, width, height);
+          }
+        }
+        requestAnimationFrame(render);
+      };
+      render();
+    }, [gl, scene, camera]);
+    return null;
+  };
 
   return (
     <div className="flex justify-center relative" style={{ width: width, height: height }}>
@@ -119,11 +153,18 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
         autoPlay={true}
         playsInline={true}
         style={{
-          transform: 'scaleX(-1)' // 비디오 화면 좌우 반전
+          position: 'absolute',
+          zIndex: -1,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          transform: 'scaleX(-1)',
         }}
       />
+      <canvas ref={combinedCanvasRef} width={width} height={height} style={{ display: 'none' }} />
       <div className="absolute" style={{ width: width, height: height }}>
         <Canvas camera={{ fov: 30, position: [0, 0.5, 1] }}>
+          <Renderer />
           <ambientLight />
           <directionalLight />
           <OrbitControls
