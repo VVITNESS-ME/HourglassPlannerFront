@@ -3,20 +3,24 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 import Image from "next/image";
+import AvatarCanvas from "@/components/general/localVideo2"; // Update this with the correct path to AvatarCanvas
+import { set } from "date-fns";
 
 export default function VideoChat() {
   const params = useParams();
-  const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRefs = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
   const peerConnections = useRef<{ [key: string]: RTCPeerConnection }>({});
-  const localStreamRef = useRef<MediaStream | null>(null);
   const roomId = params.roomId as string;
   const [users, setUsers] = useState<string[]>([]);
 
   const [videoOn, setVideoOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
   const [audioOn, setAudioOn] = useState(false);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+
+  const [remoteVideoAdded, setRemoteVideoAdded] = useState(false); // 원격 접속자가 있을 때만 remote video 추가
+  const [clickedConnect, setClickedConnect] = useState<boolean>(false); // Connect Video 버튼 클릭 여부
 
   const createPeerConnection = useCallback(
     (userId: string) => {
@@ -46,21 +50,22 @@ export default function VideoChat() {
             remoteVideo.autoplay = true;
             remoteVideo.className = "remote-video w-40 h-40";
             remoteVideoRefs.current.appendChild(remoteVideo);
+            setRemoteVideoAdded(true);
           }
           remoteVideo.srcObject = event.streams[0];
         }
       };
 
-      if (localStreamRef.current) {
-        localStreamRef.current
+      if (localStream) {
+        localStream
           .getTracks()
-          .forEach((track) => pc.addTrack(track, localStreamRef.current!));
+          .forEach((track) => pc.addTrack(track, localStream));
       }
 
       peerConnections.current[userId] = pc;
       return pc;
     },
-    [roomId]
+    [roomId, localStream]
   );
 
   const handleOffer = useCallback(
@@ -152,32 +157,15 @@ export default function VideoChat() {
     }
   }, [roomId, users, createPeerConnection]);
 
-  const connectVideo = useCallback(async () => {
+  const connectVideo = useCallback(async (stream: MediaStream) => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      localStreamRef.current = stream;
-
+      setLocalStream(stream);
       setVideoOn(true);
       setMicOn(true);
       setAudioOn(true);
-
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      Object.values(peerConnections.current).forEach((pc) => {
-        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-      });
     } catch (error) {
       console.error("Error accessing media devices:", error);
     }
-  }, []);
-
-  // TODO: 처음 입장할 때 유효한 사용자인지 백엔드에 요청해서 검증
-  useEffect(() => {
-    // validUser();
   }, []);
 
   useEffect(() => {
@@ -207,7 +195,15 @@ export default function VideoChat() {
 
     newSocket.on("userLeft", (userId: string) => {
       console.log("User left:", userId);
-      setUsers((prevUsers) => prevUsers.filter((id) => id !== userId));
+      setUsers((prevUsers) => {
+        const updatedUsers = prevUsers.filter((id) => id !== userId);
+        // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
+        if (updatedUsers.length === 1) {
+          setRemoteVideoAdded(false);
+        }
+        return updatedUsers;
+      });
+
       if (peerConnections.current[userId]) {
         peerConnections.current[userId].close();
         delete peerConnections.current[userId];
@@ -228,37 +224,29 @@ export default function VideoChat() {
   }, [roomId, handleOffer, handleAnswer, handleCandidate]);
 
   const OnVideo = () => {
-    if (localStreamRef.current) {
-      localStreamRef.current
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = true));
+    if (localStream) {
+      localStream.getVideoTracks().forEach((track) => (track.enabled = true));
       setVideoOn(true);
     }
   };
 
   const OffVideo = () => {
-    if (localStreamRef.current) {
-      localStreamRef.current
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = false));
+    if (localStream) {
+      localStream.getVideoTracks().forEach((track) => (track.enabled = false));
       setVideoOn(false);
     }
   };
 
   const OnMic = () => {
-    if (localStreamRef.current) {
-      localStreamRef.current
-        .getAudioTracks()
-        .forEach((track) => (track.enabled = true));
+    if (localStream) {
+      localStream.getAudioTracks().forEach((track) => (track.enabled = true));
       setMicOn(true);
     }
   };
 
   const OffMic = () => {
-    if (localStreamRef.current) {
-      localStreamRef.current
-        .getAudioTracks()
-        .forEach((track) => (track.enabled = false));
+    if (localStream) {
+      localStream.getAudioTracks().forEach((track) => (track.enabled = false));
       setMicOn(false);
     }
   };
@@ -287,19 +275,25 @@ export default function VideoChat() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4 flex justify-center items-center">
-        Video Chat - Room {roomId}
-      </h1>
       <div className="flex">
-        <div ref={remoteVideoRefs} className="remote-videos"></div>
-        <div className="flex-1 flex flex-col items-center">
+        <div
+          ref={remoteVideoRefs}
+          className="remote-videos"
+          style={remoteVideoAdded ? { border: "10px solid #F2CD88" } : {}}
+        ></div>
+        <div
+          className="flex-1 flex flex-col items-center"
+          style={{
+            border: "10px solid #F2CD88",
+            marginLeft: "30vh",
+            marginRight: "30vh",
+          }}
+        >
+          <h1 className="text-xl font-bold mt-3 mb-4 flex justify-center items-center">
+            Video Chat - Room {roomId}
+          </h1>
           <div className="local-video-container flex justify-center items-center h-full">
-            <video
-              ref={localVideoRef}
-              autoPlay
-              muted
-              className="w-3/4 h-auto rounded-lg mb-4"
-            />
+            <AvatarCanvas stream={localStream} onStreamReady={connectVideo} />
           </div>
           <div className="menu-bar flex justify-center items-center space-x-4">
             {videoOn ? (
@@ -354,18 +348,23 @@ export default function VideoChat() {
               />
             )}
           </div>
+            <div className="call-menu py-5">
+              {
+                clickedConnect ? (<button
+                  onClick={startCall}
+                  className="px-4 py-2 border border-black"
+                >
+                  Start Call
+                </button>) : (<button
+                onClick={() => {connectVideo(localStream!); setClickedConnect(true);}}
+                className="px-4 py-2 border border-black mr-2"
+              >
+                Connect Video
+              </button>)
+              }
+            </div>
         </div>
       </div>
-
-      <button
-        onClick={connectVideo}
-        className="px-4 py-2 border border-black mr-2"
-      >
-        Connect Video
-      </button>
-      <button onClick={startCall} className="px-4 py-2 border border-black">
-        Start Call
-      </button>
     </div>
   );
 }

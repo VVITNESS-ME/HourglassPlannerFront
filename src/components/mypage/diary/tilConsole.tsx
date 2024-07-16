@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import useDiaryStore from '../../../../store/diaryStore';
+import TilModal from "@/components/mypage/diary/tilModal";
 
 interface Til {
   title: string | null;
@@ -12,17 +13,16 @@ const TilConsole: React.FC = () => {
   const { til, setTil, selectedDate, setSelectedDate } = useDiaryStore();
   const [isEditing, setIsEditing] = useState(false);
   const [newTil, setNewTil] = useState<Til | null>(til);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedDate) {
-      console.log("point1");
       fetchTil();
     }
   }, [selectedDate]);
 
   const fetchTil = async () => {
     try {
-      console.log("point2");
       if (!selectedDate) return;
 
       const formattedDate = formatDate(selectedDate);
@@ -32,20 +32,15 @@ const TilConsole: React.FC = () => {
           'Content-Type': 'application/json',
         },
       });
+
       if (response.ok) {
         const data = await response.json();
-        setTil({
-          ...til,
+        const fetchedTil = {
           title: data.data.title,
           content: data.data.content,
-        });
-        setNewTil({
-          ...newTil,
-          title: data.data.title,
-          content: data.data.content,
-        });
-        console.log(til);
-        console.log(newTil);
+        };
+        setTil(fetchedTil);
+        setNewTil(fetchedTil);
         setIsEditing(false);
       } else {
         console.error('Failed to fetch TIL');
@@ -68,12 +63,15 @@ const TilConsole: React.FC = () => {
       if (!selectedDate || !newTil) return;
 
       const formattedDate = formatDate(selectedDate);
-      const response = await fetch(`/api/today-i-learned/${formattedDate}/modified`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/today-i-learned/${formattedDate}/modified`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ date: selectedDate, til: newTil }),
+        body: JSON.stringify({
+          title: newTil.title,
+          content: newTil.content,
+        }),
       });
 
       if (response.ok) {
@@ -88,14 +86,28 @@ const TilConsole: React.FC = () => {
   };
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = new Date(event.target.value);
-    setSelectedDate(selectedDate);
+    const newSelectedDate = new Date(event.target.value);
+    setSelectedDate(newSelectedDate);
   };
 
   const handleContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (newTil) {
       setNewTil({ ...newTil, content: event.target.value });
     }
+  };
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (newTil) {
+      setNewTil({ ...newTil, title: event.target.value });
+    }
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -106,9 +118,20 @@ const TilConsole: React.FC = () => {
         onChange={handleDateChange}
         className="mb-4 w-full p-2 border rounded"
       />
-      <div className="text-lg mb-4">
-        {selectedDate ? selectedDate.toISOString().split('T')[0] : '날짜를 선택하세요'}
-      </div>
+      {isEditing ? (
+        <div className="text-lg mb-4">
+          <input
+            type="text"
+            value={newTil?.title || ''}
+            onChange={handleTitleChange}
+            className="w-full p-2 border rounded h-[45px]"
+          />
+        </div>
+      ) : (
+        <div className="text-lg mb-4">
+          {til?.title || '아직 작성된 TIL이 없습니다'}
+        </div>
+      )}
       {isEditing ? (
         <div>
           <textarea
@@ -129,6 +152,10 @@ const TilConsole: React.FC = () => {
           </button>
         </div>
       )}
+      <button onClick={openModal} className="bg-green-500 text-white py-2 px-4 rounded">
+        일지 작성 도우미 열기
+      </button>
+      <TilModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };

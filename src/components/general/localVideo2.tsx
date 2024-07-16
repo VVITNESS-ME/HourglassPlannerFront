@@ -5,7 +5,6 @@ import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import AvatarManager from "@/components/together/facelandmark-demo/class/AvatarManager";
-import FaceLandmarkManager from '../bbmode/FaceLandmarkManager';
 import { useHourglassStore } from '../../../store/hourglassStore';
 
 interface VideoProps {
@@ -44,6 +43,8 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
     ) {
       lastVideoTimeRef.current = videoRef.current.currentTime;
       try {
+        // FaceLandmarkManager가 CSR로만 실행되도록 설정 - unhandledRejection: ReferenceError: document is not defined 에러 수정
+        const FaceLandmarkManager = require('../bbmode/FaceLandmarkManager').default;
         const faceLandmarkManager = FaceLandmarkManager.getInstance();
         faceLandmarkManager.detectLandmarks(videoRef.current, Date.now());
         const results = faceLandmarkManager.getResults();
