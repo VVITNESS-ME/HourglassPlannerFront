@@ -4,6 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeftIcon, ChevronRightIcon, LockClosedIcon, EyeIcon } from '@heroicons/react/24/outline';
 import JoinRoomModal from './joinRoomModal';
+import Button from '../general/button';
+import CreateRoomModal from './roomCreateModal';
+import Image from 'next/image';
 
 interface Room {
   roomId: number;
@@ -33,6 +36,7 @@ const RoomList: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(0);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [rooms, setRooms] = useState<Room[]>(defaultRooms);
   const roomsPerPage = 10;
@@ -59,7 +63,7 @@ const RoomList: React.FC = () => {
 
   useEffect(()=>{
     getRoomList();
-  })
+  },[])
 
   const handleRoomClick = (room: Room) => {
     if (room.isSecretRoom) {
@@ -82,6 +86,11 @@ const RoomList: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center w-full relative">
+      <div className='flex justify-end w-full max-w-3xl mt-2 mb-2 relative' >
+        <button className='w-6 h-6 relative' onClick={getRoomList}>
+          <Image src="/img/videochat/cycle.png" alt="refresh" fill />
+        </button>
+      </div>
       <div className="flex justify-center items-center w-full max-w-4xl">
         <button
           onClick={handlePrevPage}
@@ -103,7 +112,8 @@ const RoomList: React.FC = () => {
                     <EyeIcon className="h-6 w-6 mr-2" />
                     <div>
                       <div>{paginatedRooms[index].title}</div>
-                      <div className="text-sm text-gray-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>
+                      {paginatedRooms[index].participants !== paginatedRooms[index].limit?<div className="text-sm text-gray-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>
+                      :<div className="text-sm text-red-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>}
                     </div>
                   </div>
                   {paginatedRooms[index].isSecretRoom && <LockClosedIcon className="h-6 w-6 text-gray-600" />}
@@ -128,6 +138,10 @@ const RoomList: React.FC = () => {
           roomId={selectedRoom.roomId}
         />
       )}
+      <div className='mt-4'>
+        <Button label='방 생성' isActive onClick={() => setIsCreateModalOpen(true)} />
+      </div>
+      <CreateRoomModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </div>
   );
 };

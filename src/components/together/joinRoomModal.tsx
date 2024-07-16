@@ -36,12 +36,12 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName
       // alert(error);
       console.error(error);
     }
-    onClose();
+    // onClose();
   };
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog as="div" className="relative z-10" onClose={() => {setPassword("");onClose()}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -79,19 +79,19 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose, roomName
                   />
                 </div>
 
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-center">
                   <Button
                     label="취소"
-                    onClick={onClose}
+                    onClick={()=>{setPassword("");onClose()}}
                     isActive={false}
-                    width="w-auto"
+                    width="w-20"
                     height="h-10"
                   />
                   <Button
                     label="입장"
                     onClick={handleJoinRoom}
                     isActive={true}
-                    width="w-auto"
+                    width="w-20"
                     height="h-10"
                   />
                 </div>
