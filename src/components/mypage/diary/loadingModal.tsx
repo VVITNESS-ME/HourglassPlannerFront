@@ -11,8 +11,8 @@ const LoadingModal: React.FC<LoadingModalProps> = ({ isOpen }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-      <div className="bg-yellow-300 rounded-lg p-8 shadow-lg w-full max-w-4xl relative">
-        <img src="/img/137cba92ea963ce489a360b981fe31d7.png" alt="Loading..." />
+      <div className="flex items-center justify-center w-full max-w-4xl">
+        <img src="/img/loadingCat.png" alt="Loading..." className="mx-auto" />
       </div>
     </div>
   );
