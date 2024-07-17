@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from "next/image";
 
 interface LoadingModalProps {
   isOpen: boolean;
@@ -11,8 +12,8 @@ const LoadingModal: React.FC<LoadingModalProps> = ({ isOpen }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-      <div className="flex items-center justify-center w-full max-w-4xl">
-        <img src="/img/loadingCat.png" alt="Loading..." className="mx-auto" />
+      <div className="flex items-center justify-center  max-w-4xl">
+        <Image src="/img/typingCat.webp" alt="Loading..." width={500} height={500} className="mx-auto" />
       </div>
     </div>
   );
