@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 import Image from "next/image";
 import AvatarCanvas from "@/components/general/localVideo2"; // Update this with the correct path to AvatarCanvas
-import { set } from "date-fns";
 
 export default function VideoChat() {
   const params = useParams();

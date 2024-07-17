@@ -213,36 +213,28 @@ export default function VideoChat() {
 
   const OnVideo = () => {
     if (localStream) {
-      localStream
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = true));
+      localStream.getVideoTracks().forEach((track) => (track.enabled = true));
       setVideoOn(true);
     }
   };
 
   const OffVideo = () => {
     if (localStream) {
-      localStream
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = false));
+      localStream.getVideoTracks().forEach((track) => (track.enabled = false));
       setVideoOn(false);
     }
   };
 
   const OnMic = () => {
     if (localStream) {
-      localStream
-        .getAudioTracks()
-        .forEach((track) => (track.enabled = true));
+      localStream.getAudioTracks().forEach((track) => (track.enabled = true));
       setMicOn(true);
     }
   };
 
   const OffMic = () => {
     if (localStream) {
-      localStream
-        .getAudioTracks()
-        .forEach((track) => (track.enabled = false));
+      localStream.getAudioTracks().forEach((track) => (track.enabled = false));
       setMicOn(false);
     }
   };
