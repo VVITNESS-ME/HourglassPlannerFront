@@ -60,9 +60,9 @@ const HourglassList: React.FC = () => {
   }
 
   return (
-    <div className={styles.hourglassList}>
+    <div className="max-w-[800px] min-w-[400px]">
       <h3>일간 작업 목록</h3>
-      <div className={styles.border}>
+      <div className="p-4 box-border border bg-[#eeeeee] rounded-lg shadow-lg">
         <div className={styles.list}>
           {hourglasses.map((task) => (
             <div

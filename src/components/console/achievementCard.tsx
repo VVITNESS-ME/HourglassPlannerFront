@@ -86,7 +86,7 @@ const AchievementCard: React.FC = () => {
   };
 
   return (
-    <CardLayout title="오늘의 성취도" width="w-80" height="h-auto" color="bg-white">
+    <CardLayout title="오늘의 성취도" width="w-80" height="h-auto">
       <div className="text-center p-4">
         <div className="text-2xl font-bold mb-2">
           07시간 45분 <span className="text-xl font-normal">/ 총 9시간 20분</span>

@@ -21,7 +21,7 @@ const Sidebar: React.FC = () => {
   }, [pathname]);
 
   return (
-    <div className="flex flex-row justify-between space-x-2 grow md:flex-col md:space-x-0 md:space-y-2 top-20 left-0 h-full border-r border-gray-300 bg-white">
+    <div className="flex flex-row justify-between space-x-2 grow md:flex-col md:space-x-0 md:space-y-2 top-20 left-0 h-full border-r border-gray-300">
       <Link href="/mypage/profile" legacyBehavior passHref>
         <a>
           <MenuTab
@@ -52,7 +52,7 @@ const Sidebar: React.FC = () => {
           />
         </a>
       </Link>
-      <div className='hidden grow bg-white md:block md:h-auto md:rounded-md'></div>
+      <div className='hidden grow bg-transparent md:block md:h-auto md:rounded-md'></div>
     </div>
   );
 };

@@ -62,22 +62,20 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
 
   if (isMobile) {
     return (
-        <div className={`container flex flex-col fixed bottom-20 items-center justify-center max-w-[600px] max-h-[800px] w-[240px]`}>
+        <div className={`flex flex-col fixed bottom-20 items-center justify-center max-w-[600px] max-h-[800px] w-[240px]`}>
           <h2 className="min-h-[24px]">{taskName}</h2>
           <HourglassAni wd={200} />
-          {isRunning ? <TimerRunning /> : <TimerSelector />}
-          <button onClick={toggleBBMode}>외쳐 BB!!</button>
+          {isRunning ? <TimerRunning wd={200}/> : <TimerSelector wd={200}/>}
           <DailyDataModal isOpen={resultModalOpen} onClose={closeResultModal} />
         </div>
       );
   }
 
   return (
-    <div className={`container flex flex-col items-center justify-center max-w-[600px] max-h-[800px] w-[${width}px]`}>
-      <h2 className="min-h-[24px]">{taskName}</h2>
+    <div className={`flex flex-col items-center justify-center max-w-[600px] max-h-[800px] w-[${width}px]`}>
+      <h2 className="min-h-[20px]">{taskName}</h2>
       <HourglassAni wd={width*5/6} />
-      {isRunning ? <TimerRunning /> : <TimerSelector />}
-      <button onClick={toggleBBMode}>외쳐 BB!!</button>
+      {isRunning ? <TimerRunning wd={width} /> : <TimerSelector wd={width} />}
       <DailyDataModal isOpen={resultModalOpen} onClose={closeResultModal} />
     </div>
   );

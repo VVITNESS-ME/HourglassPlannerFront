@@ -148,8 +148,8 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   }, [fetchTasks, fetchUserCategories]);
 
   return (
-    <div className="border rounded-lg bg-white p-4">
-      <CardLayout title="오늘의 할일">
+    <div className="border rounded-lg bg-[#eeeeee] p-4 shadow-lg">
+      <CardLayout title="오늘의 할일" color='bg-white'>
         <ul>
           {tasks.map((task) => (
             <DraggableTask

@@ -26,20 +26,20 @@ const MainConsole: React.FC = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="min-h-screen p-8 bg-gray-100">
+      <div className="min-h-screen p-8">
         <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-          <div className="flex-1 min-w-[400px] max-w-[700px] h-[650px] mb-4">
+          <div className="flex-1 min-w-[400px] max-w-[700px] h-[500px] mb-4 relative">
             <Calendar/>
           </div>
-          <div className="flex-1 min-w-[400px] max-w-[700px] h-[650px] mb-4">
+          <div className="flex-1 min-w-[400px] max-w-[600px] h-[500px] mb-4 relative">
             <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/>
           </div>
-          <div className="flex-1 min-w/[400px] max-w/[700px] h/[650px] mb-4">
-            <Hourglass/>
+          <div className="flex top-0 justify-center items-center min-w-[400px] max-w-[600px] h-[500px] mb-4 relative bg-[#eeeeee] rounded-lg shadow-lg border">
+            <Hourglass width={220}/>
           </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-          <div className="flex-1 min-w/[400px] max-w/[700px] max-h/[700px] mb-4">
+          <div className="flex-1 min-w/[400px] max-w/[600px] max-h/[700px] mb-4">
             <SandTimerTasks/>
           </div>
           <div className="flex-1 min-w/[400px] max-w/[700px] max-h/[700px] mb-4">

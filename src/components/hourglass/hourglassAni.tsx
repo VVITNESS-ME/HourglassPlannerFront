@@ -4,8 +4,6 @@ import { useHourglassStore } from '../../../store/hourglassStore';
 import Image from "next/image";
 import './cascade.css';
 
-
-
 const HourglassAni = ({wd}:any) => {
   const styles = {
     container: {
@@ -21,20 +19,6 @@ const HourglassAni = ({wd}:any) => {
       position: 'absolute' as 'absolute',
       bottom: 0,
       transition: 'height 2s',
-    },
-    loadingBarR: {
-      width: '100%',
-      backgroundColor: '#F2CD88',
-      position: 'absolute' as 'absolute',
-      bottom: 0,
-      transition: 'height 0.1s',
-    },
-    mask: {
-      width: '100%',
-      height: '100%',
-      clipPath: 'polygon(100% 100%, 0 100%, 100% 0, 0 0)',
-      position: 'absolute' as 'absolute',
-      backgroungColor: 'transparent'
     },
     maskR: {
       width: '100%',

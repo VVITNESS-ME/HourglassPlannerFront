@@ -111,7 +111,7 @@ const StatisticsContent: React.FC = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-100 min-w-[400px] h-[600px] flex flex-col items-center">
+    <div className="p-8 bg-[#eeeeee] border min-w-[400px] h-[600px] flex flex-col items-center rounded-lg shadow-lg">
       <div className="w-full">
         <Tabs onSelect={handleTabSelect}>
           <TabList>

@@ -18,9 +18,11 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
   return (
     <html lang="ko">
     <body className={mango.className}>
+    <div className="bg-[#decd9d7a] w-screen h-screen">
     <Navbar />
-    <div className="pt-10">
+    <div className="">
       {children}
+    </div>
     </div>
     </body>
     </html>

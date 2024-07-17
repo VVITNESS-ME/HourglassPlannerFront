@@ -1,9 +1,14 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 import Image from "next/image";
 import AvatarCanvas from "@/components/general/localVideo2"; // Update this with the correct path to AvatarCanvas
+import { set } from "date-fns";
+import useRoomStore from "../../../../../store/roomStore";
+import Hourglass from "@/components/hourglass/hourglass";
+import { Task } from '@/type/types';
+import TodayTasks from "@/components/console/todayTasks";
 
 export default function VideoChat() {
   const params = useParams();
@@ -20,6 +25,36 @@ export default function VideoChat() {
 
   const [remoteVideoAdded, setRemoteVideoAdded] = useState(false); // 원격 접속자가 있을 때만 remote video 추가
   const [clickedConnect, setClickedConnect] = useState<boolean>(false); // Connect Video 버튼 클릭 여부
+
+
+  const { password } = useRoomStore(state => ({password: state.roomPassword}));
+  const router = useRouter();
+  const handleJoinRoom = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({password: password}),
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        return;
+      } else {router.push("/together");}
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
+  const [todayTasks, setTodayTasks] = useState<Task[]>([]);
+
+  const handleTaskComplete = (taskId: number) => {
+    return;
+  };
 
   const createPeerConnection = useCallback(
     (userId: string) => {
@@ -169,7 +204,7 @@ export default function VideoChat() {
 
   useEffect(() => {
     if (!roomId) return;
-
+    handleJoinRoom()
     const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
     socketRef.current = newSocket;
 
@@ -273,7 +308,7 @@ export default function VideoChat() {
   };
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col justify-around p-4">
       <div className="flex">
         <div
           ref={remoteVideoRefs}
@@ -363,6 +398,10 @@ export default function VideoChat() {
               }
             </div>
         </div>
+      </div>
+      <div className="flex flex-row max-w-[500px] w-400 justify-center items-center relative">
+        <Hourglass width={240}/>
+        {/* <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/> */}
       </div>
     </div>
   );
