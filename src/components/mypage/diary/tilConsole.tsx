@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import useDiaryStore from '../../../../store/diaryStore';
 import TilModal from "@/components/mypage/diary/tilModal";
+import LoadingModal from "@/components/mypage/diary/loadingModal";
 
 interface Til {
   title: string | null;
