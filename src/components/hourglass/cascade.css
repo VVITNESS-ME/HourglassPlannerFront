@@ -15,9 +15,9 @@
   .waterfall-container {
     position: absolute;
     top: 46%;
-    left: 47.5%;
-    width: 15px;
-    height: 215px;
+    left: 46%;
+    width: 8%;
+    height: 60%;
     overflow: hidden;
     background-color: #F2CD88;
   }
@@ -26,7 +26,7 @@
     position: absolute;
     top: 50%;
     left: 5%;
-    width: 10%;
+    width: 6%;
     height: 50%;
     background-color: rgb(172, 134, 57);
     animation: waterfall 0.37s linear infinite;
