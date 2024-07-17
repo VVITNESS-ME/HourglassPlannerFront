@@ -6,9 +6,8 @@
     "dev": "node server.js",
     "build": "next build",
     "start": "node server.js",
-    "local": "env-cmd -f .env.localhost node server.js",
-    "io": "env-cmd -f .env.localhost node socketio-local.js",
-    "ioserver": "env-cmd -f .env.production node socketio-aws.js"
+    "local": "env-cmd -f .env.localhost node server-local.js",
+    "server": "env-cmd -f .env.production node server.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.2",
