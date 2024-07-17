@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import useDiaryStore from '../../../../store/diaryStore';
 import TilModal from "@/components/mypage/diary/tilModal";
 import LoadingModal from "@/components/mypage/diary/loadingModal";
+import TilContentModal from "@/components/mypage/diary/tilContentModal"; // 새로운 TilContentModal 컴포넌트 import
 
 interface Til {
   title: string | null;
@@ -15,9 +16,10 @@ const TilConsole: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [newTil, setNewTil] = useState<Til | null>(til);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTilContentModalOpen, setIsTilContentModalOpen] = useState(false); // til 내용을 위한 모달 상태 추가
 
   useEffect(() => {
-      fetchTil();
+    fetchTil();
   }, [selectedDate]);
 
   useEffect(() => {
@@ -84,6 +86,14 @@ const TilConsole: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const openTilContentModal = () => {
+    setIsTilContentModalOpen(true);
+  };
+
+  const closeTilContentModal = () => {
+    setIsTilContentModalOpen(false);
+  };
+
   return (
     <div className="p-4 border rounded shadow-lg min-w-[400px] max-w-[600px]">
       <input
@@ -102,7 +112,7 @@ const TilConsole: React.FC = () => {
           />
         </div>
       ) : (
-        <div className="text-lg mb-4">
+        <div className="text-lg mb-4" onClick={openTilContentModal}>
           {til?.title || '아직 작성된 TIL이 없습니다'}
         </div>
       )}
@@ -120,7 +130,7 @@ const TilConsole: React.FC = () => {
         </div>
       ) : (
         <div>
-          <p className="text-gray-600 mb-4">{til?.content || '아직 작성된 TIL이 없습니다'}</p>
+          <p className="text-gray-600 mb-4" onClick={openTilContentModal}>{til?.content || '아직 작성된 TIL이 없습니다'}</p>
           <button onClick={handleEditButtonClick} className="bg-yellow-500 text-white py-2 px-4 rounded">
             일지 작성
           </button>
@@ -130,6 +140,7 @@ const TilConsole: React.FC = () => {
         일지 작성 도우미 열기
       </button>
       <TilModal isOpen={isModalOpen} onClose={closeModal} />
+      <TilContentModal isOpen={isTilContentModalOpen} onClose={closeTilContentModal} til={til} /> {/* 새로운 모달 추가 */}
     </div>
   );
 };
