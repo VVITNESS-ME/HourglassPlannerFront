@@ -7,7 +7,7 @@ import styles from './calendar.module.css';
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { hourglasses, setHourglasses, setTil, selectedDate, setSelectedDate } = useDiaryStore();
+  const { setHourglasses, setTil, selectedDate, setSelectedDate } = useDiaryStore();
 
   const fetchData = useCallback(async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');

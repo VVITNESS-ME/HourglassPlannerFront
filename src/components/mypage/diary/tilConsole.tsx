@@ -11,45 +11,18 @@ interface Til {
 }
 
 const TilConsole: React.FC = () => {
-  const { til, setTil, selectedDate, setSelectedDate } = useDiaryStore();
+  const { til, fetchTil, setTil, selectedDate, setSelectedDate } = useDiaryStore();
   const [isEditing, setIsEditing] = useState(false);
   const [newTil, setNewTil] = useState<Til | null>(til);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (selectedDate) {
       fetchTil();
-    }
   }, [selectedDate]);
 
-  const fetchTil = async () => {
-    try {
-      if (!selectedDate) return;
-
-      const formattedDate = formatDate(selectedDate);
-      const response = await fetch(`/api/today-i-learned/${formattedDate}/original`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const fetchedTil = {
-          title: data.data.title,
-          content: data.data.content,
-        };
-        setTil(fetchedTil);
-        setNewTil(fetchedTil);
-        setIsEditing(false);
-      } else {
-        console.error('Failed to fetch TIL');
-      }
-    } catch (error) {
-      console.error('Error fetching TIL', error);
-    }
-  };
+  useEffect(() => {
+    setNewTil(til);
+  }, [til]);
 
   const formatDate = (date: Date): string => {
     return date.toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 변환

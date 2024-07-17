@@ -14,7 +14,7 @@ app.prepare().then(() => {
 
   // API 프록시 설정
   server.use('/api', createProxyMiddleware({
-    target: 'http://localhost:8000', // API 서버 주소
+    target: 'http://localhost:8082', // API 서버 주소
     changeOrigin: true,
     pathRewrite: {
       '^/api': '', // URL에서 /api를 제거합니다.

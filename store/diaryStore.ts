@@ -29,9 +29,14 @@ interface DiaryStore {
   setSelectedHourglass: (hourglass: Hourglass | null) => void;
   setDescription: (description: string) => void;
   updateHourglass: (updatedHourglass: Hourglass) => void;
+  fetchTil: () => void;
 }
 
-const useDiaryStore = create<DiaryStore>((set) => ({
+const formatDate = (date: Date): string => {
+  return date.toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 변환
+};
+
+const useDiaryStore = create<DiaryStore>((set, get) => ({
   hourglasses: [],
   til: {
     title: null,
@@ -51,6 +56,34 @@ const useDiaryStore = create<DiaryStore>((set) => ({
     ),
     selectedHourglass: updatedHourglass,
   })),
+  fetchTil: async () => {
+    console.log("Tlqkf");
+    try {
+      const state = get();
+      if (!state.selectedDate) return;
+
+      const formattedDate = formatDate(state.selectedDate);
+      const response = await fetch(`/api/today-i-learned/${formattedDate}/original`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const fetchedTil = {
+          title: data.data.title,
+          content: data.data.content,
+        };
+        set({ til: fetchedTil });
+      } else {
+        console.error('Failed to fetch TIL');
+      }
+    } catch (error) {
+      console.error('Error fetching TIL', error);
+    }
+  },
 }));
 
 export default useDiaryStore;

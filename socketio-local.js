@@ -23,7 +23,7 @@ app.prepare().then(() => {
 
   // API 프록시 설정
   server.use('/api', createProxyMiddleware({
-    target: 'http://jungle5105.xyz:12345',
+    target: 'http://localhost:8082',
     changeOrigin: true,
     pathRewrite: {
       '^/api': '', // URL에서 /api를 제거합니다.
