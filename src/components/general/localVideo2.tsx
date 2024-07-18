@@ -21,7 +21,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   let timeMia = 0;
   let timeSober = 0;
 
-  const width = 600; // width를 컴포넌트 내부에서 정의
+  const width = 500; // width를 컴포넌트 내부에서 정의
   const height = 400; // height를 컴포넌트 내부에서 정의
   const url = "https://models.readyplayer.me/66922d78d77fc1238cb520a1.glb"; // 모델 URL을 컴포넌트 내부에서 정의
 
@@ -35,7 +35,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
-
+  const audioRef = useRef<HTMLAudioElement>(null);
   const animate = useCallback(() => {
     if (
       videoRef.current &&
@@ -61,6 +61,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeDoze++;
           if (timeDoze > 50) {
             setPause();
+            if (audioRef.current) audioRef.current.play();
             timeSober = 0;
           }
         } else if (faceStatus == 3) {
@@ -68,6 +69,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeMia++;
           if (timeMia > 50) {
             setPause();
+            if (audioRef.current) audioRef.current.play();
             timeSober = 0;
           }
         } else {
@@ -75,6 +77,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeSober++;
           if (timeSober > 25) {
             setResume();
+            if (audioRef.current) audioRef.current.pause();
             timeSober = 0;
             timeDoze = 0;
             timeMia = 0;
@@ -224,6 +227,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           )}
         </Canvas>
       </div>
+      <div style={{display: "hidden"}}><audio ref={audioRef}><source src="../wakeupCall.mp3" type="audio/mpeg" /></audio></div>
     </div>
   );
 };
