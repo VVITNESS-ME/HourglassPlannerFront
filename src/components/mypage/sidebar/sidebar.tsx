@@ -5,6 +5,7 @@ import { UserIcon, ChartBarIcon, BookOpenIcon } from '@heroicons/react/24/solid'
 import MenuTab from './menuTab';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Hourglass from '@/components/hourglass/hourglass';
 
 const Sidebar: React.FC = () => {
   const [activeTab, setActiveTab] = useState('');
@@ -53,6 +54,7 @@ const Sidebar: React.FC = () => {
         </a>
       </Link>
       <div className='hidden grow bg-transparent md:block md:h-auto md:rounded-md'></div>
+      <Hourglass width={120} />
     </div>
   );
 };
