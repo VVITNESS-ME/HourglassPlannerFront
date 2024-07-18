@@ -379,17 +379,19 @@ export default function VideoChat() {
           </div>
             <div className="call-menu py-5">
               {
-                clickedConnect ? (<button
+                clickedConnect ? (<Image
                   onClick={startCall}
-                  className="px-4 py-2 border border-black"
-                >
-                  Start Call
-                </button>) : (<button
+                  src="/img/videochat/start-call.png"
+                  alt="Start Call"
+                  width={60}
+                  height={60}
+                  />) : (<Image
                 onClick={() => {connectVideo(localStream!); setClickedConnect(true);}}
-                className="px-4 py-2 border border-black mr-2"
-              >
-                Connect Video
-              </button>)
+                src="/img/videochat/connect-video.png"
+                alt="Connect Video"
+                width={60}
+                height={60}
+              />)
               }
             </div>
         </div>
