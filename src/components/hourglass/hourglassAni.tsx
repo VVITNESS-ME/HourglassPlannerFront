@@ -3,6 +3,8 @@
 import { useHourglassStore } from '../../../store/hourglassStore';
 import Image from "next/image";
 import './cascade.css';
+import ClippathSVG from './clippathSVG';
+import OuterSVG from './outerSVG';
 
 const HourglassAni = ({wd}:any) => {
   const styles = {
@@ -35,8 +37,10 @@ const HourglassAni = ({wd}:any) => {
   const timeGoal = useHourglassStore((state) => state.timeGoal);
 
     return (
-      <div className='mt-4 justify-center items-center'>
-        <div style={styles.container}>
+      <div className="mt-4 flex flex-col justify-center items-center relative" style={{width: wd*2, height: wd*2}}>
+        {/* <div className='absolute flex'><OuterSVG wd = {wd*2} /></div> */}
+        {/* <div className='flex'><ClippathSVG wd={wd}/></div> */}
+        <div className='' style={styles.container}>
         {isRunning&&
           <div>
             <div style={styles.maskR}>
