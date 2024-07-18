@@ -17,7 +17,7 @@ const HourglassAni = ({wd}:any) => {
     },
     loadingBar: {
       width: '100%',
-      backgroundColor: '#F2CD88',
+      // backgroundColor: '#F2CD88',
       position: 'absolute' as 'absolute',
       bottom: 0,
       transition: 'height 2s',
@@ -36,26 +36,33 @@ const HourglassAni = ({wd}:any) => {
   const timeBurst = useHourglassStore((state) => state.timeBurst);
   const timeGoal = useHourglassStore((state) => state.timeGoal);
 
+  const loadingBarColor = (timeGoal:number) => {
+    if (timeGoal <= 1000000) return "#F2CD88";
+    else if ( 1000000 < timeGoal && timeGoal <= 2000000) return "#B4E380";
+    else if ( 2000000 < timeGoal && timeGoal <= 4000000) return "#36C2CE";
+    else return "#FF7777";
+  }
+
     return (
-      <div className="mt-4 flex flex-col justify-center items-center relative" style={{width: wd*2, height: wd*2}}>
-        {/* <div className='absolute flex'><OuterSVG wd = {wd*2} /></div> */}
-        {/* <div className='flex'><ClippathSVG wd={wd}/></div> */}
-        <div className='' style={styles.container}>
+      <div className="mt-4 mb-2 flex flex-col justify-center items-center relative" style={{width: wd*2, height: wd*2}}>
+        <div className='absolute flex'><OuterSVG wd = {wd*2.20} /></div>
+        <div className='absolute flex'><ClippathSVG wd={wd}/></div>
+        <div className='absolute flex' style={styles.container}>
         {isRunning&&
           <div>
             <div style={styles.maskR}>
-              <div style={{...styles.loadingBar, height: (54+(1-timeBurst!/timeGoal!)*30)+"%"}}></div>
+              <div style={{...styles.loadingBar, height: (54+(1-timeBurst!/timeGoal!)*30)+"%", backgroundColor: loadingBarColor(timeGoal!)}}></div>
             </div>
             {/* {(pause || (timeBurst! > (timeGoal!-1000)))?null: */
               !pause&&
-              <div className='waterfall-container'>
+              <div className='waterfall-container' style={{backgroundColor: loadingBarColor(timeGoal!)}}>
                 <div className="waterfall"></div>
                 <div className="waterfall"></div>
                 <div className="waterfall"></div>
                 <div className="waterfall"></div>
                 <div className="waterfall"></div>
               </div>}
-              <div style={{...styles.loadingBar, height: (timeBurst!/timeGoal!)*30+"%"}}></div>
+              <div style={{...styles.loadingBar, height: (timeBurst!/timeGoal!)*30+"%", backgroundColor: loadingBarColor(timeGoal!)}}></div>
           </div>
         }
         </div>
