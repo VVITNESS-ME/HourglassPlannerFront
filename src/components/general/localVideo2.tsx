@@ -27,6 +27,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
 
   const [scene, setScene] = useState<THREE.Scene | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAvatar, setShowAvatar] = useState(false); // 아바타 표시 여부 상태 추가
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -49,8 +50,6 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
         const faceLandmarkManager = FaceLandmarkManager.getInstance();
         faceLandmarkManager.detectLandmarks(videoRef.current, Date.now());
         const results = faceLandmarkManager.getResults();
-        avatarManagerRef.current.updateFacialTransforms(results, true);
-
         const faceStatus = avatarManagerRef.current.updateFacialTransforms(
           results,
           true
@@ -61,6 +60,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeDoze++;
           if (timeDoze > 50) {
             setPause();
+            setShowAvatar(true); // 아바타 표시
             if (audioRef.current) audioRef.current.play();
             timeSober = 0;
           }
@@ -69,6 +69,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeMia++;
           if (timeMia > 50) {
             setPause();
+            setShowAvatar(true); // 아바타 표시
             if (audioRef.current) audioRef.current.play();
             timeSober = 0;
           }
@@ -77,6 +78,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeSober++;
           if (timeSober > 25) {
             setResume();
+            setShowAvatar(false); // 아바타 숨기기
             if (audioRef.current) audioRef.current.pause();
             timeSober = 0;
             timeDoze = 0;
@@ -210,7 +212,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             enableZoom={false}
             enablePan={false}
           />
-          {scene && <primitive object={scene} />}
+          {showAvatar && scene && <primitive object={scene} />}
           {isLoading && (
             <Float floatIntensity={1} speed={1}>
               <Text3D
@@ -227,7 +229,11 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           )}
         </Canvas>
       </div>
-      <div style={{display: "hidden"}}><audio ref={audioRef}><source src="../wakeupCall.mp3" type="audio/mpeg" /></audio></div>
+      <div style={{ display: "hidden" }}>
+        <audio ref={audioRef}>
+          <source src="../wakeupCall.mp3" type="audio/mpeg" />
+        </audio>
+      </div>
     </div>
   );
 };
