@@ -35,7 +35,7 @@ const MainConsole: React.FC = () => {
             <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/>
           </div>
           <div className="flex top-0 justify-center items-center min-w-[400px] max-w-[600px] h-[500px] mb-4 relative bg-[#eeeeee] rounded-lg shadow-lg border">
-            <Hourglass width={220}/>
+            <Hourglass width={200}/>
           </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
