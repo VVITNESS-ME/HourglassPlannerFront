@@ -7,10 +7,10 @@ import CategorySettings from "@/components/mypage/profile/categorySettings";
 import useAuthStore from "../../../../../store/(auth)/authStore";
 
 interface Title {
-  titleId: number;
+  id: number;
   name: string;
-  description: string;
-  color: string;
+  achieveCondition: string;
+  titleColor: string;
 }
 
 interface UserInfo {
@@ -91,37 +91,38 @@ const Profile: React.FC = () => {
     }
   };
 
+  const fetchTitleInfo = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/title`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        setTitles(data.data.achievedTitleList);
+      }
+    } catch (error) {
+      console.error('Error fetching profile info', error);
+    }
+  };
+
   useEffect(() => {
     initialize();
   }, [initialize]);
 
   useEffect(() => {
+    fetchTitleInfo();
+    fetchCategoriesInfo();
     if (isInitialized) {
       setUserInfo({
         userEmail: email,
         userName: username,
         main_title: 1,
       });
-
-      const testTitleData = [
-        { titleId: 1, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: 2, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: 3, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: 4, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: 5, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-        { titleId: 6, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: 7, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: 8, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: 9, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: 10, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-        { titleId: 11, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: 12, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: 13, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: 14, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: 15, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-      ];
-      setTitles(testTitleData);
-      fetchCategoriesInfo();
     }
   }, [isInitialized, email, username]);
 

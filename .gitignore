@@ -44,4 +44,7 @@ dev.cert
 dev.key
 server.key
 server.cert
-server-local.js
+socketio-aws.js
+socketio-local.js
+socketserver.js
+package.json
