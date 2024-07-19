@@ -61,14 +61,15 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
   }
 
   if (isMobile) {
-    return (
-        <div className={`flex flex-col fixed bottom-20 items-center justify-center max-w-[600px] max-h-[800px] w-[240px]`}>
-          <h2 className="min-h-[24px]">{taskName}</h2>
-          <HourglassAni wd={200} />
-          {isRunning ? <TimerRunning wd={200}/> : <TimerSelector wd={200}/>}
-          <DailyDataModal isOpen={resultModalOpen} onClose={closeResultModal} />
-        </div>
-      );
+    width = 200
+    // return (
+    //     <div className={`flex flex-col mt-auto items-center justify-center max-w-[600px] max-h-[800px] w-[200px]`}>
+    //       <h2 className="min-h-[24px]">{taskName}</h2>
+    //       <HourglassAni wd={180} />
+    //       {isRunning ? <TimerRunning wd={200}/> : <TimerSelector wd={200}/>}
+    //       <DailyDataModal isOpen={resultModalOpen} onClose={closeResultModal} />
+    //     </div>
+    //   );
   }
 
   return (

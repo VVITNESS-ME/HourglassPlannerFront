@@ -309,14 +309,14 @@ export default function VideoChat() {
 
   return (
     <div className="flex flex-col justify-around p-4">
-      <div className="flex flex-row flex-wrap justify-center items-center">
+      <div className="flex flex-wrap justify-center">
         <div
           ref={remoteVideoRefs}
           className="remote-videos"
           style={remoteVideoAdded ? { border: "10px solid #F2CD88" } : {}}
         ></div>
         <div
-          className="flex-1 flex flex-col items-center"
+          className="flex flex-col items-center max-w-[600px]"
         >
           <h1 className="text-xl font-bold mt-3 mb-4 flex justify-center items-center">
             Video Chat - Room {roomId}
@@ -395,10 +395,10 @@ export default function VideoChat() {
               }
             </div>
         </div>
-        <div className="flex flex-row max-w-[500px] justify-center items-center relative">
-        <Hourglass width={220}/>
+        <div className="flex flex-row w-[400px] justify-center items-center relative">
+        <Hourglass width={200}/>
         {/* <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/> */}
-      </div>
+        </div>
       </div>
 
     </div>

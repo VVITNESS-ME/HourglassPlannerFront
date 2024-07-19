@@ -28,24 +28,24 @@ const MainConsole: React.FC = () => {
     <DndProvider backend={HTML5Backend}>
       <div className="min-h-screen p-8">
         <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-          <div className="flex-1 min-w-[400px] max-w-[700px] h-[500px] mb-4 relative">
+          <div className="flex-1 min-w-[400px] max-w-[500px] h-[500px] mb-4 relative">
             <Calendar/>
           </div>
-          <div className="flex-1 min-w-[400px] max-w-[600px] h-[500px] mb-4 relative">
+          <div className="flex-1 min-w-[400px] max-w-[500px] h-[500px] mb-4 relative">
             <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/>
           </div>
-          <div className="flex top-0 justify-center items-center min-w-[400px] max-w-[600px] h-[500px] mb-4 relative bg-[#eeeeee] rounded-lg shadow-lg border">
+          <div className="flex justify-center items-center min-w-[400px] max-w-[550px] h-[500px] mb-4 relative bg-[#eeeeee] rounded-lg shadow-lg border">
             <Hourglass width={200}/>
           </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-          <div className="flex-1 min-w/[400px] max-w/[600px] max-h/[700px] mb-4">
+          <div className="flex-1 min-w-[400px] max-w-[600px] max-h/[700px]">
             <SandTimerTasks/>
           </div>
-          <div className="flex-1 min-w/[400px] max-w/[700px] max-h/[700px] mb-4">
+          <div className="flex-1 min-w-[400px] max-w-[600px] max-h-[700px]">
             <CompletedTasks tasks={completedTasks} setTasks={setCompletedTasks} onTaskComplete={handleTaskComplete}/>
           </div>
-          <div className="flex-1 min-w/[400px] max-w/[700px] max-h/[700px] mb-4">
+          <div className="flex-1 min-w-[400px] max-w-[600px] max-h-[400px]">
             <AchievementCard/>
           </div>
         </div>

@@ -53,8 +53,8 @@ const Sidebar: React.FC = () => {
           />
         </a>
       </Link>
-      <div className='hidden grow bg-transparent md:block md:h-auto md:rounded-md'></div>
       <Hourglass width={120} />
+      <div className='hidden grow bg-transparent md:block md:h-auto md:rounded-md'></div>
     </div>
   );
 };
