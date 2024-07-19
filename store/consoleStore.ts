@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import {create} from 'zustand';
 
 interface Schedule {
   description: string;
@@ -11,6 +11,7 @@ interface ConsoleStore {
 }
 
 const useConsoleStore = create<ConsoleStore>(set => ({
+
   schedules: [],
   setSchedules: (schedules) => set({ schedules }),
 }));
