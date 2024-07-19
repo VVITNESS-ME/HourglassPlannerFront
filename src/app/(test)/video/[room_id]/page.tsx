@@ -5,7 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import LocalVideo from "@/components/general/localVideo";
 import PeerVideo from "@/components/general/peerVideo";
 import Hourglass from "@/components/hourglass/hourglass";
-import VideoChatRoom from "@/components/together/videoChatRoom";
+import TitleStore from "../../../../../store/titleStore";
+import useTitleStore from "../../../../../store/titleStore";
 
 const VideoPage: React.FC = () => {
   const params = useParams();
@@ -18,6 +19,8 @@ const VideoPage: React.FC = () => {
   const signalingServerRef = useRef<WebSocket | null>(null);
   const myIdRef = useRef<string | null>(null);
 
+  const { mainTitle, userName, fetchTitles } = useTitleStore();
+
   useEffect(() => {
     myIdRef.current = myId;
     console.log('myId has been updated:', myId);  // 상태 업데이트 확인을 위해 로그 추가
@@ -28,6 +31,7 @@ const VideoPage: React.FC = () => {
   };
 
   useEffect(() => {
+    fetchTitles()
     const startMedia = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });

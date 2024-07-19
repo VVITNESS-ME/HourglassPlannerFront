@@ -106,7 +106,7 @@ const Profile: React.FC = () => {
         },
       });
     }
-  }, [isInitialized, email, username, mainTitle, fetchTitles]);
+  }, []);
 
   useEffect(() => {
     fetchCategoriesInfo();
