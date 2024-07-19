@@ -25,7 +25,7 @@ const TitleList: React.FC = () => {
             onClick={() => setSelectedTitle(index)}
           >
             <div className="flex w-full items-center space-x-2 ">
-              <strong className="flex-none w-[200px]">{title.name}</strong>
+              <strong className="flex-none w-[100px]">{title.name}</strong>
               <span className="flex-grow truncate">{title.achieveCondition}</span>
             </div>
           </li>
