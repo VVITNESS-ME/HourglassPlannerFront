@@ -16,10 +16,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const pause = useHourglassStore((state) => state.pause);
   const setPause = useHourglassStore((state) => state.setPause);
   const setResume = useHourglassStore((state) => state.setResume);
-
   let timeDoze = 0;
   let timeMia = 0;
   let timeSober = 0;
+  let timeSober2 = 0;
 
   const width = 500; // width를 컴포넌트 내부에서 정의
   const height = 400; // height를 컴포넌트 내부에서 정의
@@ -60,7 +60,8 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeDoze++;
           if (timeDoze > 50) {
             setPause();
-            setShowAvatar(true); // 아바타 표시
+            // setShowAvatar(true); // 아바타 표시
+            avatarManagerRef.current.setAvatarVisibility(true)
             if (audioRef.current) audioRef.current.play();
             timeSober = 0;
           }
@@ -69,20 +70,25 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeMia++;
           if (timeMia > 50) {
             setPause();
-            setShowAvatar(true); // 아바타 표시
+            // setShowAvatar(true); // 아바타 표시
             if (audioRef.current) audioRef.current.play();
             timeSober = 0;
           }
         } else {
           // 정상상태
           timeSober++;
+          timeSober2++;
           if (timeSober > 25) {
             setResume();
-            setShowAvatar(false); // 아바타 숨기기
             if (audioRef.current) audioRef.current.pause();
-            timeSober = 0;
             timeDoze = 0;
             timeMia = 0;
+            timeSober = 0;
+          }
+          if (timeSober2 > 125) {
+            // setShowAvatar(false); // 아바타 숨기기
+            avatarManagerRef.current.setAvatarVisibility(false);
+            timeSober2 = 0;
           }
         }
       } catch (e) {
@@ -212,7 +218,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             enableZoom={false}
             enablePan={false}
           />
-          {showAvatar && scene && <primitive object={scene} />}
+          {scene && <primitive object={scene} />}
           {isLoading && (
             <Float floatIntensity={1} speed={1}>
               <Text3D
