@@ -70,9 +70,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({mainTitle }) => {
             <p><strong>닉네임:</strong> {username}</p>
             <button
               onClick={handleNicknameChange}
-              className="w-[190px] h-[51px] bg-[#4C6C73] rounded-lg text-white text-2xl font-MangoDdobak flex items-center justify-center"
+              className="w-[70px] h-[38px] bg-[#4C6C73] rounded-lg text-white text-xl font-MangoDdobak flex items-center justify-center"
             >
-              닉네임 변경
+              변경
             </button>
           </div>
           <p className="mb-2"><strong>이메일:</strong> {email}</p>
@@ -83,13 +83,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({mainTitle }) => {
         <div className="flex justify-end space-x-4">
           <button
             onClick={handlePasswordChange}
-            className="w-[226px] h-[51px] bg-[#4C6C73] rounded-lg text-white text-2xl font-MangoDdobak flex items-center justify-center"
+            className="w-[150px] h-[38px] bg-[#4C6C73] rounded-lg text-white text-xl font-MangoDdobak flex items-center justify-center"
           >
             비밀번호 변경
           </button>
           <button
             onClick={handleSignOut}
-            className="w-[166px] h-[51px] bg-[#D8A039] rounded-lg text-white text-2xl font-MangoDdobak flex items-center justify-center"
+            className="w-[150px] h-[38px] bg-[#D8A039] rounded-lg text-white text-xl font-MangoDdobak flex items-center justify-center"
           >
             탈퇴하기
           </button>
