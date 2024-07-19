@@ -11,10 +11,10 @@ const Statistics = () => {
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-         <div className="flex-1 min-w-[400px] max-w-[600px] mb-4">
+         <div className="flex-1 w-[453px] mb-4">
            <GardenCalendar/>
          </div>
-         <div className="flex-1 min-w-[400px] max-w-[600px] mb-4">
+         <div className="flex-1 min-w-[453px] mb-4">
            <PieGraph/>
          </div>
       </div>
