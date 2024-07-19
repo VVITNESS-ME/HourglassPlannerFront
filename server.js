@@ -23,6 +23,20 @@ app.prepare().then(() => {
 
   server.use(cors());
 
+  // 방 정보 저장
+  const rooms = new Map();
+
+  // 방에 접속한 유저 수를 응답하는 API 엔드포인트 추가
+  server.get('/room/:roomId/users', (req, res) => {
+  const roomId = req.params.roomId;
+  const room = rooms.get(roomId);
+
+  if (!room) {
+    return res.status(404).json({ error: "없는 roomId입니다." });
+  }
+  return res.json({ userCount: room.size });
+});
+
   // Next.js의 기본 요청 핸들러 설정
   server.all('*', (req, res) => handle(req, res));
 
@@ -35,8 +49,6 @@ app.prepare().then(() => {
       methods: ["GET", "POST"]
     }
   });
-
-  const rooms = new Map();
 
   io.on('connection', (socket) => {
     socket.on('join', (roomId) => {
