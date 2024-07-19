@@ -5,6 +5,7 @@ import TitleList from '@/components/mypage/profile/titleList';
 import ProfileCard from '@/components/mypage/profile/profileCard';
 import CategorySettings from "@/components/mypage/profile/categorySettings";
 import useAuthStore from "../../../../../store/(auth)/authStore";
+import useTitleStore from "../../../../../store/titleStore";
 
 interface Title {
   id: number;
@@ -16,7 +17,7 @@ interface Title {
 interface UserInfo {
   userEmail: string;
   userName: string;
-  main_title: number;
+  main_title: Title;
 }
 
 interface UserCategory {
@@ -26,10 +27,9 @@ interface UserCategory {
 }
 
 const Profile: React.FC = () => {
-  const [titles, setTitles] = useState<Title[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [mainTitle, setMainTitle] = useState<Title | null>(null);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+  const { mainTitle, fetchTitles } = useTitleStore();
   const { username, email, isInitialized, initialize } = useAuthStore(state => ({
     username: state.username,
     email: state.email,
@@ -38,20 +38,17 @@ const Profile: React.FC = () => {
   }));
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
-    // Calculate the new ID
     const maxId = userCategories.reduce((max, category) => (category.categoryId > max ? category.categoryId : max), 0);
     const newCategoryId = maxId + 1;
 
-    const newCategory: { categoryId: number; color: string; categoryName: string } = {
+    const newCategory = {
       categoryId: newCategoryId,
       categoryName: category.categoryName,
       color: category.color,
     };
 
-    // Optimistically update the UI
-    setUserCategories((prevCategories) => [...prevCategories, newCategory]);
+    setUserCategories(prevCategories => [...prevCategories, newCategory]);
 
-    // Attempt to add the category to the server
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
         method: 'POST',
@@ -91,40 +88,29 @@ const Profile: React.FC = () => {
     }
   };
 
-  const fetchTitleInfo = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/title`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-      const data = await response.json();
-      console.log(data);
-      if (response.ok) {
-        setTitles(data.data.achievedTitleList);
-      }
-    } catch (error) {
-      console.error('Error fetching profile info', error);
-    }
-  };
-
   useEffect(() => {
     initialize();
   }, [initialize]);
 
   useEffect(() => {
-    fetchTitleInfo();
-    fetchCategoriesInfo();
     if (isInitialized) {
+      fetchTitles();
       setUserInfo({
         userEmail: email,
         userName: username,
-        main_title: 1,
+        main_title: {
+          id: mainTitle?.id ?? 0,
+          name: mainTitle?.name ?? '',
+          achieveCondition: mainTitle?.achieveCondition ?? '',
+          titleColor: mainTitle?.titleColor ?? '',
+        },
       });
     }
-  }, [isInitialized, email, username]);
+  }, [isInitialized, email, username, mainTitle, fetchTitles]);
+
+  useEffect(() => {
+    fetchCategoriesInfo();
+  }, []);
 
   return (
     <div>
@@ -138,7 +124,7 @@ const Profile: React.FC = () => {
       </div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
         <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
-          <TitleList titles={titles} setUserInfo={setUserInfo} />
+          <TitleList/>
         </div>
         <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
         </div>
