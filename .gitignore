@@ -44,5 +44,4 @@ dev.cert
 dev.key
 server.key
 server.cert
-server.js
 server-local.js
