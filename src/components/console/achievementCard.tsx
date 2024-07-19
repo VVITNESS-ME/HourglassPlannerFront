@@ -68,8 +68,8 @@ const AchievementCard: React.FC = () => {
   const [activities, setActivities] = useState<{ label: string, time: number, burst: number, color: string }[]>([]);
   const [totalTime, setTotalTime] = useState(0);
   const [totalBurstTime, setTotalBurstTime] = useState(0);
-  const { isRunning } = useHourglassStore();
-  const fetchData = useCallback(async (date: Date) => {
+  const { dailyData } = useHourglassStore();
+  const fetchData = (async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
@@ -120,11 +120,11 @@ const AchievementCard: React.FC = () => {
     } catch (error) {
       console.error('Error fetching data', error);
     }
-  }, []);
+  });
 
   useEffect(() => {
     fetchData(new Date());
-  }, [fetchData, isRunning]);
+  }, [dailyData]);
 
   const data = {
     labels: [''],

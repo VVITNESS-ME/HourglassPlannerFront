@@ -15,7 +15,7 @@ const Diary: React.FC = () => {
         <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
           <Calendar/>
         </div>
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+        <div className="flex-1 w-[426.5px] h-[442px] mb-4">
           <TilConsole/>
         </div>
       </ div>

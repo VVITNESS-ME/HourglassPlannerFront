@@ -10,6 +10,7 @@ const Calendar: React.FC = () => {
   const { setHourglasses, setTil, selectedDate, setSelectedDate } = useDiaryStore();
 
   const fetchData = useCallback(async (date: Date) => {
+    date.setHours(12);
     const formattedDate = format(date, 'yyyy-MM-dd');
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
@@ -39,11 +40,8 @@ const Calendar: React.FC = () => {
   }, [fetchData, setSelectedDate]);
 
   const handleDayClick = (day: Date) => {
-    const today = new Date();
-    if (day <= today) {
       setSelectedDate(day);
       fetchData(day);
-    }
   };
 
   const renderHeader = () => {
@@ -98,13 +96,12 @@ const Calendar: React.FC = () => {
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
-        const isFutureDate = day > new Date();
         const isSelected = selectedDate ? isSameDay(day, selectedDate) : false; // 변경된 부분
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : isSelected ? styles.selected : ""} ${isFutureDate ? styles.future : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? styles.disabled : isSelected ? styles.selected : ""}`}
             key={day.toString()}
-            onClick={() => !isFutureDate && handleDayClick(cloneDay)}
+            onClick={() => handleDayClick(cloneDay)}
           >
             <span className={styles.number}>{formattedDate}</span>
           </div>

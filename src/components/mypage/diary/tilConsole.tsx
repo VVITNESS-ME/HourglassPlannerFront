@@ -95,7 +95,7 @@ const TilConsole: React.FC = () => {
   };
 
   return (
-    <div className="p-4 bg-[#eeeeee] border rounded shadow-lg min-w-[400px] max-w-[600px]">
+    <div className="p-4 bg-[#eeeeee] border rounded shadow-lg w-full h-full">
       <input
         type="date"
         value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
@@ -117,11 +117,11 @@ const TilConsole: React.FC = () => {
         </div>
       )}
       {isEditing ? (
-        <div>
+        <div className="overflow-scroll">
           <textarea
             value={newTil?.content || ''}
             onChange={handleContentChange}
-            className="w-full min-h-[230px] p-2 border rounded mb-4"
+            className="w-full h-[220px] p-2 border rounded mb-4"
             rows={4}
           />
           <button onClick={handleSaveButtonClick} className="bg-sandy-3 text-white py-2 px-4 rounded">
@@ -133,19 +133,24 @@ const TilConsole: React.FC = () => {
         </div>
       ) : (
         <div>
-          <p className="text-gray-600 mb-4" onClick={openTilContentModal}>{til?.content || '아직 작성된 TIL이 없습니다'}</p>
-          <button onClick={handleEditButtonClick} className="bg-sandy-3 text-white py-2 px-4 rounded">
-            일지 작성
-          </button>
-          <button onClick={openModal} className="bg-green-500 text-white py-2 px-4 rounded ml-2">
-            일지 작성 도우미 열기
-          </button>
+          <div className="overflow-scroll h-[250px]">
+            <p className="text-gray-600 mb-4 h-full"
+               onClick={openTilContentModal}>{til?.content || '아직 작성된 TIL이 없습니다'}</p>
+          </div>
+          <div className="pt-4">
+            <button onClick={handleEditButtonClick} className="bg-sandy-3 text-white py-2 px-4 rounded">
+              일지 작성
+            </button>
+            <button onClick={openModal} className="bg-green-500 text-white py-2 px-4 rounded ml-2">
+              일지 작성 도우미 열기
+            </button>
+          </div>
         </div>
-      )}
-      <TilModal isOpen={isModalOpen} onClose={closeModal} />
-      <TilContentModal isOpen={isTilContentModalOpen} onClose={closeTilContentModal} til={til} /> {/* 새로운 모달 추가 */}
-    </div>
-  );
-};
+          )}
+          <TilModal isOpen={isModalOpen} onClose={closeModal}/>
+          <TilContentModal isOpen={isTilContentModalOpen} onClose={closeTilContentModal} til={til}/> {/* 새로운 모달 추가 */}
+        </div>
+      );
+      };
 
-export default TilConsole;
+      export default TilConsole;
