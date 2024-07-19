@@ -29,7 +29,7 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
   const stopTimerWithNOAuth = useHourglassStore((state) => state.stopTimerWithNOAuth);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
   const popUpModal = useHourglassStore((state) => state.popUpModal);
-  const [hideTimer, toggleTimer] = useState(false);
+  const [hideTimer, toggleTimer] = useState(true);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
   
   const hideToggle = () => { toggleTimer(!hideTimer); };
