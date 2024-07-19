@@ -1,4 +1,6 @@
 import create from 'zustand';
+import { decodeJwt } from "./(auth)/jwtDecode";
+import Cookies from "js-cookie";
 
 interface Title {
   id: number;
@@ -10,6 +12,7 @@ interface Title {
 interface TitleStore {
   achievedTitles: Title[];
   notAchievedTitles: Title[];
+  userName: string;
   mainTitle: Title | null;
   fetchTitles: () => Promise<void>;
   setMainTitle: (titleId: number) => Promise<void>;
@@ -18,6 +21,7 @@ interface TitleStore {
 const useTitleStore = create<TitleStore>((set) => ({
   achievedTitles: [],
   notAchievedTitles: [],
+  userName: '',
   mainTitle: null,
   fetchTitles: async () => {
     try {
@@ -29,11 +33,15 @@ const useTitleStore = create<TitleStore>((set) => ({
         credentials: 'include',
       });
       const data = await response.json();
+      const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token') || '';
+      const decoded = decodeJwt(token);
       set({
         achievedTitles: data.data.achievedTitleList,
         notAchievedTitles: data.data.notAchievedTitleList,
         mainTitle: data.data.mainTitle,
+        userName: decoded.sub,
       });
+      console.log(decoded.sub);
     } catch (error) {
       console.error('Failed to fetch titles', error);
     }
