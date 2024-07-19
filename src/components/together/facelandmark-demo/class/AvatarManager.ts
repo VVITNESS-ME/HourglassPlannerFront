@@ -7,9 +7,11 @@ class AvatarManager {
   private static instance: AvatarManager = new AvatarManager();
   private scene!: THREE.Scene;
   isModelLoaded = false;
-  private avatarVisible = false;
+  private avatarVisible = true;
   private blinkStartTime: number | null = null;
+  private blinkEndTime: number | null = null;
   private blinkThreshold = 0.1 * 1000; // 1 second in milliseconds
+  private visibilityDuration = 5 * 1000; // 5 seconds in milliseconds
 
   private constructor() {
     this.scene = new THREE.Scene();
@@ -42,14 +44,14 @@ class AvatarManager {
 
   updateFacialTransforms = (results: FaceLandmarkerResult, flipped = true) => {
     // 얼굴이 감지되는지 확인
-    if (!results || !this.isModelLoaded  || !results.faceLandmarks?.length) {
+    if (!results || !this.isModelLoaded || !results.faceLandmarks?.length) {
       return 3;
-    };
+    }
 
     const isBlinking = this.checkBlinking(results);
     // this.updateBlinkTime(isBlinking);
 
-    // const shouldShowAvatar = this.blinkStartTime !== null && (Date.now() - this.blinkStartTime) >= this.blinkThreshold;
+    // const shouldShowAvatar = this.shouldAvatarBeVisible();
     // this.setAvatarVisibility(shouldShowAvatar);
 
     if (this.avatarVisible) {
@@ -60,10 +62,9 @@ class AvatarManager {
     // 눈이 감긴 상태인지 아닌지 확인
     if (isBlinking) {
       return 1;
-    } else{
+    } else {
       return 2;
     }
-
   };
 
   checkBlinking = (results: FaceLandmarkerResult): boolean => {
@@ -85,9 +86,27 @@ class AvatarManager {
       if (this.blinkStartTime === null) {
         this.blinkStartTime = Date.now();
       }
+      this.blinkEndTime = null;
     } else {
+      if (this.blinkStartTime !== null) {
+        this.blinkEndTime = Date.now();
+      }
       this.blinkStartTime = null;
     }
+  };
+
+  shouldAvatarBeVisible = (): boolean => {
+    if (!this.isModelLoaded) {
+      return false;
+    }
+
+    if (this.blinkStartTime !== null) {
+      return Date.now() - this.blinkStartTime >= this.blinkThreshold;
+    }
+    if (this.blinkEndTime !== null) {
+      return Date.now() - this.blinkEndTime < this.visibilityDuration;
+    }
+    return false;
   };
 
   setAvatarVisibility = (visible: boolean) => {
