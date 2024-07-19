@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import useDiaryStore from '../../../../store/diaryStore';
 import TilModal from "@/components/mypage/diary/tilModal";
+import LoadingModal from "@/components/mypage/diary/loadingModal";
+import TilContentModal from "@/components/mypage/diary/tilContentModal"; // 새로운 TilContentModal 컴포넌트 import
 
 interface Til {
   title: string | null;
@@ -10,45 +12,19 @@ interface Til {
 }
 
 const TilConsole: React.FC = () => {
-  const { til, setTil, selectedDate, setSelectedDate } = useDiaryStore();
+  const { til, fetchTil, setTil, selectedDate, setSelectedDate } = useDiaryStore();
   const [isEditing, setIsEditing] = useState(false);
   const [newTil, setNewTil] = useState<Til | null>(til);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTilContentModalOpen, setIsTilContentModalOpen] = useState(false); // til 내용을 위한 모달 상태 추가
 
   useEffect(() => {
-    if (selectedDate) {
-      fetchTil();
-    }
+    fetchTil();
   }, [selectedDate]);
 
-  const fetchTil = async () => {
-    try {
-      if (!selectedDate) return;
-
-      const formattedDate = formatDate(selectedDate);
-      const response = await fetch(`/api/today-i-learned/${formattedDate}/original`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const fetchedTil = {
-          title: data.data.title,
-          content: data.data.content,
-        };
-        setTil(fetchedTil);
-        setNewTil(fetchedTil);
-        setIsEditing(false);
-      } else {
-        console.error('Failed to fetch TIL');
-      }
-    } catch (error) {
-      console.error('Error fetching TIL', error);
-    }
-  };
+  useEffect(() => {
+    setNewTil(til);
+  }, [til]);
 
   const formatDate = (date: Date): string => {
     return date.toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 변환
@@ -110,8 +86,16 @@ const TilConsole: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const openTilContentModal = () => {
+    setIsTilContentModalOpen(true);
+  };
+
+  const closeTilContentModal = () => {
+    setIsTilContentModalOpen(false);
+  };
+
   return (
-    <div className="p-4 border rounded shadow-lg min-w-[400px] max-w-[600px]">
+    <div className="p-4 bg-[#eeeeee] border rounded shadow-lg min-w-[400px] max-w-[600px]">
       <input
         type="date"
         value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
@@ -128,7 +112,7 @@ const TilConsole: React.FC = () => {
           />
         </div>
       ) : (
-        <div className="text-lg mb-4">
+        <div className="text-lg mb-4" onClick={openTilContentModal}>
           {til?.title || '아직 작성된 TIL이 없습니다'}
         </div>
       )}
@@ -137,25 +121,29 @@ const TilConsole: React.FC = () => {
           <textarea
             value={newTil?.content || ''}
             onChange={handleContentChange}
-            className="w-full p-2 border rounded mb-4"
+            className="w-full min-h-[230px] p-2 border rounded mb-4"
             rows={4}
           />
-          <button onClick={handleSaveButtonClick} className="bg-blue-500 text-white py-2 px-4 rounded">
+          <button onClick={handleSaveButtonClick} className="bg-sandy-3 text-white py-2 px-4 rounded">
             저장
+          </button>
+          <button onClick={openModal} className="bg-green-500 text-white py-2 px-4 rounded ml-2">
+            일지 작성 도우미 열기
           </button>
         </div>
       ) : (
         <div>
-          <p className="text-gray-600 mb-4">{til?.content || '아직 작성된 TIL이 없습니다'}</p>
-          <button onClick={handleEditButtonClick} className="bg-yellow-500 text-white py-2 px-4 rounded">
+          <p className="text-gray-600 mb-4" onClick={openTilContentModal}>{til?.content || '아직 작성된 TIL이 없습니다'}</p>
+          <button onClick={handleEditButtonClick} className="bg-sandy-3 text-white py-2 px-4 rounded">
             일지 작성
+          </button>
+          <button onClick={openModal} className="bg-green-500 text-white py-2 px-4 rounded ml-2">
+            일지 작성 도우미 열기
           </button>
         </div>
       )}
-      <button onClick={openModal} className="bg-green-500 text-white py-2 px-4 rounded">
-        일지 작성 도우미 열기
-      </button>
       <TilModal isOpen={isModalOpen} onClose={closeModal} />
+      <TilContentModal isOpen={isTilContentModalOpen} onClose={closeTilContentModal} til={til} /> {/* 새로운 모달 추가 */}
     </div>
   );
 };

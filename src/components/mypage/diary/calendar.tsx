@@ -7,7 +7,7 @@ import styles from './calendar.module.css';
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { hourglasses, setHourglasses, setTil, selectedDate, setSelectedDate } = useDiaryStore();
+  const { setHourglasses, setTil, selectedDate, setSelectedDate } = useDiaryStore();
 
   const fetchData = useCallback(async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
@@ -130,7 +130,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className={styles.calendar}>
+    <div className="max-w-[800px] min-w-[400px] border box-border bg-[#eeeeee] rounded-lg shadow-lg pt-10 pb-14">
       {renderHeader()}
       {renderDays()}
       {renderCells()}

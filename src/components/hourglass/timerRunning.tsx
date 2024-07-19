@@ -13,7 +13,11 @@ interface UserCategory {
   color: string;
 }
 
-const TimerRunning: React.FC = () => {
+interface Props {
+  wd: number
+}
+
+const TimerRunning: React.FC<Props> = ({wd}) => {
   const timeBurst = useHourglassStore((state) => state.timeBurst);
   const timeGoal = useHourglassStore((state) => state.timeGoal);
   const isRunning = useHourglassStore((state) => state.isRunning);
@@ -27,7 +31,7 @@ const TimerRunning: React.FC = () => {
   const popUpModal = useHourglassStore((state) => state.popUpModal);
   const [hideTimer, toggleTimer] = useState(false);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
-
+  
   const hideToggle = () => { toggleTimer(!hideTimer); };
 
   const stopTimerAndFetchCategories = useCallback(async () => {
@@ -102,18 +106,18 @@ const TimerRunning: React.FC = () => {
     return () => clearInterval(timer as NodeJS.Timeout);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
 
-  return (
-    <div className='flex flex-col w-max justify-center items-center text-2xl'>
+
+  if(wd>250) return (
+    <div className='flex flex-col w-max justify-center items-center text-lg md:text-2xl mb-4'>
       <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
       <div {...(hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" })}>
-        <div className='mt-6'>
+        <div className='mt-4 mb-2'>
           {timeGoal !== null ? (
             timeGoal - (timeBurst || 0) > 86400000
               ? <p>진행시간: {formatRemainingTime(timeBurst || 0)}</p>
               : <p>남은시간: {formatRemainingTime(timeGoal - (timeBurst || 0))}</p>
           ) : 'N/A'}
         </div>
-        <button className='mt-2' onClick={togglePause}>pause/restart</button>
       </div>
       <div>
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
@@ -121,6 +125,24 @@ const TimerRunning: React.FC = () => {
       <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
     </div>
   );
+  else return(
+    <div className='flex flex-col w-max justify-center items-center text-lg md:text-lg'>
+    <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
+    <div {...(hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" })}>
+      <div className='mt-1'>
+        {timeGoal !== null ? (
+          timeGoal - (timeBurst || 0) > 86400000
+            ? <p>진행시간: {formatRemainingTime(timeBurst || 0)}</p>
+            : <p>남은시간: {formatRemainingTime(timeGoal - (timeBurst || 0))}</p>
+        ) : 'N/A'}
+      </div>
+    </div>
+    <div>
+      <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10'/>
+    </div>
+    <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
+  </div>
+  )
 };
 
 export default TimerRunning;

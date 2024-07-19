@@ -5,18 +5,19 @@ import TitleList from '@/components/mypage/profile/titleList';
 import ProfileCard from '@/components/mypage/profile/profileCard';
 import CategorySettings from "@/components/mypage/profile/categorySettings";
 import useAuthStore from "../../../../../store/(auth)/authStore";
+import useTitleStore from "../../../../../store/titleStore";
 
 interface Title {
-  titleId: number;
+  id: number;
   name: string;
-  description: string;
-  color: string;
+  achieveCondition: string;
+  titleColor: string;
 }
 
 interface UserInfo {
   userEmail: string;
   userName: string;
-  main_title: number;
+  main_title: Title;
 }
 
 interface UserCategory {
@@ -26,10 +27,9 @@ interface UserCategory {
 }
 
 const Profile: React.FC = () => {
-  const [titles, setTitles] = useState<Title[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [mainTitle, setMainTitle] = useState<Title | null>(null);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+  const { mainTitle, fetchTitles } = useTitleStore();
   const { username, email, isInitialized, initialize } = useAuthStore(state => ({
     username: state.username,
     email: state.email,
@@ -38,26 +38,24 @@ const Profile: React.FC = () => {
   }));
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
-    // Calculate the new ID
     const maxId = userCategories.reduce((max, category) => (category.categoryId > max ? category.categoryId : max), 0);
     const newCategoryId = maxId + 1;
 
-    const newCategory: { categoryId: number; color: string; categoryName: string } = {
+    const newCategory = {
       categoryId: newCategoryId,
       categoryName: category.categoryName,
       color: category.color,
     };
 
-    // Optimistically update the UI
-    setUserCategories((prevCategories) => [...prevCategories, newCategory]);
+    setUserCategories(prevCategories => [...prevCategories, newCategory]);
 
-    // Attempt to add the category to the server
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(newCategory),
       });
 
@@ -96,33 +94,23 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (isInitialized) {
+      fetchTitles();
       setUserInfo({
         userEmail: email,
         userName: username,
-        main_title: 1,
+        main_title: {
+          id: mainTitle?.id ?? 0,
+          name: mainTitle?.name ?? '',
+          achieveCondition: mainTitle?.achieveCondition ?? '',
+          titleColor: mainTitle?.titleColor ?? '',
+        },
       });
-
-      const testTitleData = [
-        { titleId: 1, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: 2, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: 3, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: 4, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: 5, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-        { titleId: 6, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: 7, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: 8, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: 9, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: 10, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-        { titleId: 11, name: '망부석', description: '3시간 동안 자리이탈/졸음 없음', color: '#228B22' },
-        { titleId: 12, name: '원펀맨', description: '운동 카테고리 100시간 달성', color: '#1E90FF' },
-        { titleId: 13, name: '전 집중 호흡', description: '1시간 동안 자리이탈/졸음 없음', color: '#8A2BE2' },
-        { titleId: 14, name: '시작이 반', description: '10분 모래시계 완료', color: '#FFD700' },
-        { titleId: 15, name: '그건 제 잔상입니다만', description: '30분 이내 10회 이상 자리이탈/졸음', color: '#FF69B4' },
-      ];
-      setTitles(testTitleData);
-      fetchCategoriesInfo();
     }
-  }, [isInitialized, email, username]);
+  }, [isInitialized, email, username, mainTitle, fetchTitles]);
+
+  useEffect(() => {
+    fetchCategoriesInfo();
+  }, []);
 
   return (
     <div>
@@ -136,7 +124,7 @@ const Profile: React.FC = () => {
       </div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
         <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
-          <TitleList titles={titles} setUserInfo={setUserInfo} />
+          <TitleList/>
         </div>
         <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
         </div>

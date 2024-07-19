@@ -13,10 +13,10 @@ interface UserInfo {
 }
 
 interface Title {
-  titleId: number;
+  id: number;
   name: string;
-  description: string;
-  color: string;
+  achieveCondition: string;
+  titleColor: string;
 }
 
 interface ProfileCardProps {

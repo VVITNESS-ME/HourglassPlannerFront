@@ -18,9 +18,11 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
   return (
     <html lang="ko">
     <body className={mango.className}>
+    <div className="bg-transparent w-screen h-screen -z-50">
     <Navbar />
-    <div className="pt-10 flex flex-col">
+    <div className="">
       {children}
+    </div>
     </div>
     </body>
     </html>

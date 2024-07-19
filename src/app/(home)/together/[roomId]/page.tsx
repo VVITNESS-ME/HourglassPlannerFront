@@ -1,10 +1,14 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 import Image from "next/image";
 import AvatarCanvas from "@/components/general/localVideo2"; // Update this with the correct path to AvatarCanvas
 import { set } from "date-fns";
+import useRoomStore from "../../../../../store/roomStore";
+import Hourglass from "@/components/hourglass/hourglass";
+import { Task } from '@/type/types';
+import TodayTasks from "@/components/console/todayTasks";
 
 export default function VideoChat() {
   const params = useParams();
@@ -21,6 +25,36 @@ export default function VideoChat() {
 
   const [remoteVideoAdded, setRemoteVideoAdded] = useState(false); // 원격 접속자가 있을 때만 remote video 추가
   const [clickedConnect, setClickedConnect] = useState<boolean>(false); // Connect Video 버튼 클릭 여부
+
+
+  const { password } = useRoomStore(state => ({password: state.roomPassword}));
+  const router = useRouter();
+  const handleJoinRoom = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({password: password}),
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        return;
+      } else {router.push("/together");}
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
+  const [todayTasks, setTodayTasks] = useState<Task[]>([]);
+
+  const handleTaskComplete = (taskId: number) => {
+    return;
+  };
 
   const createPeerConnection = useCallback(
     (userId: string) => {
@@ -170,7 +204,7 @@ export default function VideoChat() {
 
   useEffect(() => {
     if (!roomId) return;
-
+    handleJoinRoom()
     const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
     socketRef.current = newSocket;
 
@@ -274,20 +308,15 @@ export default function VideoChat() {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex">
+    <div className="flex flex-col justify-around p-4">
+      <div className="flex flex-wrap justify-center">
         <div
           ref={remoteVideoRefs}
           className="remote-videos"
           style={remoteVideoAdded ? { border: "10px solid #F2CD88" } : {}}
         ></div>
         <div
-          className="flex-1 flex flex-col items-center"
-          style={{
-            border: "10px solid #F2CD88",
-            marginLeft: "30vh",
-            marginRight: "30vh",
-          }}
+          className="flex flex-col items-center max-w-[600px]"
         >
           <h1 className="text-xl font-bold mt-3 mb-4 flex justify-center items-center">
             Video Chat - Room {roomId}
@@ -350,21 +379,28 @@ export default function VideoChat() {
           </div>
             <div className="call-menu py-5">
               {
-                clickedConnect ? (<button
+                clickedConnect ? (<Image
                   onClick={startCall}
-                  className="px-4 py-2 border border-black"
-                >
-                  Start Call
-                </button>) : (<button
+                  src="/img/videochat/start-call.png"
+                  alt="Start Call"
+                  width={60}
+                  height={60}
+                  />) : (<Image
                 onClick={() => {connectVideo(localStream!); setClickedConnect(true);}}
-                className="px-4 py-2 border border-black mr-2"
-              >
-                Connect Video
-              </button>)
+                src="/img/videochat/connect-video.png"
+                alt="Connect Video"
+                width={60}
+                height={60}
+              />)
               }
             </div>
         </div>
+        <div className="flex flex-row w-[400px] justify-center items-center relative">
+        <Hourglass width={200}/>
+        {/* <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/> */}
+        </div>
       </div>
+
     </div>
   );
 }

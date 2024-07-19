@@ -29,7 +29,7 @@ const SandTimerTasks: React.FC = () => {
   }, [schedules]); // schedules가 변경될 때마다 이 effect를 다시 실행
 
   return (
-    <CardLayout title="모래시계 비서" color="bg-green-200"> {/* 배경색 수정 */}
+    <CardLayout title="모래시계 비서"> {/* 배경색 수정 */}
       <ul>
         {sortedTasks.map((task, index) => (
           <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap pr-4">

@@ -1,11 +1,11 @@
 // AvatarCanvas.tsx
-'use client';
-import * as THREE from 'three';
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
+"use client";
+import * as THREE from "three";
+import { Canvas, useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import AvatarManager from "@/components/together/facelandmark-demo/class/AvatarManager";
-import { useHourglassStore } from '../../../store/hourglassStore';
+import { useHourglassStore } from "../../../store/hourglassStore";
 
 interface VideoProps {
   stream: MediaStream | null;
@@ -16,17 +16,18 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const pause = useHourglassStore((state) => state.pause);
   const setPause = useHourglassStore((state) => state.setPause);
   const setResume = useHourglassStore((state) => state.setResume);
-
   let timeDoze = 0;
   let timeMia = 0;
   let timeSober = 0;
+  let timeSober2 = 0;
 
-  const width = 600; // width를 컴포넌트 내부에서 정의
+  const width = 500; // width를 컴포넌트 내부에서 정의
   const height = 400; // height를 컴포넌트 내부에서 정의
   const url = "https://models.readyplayer.me/66922d78d77fc1238cb520a1.glb"; // 모델 URL을 컴포넌트 내부에서 정의
 
   const [scene, setScene] = useState<THREE.Scene | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAvatar, setShowAvatar] = useState(false); // 아바타 표시 여부 상태 추가
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -35,7 +36,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
-
+  const audioRef = useRef<HTMLAudioElement>(null);
   const animate = useCallback(() => {
     if (
       videoRef.current &&
@@ -44,30 +45,52 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       lastVideoTimeRef.current = videoRef.current.currentTime;
       try {
         // FaceLandmarkManager가 CSR로만 실행되도록 설정 - unhandledRejection: ReferenceError: document is not defined 에러 수정
-        const FaceLandmarkManager = require('../bbmode/FaceLandmarkManager').default;
+        const FaceLandmarkManager =
+          require("../bbmode/FaceLandmarkManager").default;
         const faceLandmarkManager = FaceLandmarkManager.getInstance();
         faceLandmarkManager.detectLandmarks(videoRef.current, Date.now());
         const results = faceLandmarkManager.getResults();
-        avatarManagerRef.current.updateFacialTransforms(results, true);
-        
-        const faceStatus = avatarManagerRef.current.updateFacialTransforms(results, true);
+        const faceStatus = avatarManagerRef.current.updateFacialTransforms(
+          results,
+          true
+        );
 
-        if (faceStatus == 1) { // 눈감음
+        if (faceStatus == 1) {
+          // 눈감음
           timeDoze++;
-          if (timeDoze > 50) { setPause(); timeSober = 0}
-        } else if (faceStatus == 3) { // 자리이탈
+          if (timeDoze > 50) {
+            setPause();
+            // setShowAvatar(true); // 아바타 표시
+            avatarManagerRef.current.setAvatarVisibility(true)
+            if (audioRef.current) audioRef.current.play();
+            timeSober = 0;
+          }
+        } else if (faceStatus == 3) {
+          // 자리이탈
           timeMia++;
-          if (timeMia > 50) { setPause(); timeSober = 0}
-        } else { // 정상상태
+          if (timeMia > 50) {
+            setPause();
+            // setShowAvatar(true); // 아바타 표시
+            if (audioRef.current) audioRef.current.play();
+            timeSober = 0;
+          }
+        } else {
+          // 정상상태
           timeSober++;
+          timeSober2++;
           if (timeSober > 25) {
             setResume();
-            timeSober = 0;
+            if (audioRef.current) audioRef.current.pause();
             timeDoze = 0;
             timeMia = 0;
+            timeSober = 0;
+          }
+          if (timeSober2 > 125) {
+            // setShowAvatar(false); // 아바타 숨기기
+            avatarManagerRef.current.setAvatarVisibility(false);
+            timeSober2 = 0;
           }
         }
-
       } catch (e) {
         console.log(e);
       }
@@ -80,6 +103,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
+          audio: true,
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -88,9 +112,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             requestRef.current = requestAnimationFrame(animate);
           };
         }
+        streamRef.current = stream; // 스트림을 저장해 둡니다.
       } catch (e) {
         console.log(e);
-        alert("Failed to load webcam!");
+        alert("Failed to load webcam or microphone!");
       }
     };
     getUserCamera();
@@ -114,9 +139,19 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
 
   useEffect(() => {
     if (combinedCanvasRef.current) {
-      const stream = combinedCanvasRef.current.captureStream();
-      streamRef.current = stream;
-      onStreamReady(stream);
+      const canvasStream = combinedCanvasRef.current.captureStream();
+      // Get the audio track from the original user media stream
+      const audioTrack =
+        videoRef.current?.srcObject instanceof MediaStream
+          ? videoRef.current.srcObject.getAudioTracks()[0]
+          : null;
+      if (audioTrack) {
+        // Add the audio track to the canvas stream
+        canvasStream.addTrack(audioTrack);
+      }
+
+      streamRef.current = canvasStream;
+      onStreamReady(canvasStream);
     }
   }, [isLoading, onStreamReady]);
 
@@ -126,7 +161,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       rendererRef.current = gl;
       const render = () => {
         if (combinedCanvasRef.current && videoRef.current) {
-          const ctx = combinedCanvasRef.current.getContext('2d');
+          const ctx = combinedCanvasRef.current.getContext("2d");
           if (ctx) {
             ctx.save();
             ctx.scale(-1, 1); // X 축을 반전시킴
@@ -145,24 +180,32 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   };
 
   return (
-    <div className="flex justify-center relative" style={{ width: width, height: height }}>
+    <div
+      className="flex justify-center relative"
+      style={{ width: width, height: height }}
+    >
       <video
-        className='w-full h-auto'
+        className="w-full h-auto"
         ref={videoRef}
         loop={true}
         muted={true}
         autoPlay={true}
         playsInline={true}
         style={{
-          position: 'absolute',
+          position: "absolute",
           zIndex: -1,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          transform: 'scaleX(-1)',
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transform: "scaleX(-1)",
         }}
       />
-      <canvas ref={combinedCanvasRef} width={width} height={height} style={{ display: 'none' }} />
+      <canvas
+        ref={combinedCanvasRef}
+        width={width}
+        height={height}
+        style={{ display: "none" }}
+      />
       <div className="absolute" style={{ width: width, height: height }}>
         <Canvas camera={{ fov: 30, position: [0, 0.5, 1] }}>
           <Renderer />
@@ -191,6 +234,11 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             </Float>
           )}
         </Canvas>
+      </div>
+      <div style={{ display: "hidden" }}>
+        <audio ref={audioRef}>
+          <source src="../wakeupCall.mp3" type="audio/mpeg" />
+        </audio>
       </div>
     </div>
   );

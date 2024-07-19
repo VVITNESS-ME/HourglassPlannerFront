@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import useDiaryStore from '../../../../store/diaryStore';
 import Button from '../profile/button';
+import LoadingModal from "@/components/mypage/diary/loadingModal";
 
 interface TilModalProps {
   isOpen: boolean;
@@ -10,12 +11,13 @@ interface TilModalProps {
 }
 
 const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
-  const { selectedDate, hourglasses, til, setTil } = useDiaryStore();
+  const { selectedDate, hourglasses, til, setTil} = useDiaryStore();
   const [description, setDescription] = useState('');
   const [aiTitle, setAiTitle] = useState('');
   const [aiResult, setAiResult] = useState('');
   const [title, setTitle] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [isLoadingModalOpen, setIsLoadingModalOpen] = useState<boolean>(false);
 
   const uniqueCategories = Array.from(new Set(hourglasses.map(h => h.categoryName)));
 
@@ -46,6 +48,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
 
   const conVertTil = async () => {
     try {
+      setIsLoadingModalOpen(true);
       const formattedDate = formatDate(selectedDate!);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/today-i-learned/modify`, {
         method: 'POST',
@@ -67,13 +70,14 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
       }
     } catch (error) {
       console.error('Error updating TIL', error);
+    }finally {
+      setIsLoadingModalOpen(false);
     }
   };
 
   const handleSaveButtonClick = async () => {
     try {
-      if (!selectedDate || !aiTitle || !aiResult) return; // 수정된 조건
-
+      if (!selectedDate || !aiTitle || !aiResult) return;
       const formattedDate = formatDate(selectedDate);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/today-i-learned/${formattedDate}/modified`, {
         method: 'POST',
@@ -104,6 +108,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+      <LoadingModal isOpen={isLoadingModalOpen} />
       <div className="bg-yellow-300 rounded-lg p-8 shadow-lg w-full max-w-4xl relative">
         <button
           className="absolute top-4 right-4 text-black text-2xl font-bold"

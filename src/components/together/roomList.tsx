@@ -16,29 +16,13 @@ interface Room {
   participants: number;
 }
 
-const defaultRooms: Room[] = [
-  // try get: /together/list => if response success, JSON.parse(data), else redirect to rootpage
-  {roomId: 1,title: '그래프 알고리즘 공부하실분~', isSecretRoom: true, limit: 4, participants: 3},
-  {roomId: 2,title: '같이 청소년 상어 푸실실 비법: 문제풀이', isSecretRoom: false, limit: 4, participants: 1},
-  {roomId: 3, title: '서로 감시하는 스터디 카페 (결과만 봄)', isSecretRoom: true, limit: 4, participants: 3},
-  {roomId: 4, title: '질문/취업 고민 공유방', isSecretRoom: false, limit: 4, participants: 3},
-  {roomId: 5, title: 'ALL DAY 공부방', isSecretRoom: true, limit: 4, participants: 2},
-  {roomId: 6, title: '마지막까지 남으실분 기프티콘 드려요', isSecretRoom: true, limit: 4, participants: 4},
-  {roomId: 7,title: '아무거나 모각코 하는 방', isSecretRoom: true, limit: 4, participants: 1},
-  {roomId: 8, title: '추가 방 1', isSecretRoom: false, limit: 4, participants: 3},
-  {roomId: 9, title: '추가 방 2', isSecretRoom: true, limit: 4, participants: 2},
-  {roomId: 10, title: '추가 방 3', isSecretRoom:false, limit: 4, participants: 3},
-  {roomId: 11, title: '추가 방 4', isSecretRoom: true, limit: 4, participants: 3},
-  {roomId: 12, title: '추가 방 5', isSecretRoom: false, limit: 3, participants: 3},
-];
-
 const RoomList: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(0);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [rooms, setRooms] = useState<Room[]>(defaultRooms);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const roomsPerPage = 10;
 
   // 서버에 방 리스트 요청

@@ -37,7 +37,6 @@ yarn-error.log*
 next-env.d.ts
 
 yarn.lock
-server.js
 next.config.mjs
 
 # local 
@@ -46,10 +45,3 @@ dev.key
 server.key
 server.cert
 server-local.js
-
-server.ts
-server.js
-
-socketio-local.js
-socketio-aws.js
-socketserver.js

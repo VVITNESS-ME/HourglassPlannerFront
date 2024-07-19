@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Sidebar from '../../../components/mypage/sidebar/sidebar';
+import Hourglass from '@/components/hourglass/hourglass';
 
 export default function MypageLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -9,7 +10,7 @@ export default function MypageLayout({ children }: Readonly<{ children: React.Re
       <div className='flex-none w-full md:w-64'>
         <Sidebar  />
       </div>
-      <div className="flex-grow p-8">
+      <div className="flex p-8">
         {children}
       </div>
     </div>

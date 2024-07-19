@@ -53,8 +53,8 @@ const DailyDataModal: React.FC<DailyDataModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-10">
-      <div className="bg-white rounded-lg overflow-hidden shadow-lg w-96">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-800 bg-opacity-10">
+      <div className="bg-white z-50 rounded-lg overflow-hidden shadow-lg w-96">
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-lg font-bold mb-4">Daily Data Summary</div>

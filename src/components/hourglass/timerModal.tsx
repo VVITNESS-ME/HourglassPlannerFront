@@ -93,8 +93,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-10">
-      <div className="bg-white rounded-lg overflow-hidden shadow-lg w-96">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-10 modal-backdrop">
+      <div className="bg-white rounded-lg overflow-hidden shadow-lg w-96 modal-container">
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-lg font-bold mb-4">활동을 선택하세요</div>
@@ -108,7 +108,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
           {(tId === null || tId === undefined) && (
             <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
               {userCategories.map((category) => (
-                <label key={category.userCategoryId} className="block p-2 border-b border-gray-300" style={{ backgroundColor: category.color }}>
+                <label key={category.userCategoryId} className="block p-2 border-b border-gray-300"
+                       style={{backgroundColor: category.color}}>
                   <input
                     type="radio"
                     name="activity"
@@ -116,7 +117,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
                     checked={selectedActivity === category.categoryName}
                     onChange={handleActivityChange}
                     className="mr-2"
-                    style={{ backgroundColor: category.color }}
+                    style={{backgroundColor: category.color}}
                   />
                   {category.categoryName}
                 </label>
@@ -129,7 +130,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
           >
             + 카테고리 추가
           </button>
-          <br />
+          <br/>
           <CategoryModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}

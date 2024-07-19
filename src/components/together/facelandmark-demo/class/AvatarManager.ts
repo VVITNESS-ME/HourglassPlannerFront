@@ -7,7 +7,7 @@ class AvatarManager {
   private static instance: AvatarManager = new AvatarManager();
   private scene!: THREE.Scene;
   isModelLoaded = false;
-  private avatarVisible = true;
+  private avatarVisible = false;
   private blinkStartTime: number | null = null;
   private blinkThreshold = 0.1 * 1000; // 1 second in milliseconds
 
@@ -47,10 +47,10 @@ class AvatarManager {
     };
 
     const isBlinking = this.checkBlinking(results);
-    this.updateBlinkTime(isBlinking);
+    // this.updateBlinkTime(isBlinking);
 
-    const shouldShowAvatar = this.blinkStartTime !== null && (Date.now() - this.blinkStartTime) >= this.blinkThreshold;
-    this.setAvatarVisibility(shouldShowAvatar);
+    // const shouldShowAvatar = this.blinkStartTime !== null && (Date.now() - this.blinkStartTime) >= this.blinkThreshold;
+    // this.setAvatarVisibility(shouldShowAvatar);
 
     if (this.avatarVisible) {
       this.updateBlendShapes(results, flipped);
