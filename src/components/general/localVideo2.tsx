@@ -56,7 +56,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
         );
 
         if (faceStatus == 1) {
-          console.log("눈감음");
+          // console.log("눈감음");
           // 눈감음
           timeDoze++;
           if (timeDoze > 50) {
@@ -68,7 +68,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             timeSober = 0;
           }
         } else if (faceStatus == 3) {
-          console.log("자리이탈");
+          // console.log("자리이탈");
           // 자리이탈
           timeMia++;
           if (timeMia > 50) {
@@ -82,13 +82,13 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             timeSober = 0;
           }
         } else {
-          console.log("정상상태");
+          // console.log("정상상태");
           // 정상상태
           timeSober++;
-          console.log(timeSober);
+          // console.log(timeSober);
           if (timeSober > 25) {
             if (pause) setResume();
-            if (audioRef.current) audioRef.current.pause();
+            if (audioRef.current) {audioRef.current.pause(); audioRef.current.currentTime = 0;}
             timeDoze = 0;
             timeMia = 0;
           }
@@ -243,7 +243,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       </div>
       <div style={{ display: "hidden" }}>
         <audio ref={audioRef}>
-          <source src="../wakeupCall.wav" type="audio" />
+          <source src="../wakeupCall.wav" type="audio/wav" />
         </audio>
       </div>
     </div>
