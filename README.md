@@ -41,4 +41,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 ## Git Actions for CI/CD to EC2 Instance
-[![Deploy to Amazon ECS](https://github.com/VVITNESS-ME/HourglassPlannerFront/actions/workflows/aws-ec2.yml/badge.svg?branch=aws&event=push)](https://github.com/VVITNESS-ME/HourglassPlannerFront/actions/workflows/aws-ec2.yml)
+[![Deploy to Amazon ECS](https://github.com/VVITNESS-ME/HourglassPlannerFront/actions/workflows/aws-ec2.yml/badge.svg?branch=aws)](https://github.com/VVITNESS-ME/HourglassPlannerFront/actions/workflows/aws-ec2.yml)
