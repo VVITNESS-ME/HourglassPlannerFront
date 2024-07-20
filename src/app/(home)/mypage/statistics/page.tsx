@@ -18,7 +18,9 @@ const Statistics = () => {
            <PieGraph/>
          </div>
       </div>
+      <div className="pb-10">
       <StatisticsContent/>
+      </div>
     </div>
   );
 };
