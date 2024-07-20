@@ -25,12 +25,13 @@ interface FinishedDataModalProps {
 const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }) => {
   const start = useHourglassStore<Date|null>(state => state.timeStart);
   const end = useHourglassStore<Date|null>(state => state.timeEnd);
-  const burst = useHourglassStore<number|null>(state => state.timeBurst);
+  const burst1000 = useHourglassStore<number|null>(state => state.timeBurst);
   const categoryName = useHourglassStore(state => state.dailyData.at(-1)?.categoryName);
   if (!isOpen) return null;
-  if (!start || !end || !burst || !categoryName) return null;
+  if (!start || !end || !burst1000|| !categoryName) return null;
   else {
-  const total = (end.getTime()-start.getTime())/1000
+  const burst = burst1000/1000;
+  const total = (end.getTime()-start.getTime())/1000;
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const netHours = Math.floor(burst / 3600);
