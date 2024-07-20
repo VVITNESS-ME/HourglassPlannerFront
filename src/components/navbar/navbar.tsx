@@ -20,7 +20,7 @@ const Navbar = () => {
     // if (!isInitialized) return null;
 
     return (
-      <div className="w-full pt-8 h-50 top-5 mb-10">
+      <div className="w-full pt-8 h-50 top-5 mb-2">
           <div className="container mx-auto px-4 w-full h-full">
               <div className="flex justify-between items-center h-full">
                   <div className="flex flex-row">

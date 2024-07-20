@@ -117,7 +117,7 @@ const TilConsole: React.FC = () => {
         </div>
       )}
       {isEditing ? (
-        <div className="overflow-scroll">
+        <div className="">
           <textarea
             value={newTil?.content || ''}
             onChange={handleContentChange}
@@ -133,7 +133,7 @@ const TilConsole: React.FC = () => {
         </div>
       ) : (
         <div>
-          <div className="overflow-scroll h-[250px]">
+          <div className="overflow-scroll h-[200px]">
             <p className="text-gray-600 mb-4 h-full"
                onClick={openTilContentModal}>{til?.content || '아직 작성된 TIL이 없습니다'}</p>
           </div>

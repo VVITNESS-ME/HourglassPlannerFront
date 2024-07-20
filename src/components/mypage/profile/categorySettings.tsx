@@ -39,7 +39,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
 
   return (
     <div>
-      <CardLayout title="카테고리 설정" width="flex-1 min-w-[400px] max-w-[700px]" height="h-[295px]" color="bg-[#EEEEEE]">
+      <CardLayout title="카테고리 설정" width="flex-1 w-full" height="h-[295px]" color="bg-[#EEEEEE]">
         <ul className="p-2 h-[265px] overflow-y-auto">
           {categories.map((category, index) => (
             <li key={index} className="relative p-2 mb-2 text-white rounded flex justify-between items-center group" style={{ backgroundColor: category.color }}>

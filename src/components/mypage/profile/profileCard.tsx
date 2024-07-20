@@ -52,7 +52,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({mainTitle }) => {
   };
 
   return (
-    <div className="relative box-border flex-1 min-w-[400px] max-w-[700px] bg-[#EEEEEE] border shadow-lg rounded-lg p-6 mb-4">
+    <div className="relative box-border flex-1 w-full bg-[#EEEEEE] border shadow-lg rounded-lg p-6 mb-4">
       <div className=''>
         <div className="flex flex-wrap w-full justify-between font-MangoDdobak text-3xl leading-[60px] text-black mb-4">
           나의 정보

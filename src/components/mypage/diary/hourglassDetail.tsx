@@ -56,9 +56,11 @@ const HourglassDetail: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[800px] min-w-[400px]">
-      <h3>작업 기록</h3>
+    <div className="w-full h-full">
       <div className="p-4 box-border border bg-[#eeeeee] rounded-lg shadow-lg">
+        <div className="pb-2 pl-2 pl-2">
+          <h3>작업 기록</h3>
+        </div>
         {isEditing ? (
           <div>
             <textarea
