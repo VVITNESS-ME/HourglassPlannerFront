@@ -85,7 +85,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeSober++;
           console.log(timeSober);
           if (timeSober > 25) {
-            setResume();
+            if (pause) setResume();
             if (audioRef.current) audioRef.current.pause();
             timeDoze = 0;
             timeMia = 0;

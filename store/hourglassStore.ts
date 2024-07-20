@@ -262,12 +262,14 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   }),
 
   setPause: () => set((state) => {
+    state.togglePause();
     const newState = { ...state, pause: true };
     saveStateToCookies(newState);
     return newState;
   }),
 
   setResume: () => set((state) => {
+    state.togglePause();
     const newState = { ...state, pause: false };
     saveStateToCookies(newState);
     return newState;
