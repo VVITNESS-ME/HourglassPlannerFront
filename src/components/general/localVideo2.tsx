@@ -37,7 +37,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const setPreventLoopBool = (value) => {
+  const setPreventLoopBool = (value:boolean) => {
     preventLoopBoolRef.current = value;
     _setPreventLoopBool(value);
   };

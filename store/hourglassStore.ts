@@ -281,7 +281,6 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeGoal: state.timeGoal,
         hId: state.hId,
         timeBurst: state.timeBurst,
-        pause: true,
       });
 
       if (hId) {
@@ -312,7 +311,6 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         timeGoal: state.timeGoal,
         hId: state.hId,
         timeBurst: state.timeBurst,
-        pause: false,
       });
 
       if (hId) {
