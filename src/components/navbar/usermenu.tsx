@@ -22,32 +22,55 @@ const UserMenu: React.FC<UserMenuProps> = ({ username}) => {
   }
 
   const currentPath = usePathname();
-  const { schedules } = useConsoleStore(); // useConsoleStore에서 schedules 상태 사용
+  const { schedules,setSchedules } = useConsoleStore(); // useConsoleStore에서 schedules 상태 사용
 
+  const fetchSchedules = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/calendar/1`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSchedules(data.data.schedules);
+        console.log("스케쥴 세팅");
+      } else {
+        console.error('Failed to fetch schedules');
+      }
+    } catch (error) {
+      console.error('Error fetching schedules', error);
+    }
+  };
+  useEffect(()=>{fetchSchedules()},[])
+  
   useEffect(()=>{
     let newTasks: Task[] = [];
     schedules.forEach(schedule => {
-      if(schedule.dday <=1) newTasks.push({text: schedule.description, dday: schedule.dday})
+      if(schedule.dday <=1) {newTasks.push({text: schedule.description, dday: schedule.dday}); console.log("!!!!");}
     });
     newTasks?.sort((a:Task, b:Task) => a.dday - b.dday);
-    setTasks({...tasks, ...newTasks})
+    console.log(newTasks);
+    setTasks(newTasks);
   },[schedules])
 
   return (
-    <div>
+    <div className="flex flex-col">
       <div className="flex flex-row">
-        <button className="flex" onClick={handleMessageClick}>{tasks.length?<Image className="" width={30} height={30} src="/img/bell.svg" alt="alarm"/>:null}</button>
+        <button className="flex" onClick={handleMessageClick}>{tasks?<Image className="" width={30} height={30} src="/img/bellRedDot.svg" alt="alarm"/>:<Image className="" width={30} height={30} src="/img/bell.svg" alt="alarm"/>}</button>
         <Link href="/together"> <Image className="ml-4" width={30} height={30} src="/img/together.svg" alt="together"/> </Link>
         <Link href="/console"> <Image className="ml-4" width={30} height={30} src="/img/todo.svg" alt="todo"/></Link>
         <Link href="/mypage/diary"> <button className="ml-4 w-48 bg-transparent rounded hover:bg-mono-1 text-xl">{username}</button> </Link>
       </div>
-      {tasksOn&&(<div className="flex absolute right-40 top-24 w-72 h-20 border rounded-2xl text-balance text-xl bg-sandy-1 items-center justify-center">
-        <ul>
-          {tasks.map((task:Task, index:number)=>
-           <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap pr-4">
-           <span>{task.text}</span>
-           <span className="text-red-500">{task.dday}</span></li>)}
-        </ul>
+      {tasksOn&&(<div className="flex flex-col absolute top-20 w-64 h-24 border rounded-2xl text-balance text-xl bg-sandy-1 items-center justify-center overflow-auto">
+        {tasks?.map((task)=>
+          <div className="w-full pl-6 pr-6 flex justify-between items-center">
+            <div>{task.text}</div>
+            <div className="text-red-500">D - {task.dday}</div>
+          </div>)}
       </div>)}
 
     </div>
