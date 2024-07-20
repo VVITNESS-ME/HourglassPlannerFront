@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import useAuthStore from "../../../store/(auth)/authStore";
@@ -29,7 +29,7 @@ const Navbar = () => {
                       </Link>
                       <Link href="/" className="py-2 ml-2 text-xl hidden sm:block">모래시계 플래너</Link>
                   </div>
-                  {!isInitialized?null:username === "" ? <LoginMenu /> : <UserMenu username={username} />}
+                  {!isInitialized?null:username === "" ? <LoginMenu /> : <UserMenu username={username}/>}
               </div>
           </div>
       </div>
