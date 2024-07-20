@@ -64,10 +64,11 @@ jobs:
 
           # Git 명령어를 실행합니다.
           git pull
-          git checkout remote/origin/aws
+          git checkout origin/aws
           
           # npm 명령어를 실행합니다.
           npm install
           npm run build
-          npm run server &
+          npm run server > npm.log 2>&1 &
+          exit
         EOF

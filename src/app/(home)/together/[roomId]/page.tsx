@@ -4,11 +4,9 @@ import { useParams, useRouter } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 import Image from "next/image";
 import AvatarCanvas from "@/components/general/localVideo2"; // Update this with the correct path to AvatarCanvas
-import { set } from "date-fns";
 import useRoomStore from "../../../../../store/roomStore";
 import Hourglass from "@/components/hourglass/hourglass";
 import { Task } from '@/type/types';
-import TodayTasks from "@/components/console/todayTasks";
 
 export default function VideoChat() {
   const params = useParams();
