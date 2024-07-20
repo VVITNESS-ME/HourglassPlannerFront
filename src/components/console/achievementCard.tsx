@@ -138,7 +138,7 @@ const AchievementCard: React.FC = () => {
 
   return (
     <div className="w-full h-full border rounded-lg shadow-lg">
-      <CardLayout title="오늘의 성취도" width="w-80" height="v">
+      <CardLayout title="오늘의 성취도" width="w-full" height="h-full">
         <div className="text-center pt-4 pl-4 pr-4">
           <div className="text-2xl font-bold">
             {Math.floor(totalBurstTime / 60)}시간 {totalBurstTime % 60}분 <span className="text-xl font-normal">/ 총 {Math.floor(totalTime / 60)}시간 {totalTime % 60}분</span>

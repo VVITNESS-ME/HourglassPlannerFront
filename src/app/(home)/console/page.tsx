@@ -11,6 +11,7 @@ import TodayTasks from '../../../components/console/todayTasks';
 import Hourglass from '../../../components/hourglass/hourglass';
 import Calendar from "@/components/console/consoleCalendar";
 import { Task } from '@/type/types';
+import SandTimerSecretary from "../../../components/console/sandTimerSecretary";
 
 const MainConsole: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
@@ -40,7 +41,7 @@ const MainConsole: React.FC = () => {
         </div>
         <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
           <div className="flex w-[450px] h-[410px]">
-            <SandTimerTasks/>
+            <SandTimerSecretary/>
           </div>
           <div className="flex w-[450px] h-[410px]">
             <CompletedTasks tasks={completedTasks} setTasks={setCompletedTasks} onTaskComplete={handleTaskComplete}/>
