@@ -73,10 +73,12 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeMia++;
           if (timeMia > 50) {
             setPause();
+            /*
             if (!showAvatar) {
               setShowAvatar(true); // 아바타 표시
               if (audioRef.current) audioRef.current.play();
             }
+            */
             timeSober = 0;
           }
         } else {
@@ -241,7 +243,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       </div>
       <div style={{ display: "hidden" }}>
         <audio ref={audioRef}>
-          <source src="../wakeupCall.mp3" type="audio/mpeg" />
+          <source src="../wakeupCall.wav" type="audio" />
         </audio>
       </div>
     </div>
