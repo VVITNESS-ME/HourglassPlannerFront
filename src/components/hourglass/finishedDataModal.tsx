@@ -23,7 +23,10 @@ interface FinishedDataModalProps {
 }
 
 const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }) => {
-  const finishData = useHourglassStore<DailyData>(state => state.dailyData.at(-1)!);
+  const finishData = useHourglassStore<DailyData|undefined>(state => state.dailyData.at(-1));
+  if (!isOpen) return null;
+  if (!finishData) return null;
+  else {
   const total = (finishData.end.getTime()-finishData.start.getTime())/1000
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
@@ -38,9 +41,8 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
       },
     ],
   };
-
-  if (!isOpen) return null;
-
+  
+  
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-800 bg-opacity-10">
       <div className="bg-white z-50 rounded-lg overflow-hidden shadow-lg w-96">
@@ -81,7 +83,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
         </div>
       </div>
     </div>
-  );
+  );}
 };
 
 export default FinishedDataModal;
