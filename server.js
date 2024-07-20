@@ -91,7 +91,7 @@ app.prepare().then(() => {
       socket.to(roomId).emit("userJoined", socket.id);
 
       // 인원 수 변동 fetch
-      await fetchParticipants(roomId, room.size);
+      fetchParticipants(roomId, room.size);
     });
 
     socket.on("offer", ({ roomId, toUserId, offer }) => {
@@ -117,7 +117,7 @@ app.prepare().then(() => {
             socket.to(room).emit("userLeft", socket.id);
           }
           // 인원 수 변동 fetch
-          await fetchParticipants(room, users.size);
+          fetchParticipants(room, users.size);
         }
       }
     });
