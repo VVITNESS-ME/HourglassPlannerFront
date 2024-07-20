@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from 'next/navigation'
 import useConsoleStore from '../../../store/consoleStore'; // useConsoleStore 훅 임포트
@@ -13,10 +13,9 @@ type UserMenuProps = {
   username: string;
 };
 
-
-let tasks:Task[]
-
 const UserMenu: React.FC<UserMenuProps> = ({ username}) => {
+
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [tasksOn, setTasksOn] = useState<boolean>(false);
   const handleMessageClick = () => {
     setTasksOn(!tasksOn);
@@ -24,10 +23,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ username}) => {
 
   const currentPath = usePathname();
   const { schedules } = useConsoleStore(); // useConsoleStore에서 schedules 상태 사용
-  schedules.forEach(schedule => {
-    if(schedule.dday <=1) tasks.push({text: schedule.description, dday: schedule.dday})
-  });
-  tasks.sort((a:Task, b:Task) => a.dday - b.dday)
+
+  useEffect(()=>{
+    let newTasks: Task[] = [];
+    schedules.forEach(schedule => {
+      if(schedule.dday <=1) newTasks.push({text: schedule.description, dday: schedule.dday})
+    });
+    newTasks?.sort((a:Task, b:Task) => a.dday - b.dday);
+    setTasks({...tasks, ...newTasks})
+  },[schedules])
 
   return (
     <div>
