@@ -66,8 +66,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ username}) => {
         <Link href="/mypage/diary"> <button className="ml-4 w-48 bg-transparent rounded hover:bg-mono-1 text-xl">{username}</button> </Link>
       </div>
       {tasksOn&&(<div className="flex flex-col absolute top-20 w-64 h-24 border rounded-2xl text-balance text-xl bg-sandy-1 items-center justify-center overflow-auto">
-        {tasks?.map((task)=>
-          <div className="w-full pl-6 pr-6 flex justify-between items-center">
+        {tasks?.map((task, index)=>
+          <div key={index}  className="w-full pl-6 pr-6 flex justify-between items-center">
             <div>{task.text}</div>
             <div className="text-red-500">D - {task.dday}</div>
           </div>)}

@@ -14,9 +14,7 @@ interface VideoProps {
 }
 
 const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
-  const pause = useHourglassStore((state) => state.pause);
-  const setPause = useHourglassStore((state) => state.setPause);
-  const setResume = useHourglassStore((state) => state.setResume);
+  const {setPause, setResume, pause} = useHourglassStore();
   let timeDoze = 0;
   let timeMia = 0;
   let timeSober = 0;
@@ -28,6 +26,8 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const [scene, setScene] = useState<THREE.Scene | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAvatar, setShowAvatar] = useState(false); // 아바타 표시 여부 상태 추가
+  const [preventLoopBool,_setPreventLoopBool] = useState<boolean>(pause);
+  const preventLoopBoolRef = useRef(false);
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -37,6 +37,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const setPreventLoopBool = (value) => {
+    preventLoopBoolRef.current = value;
+    _setPreventLoopBool(value);
+  };
   const animate = useCallback(() => {
     if (
       videoRef.current &&
@@ -60,7 +64,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           // 눈감음
           timeDoze++;
           if (timeDoze > 50) {
-            setPause();
+            if(!pause && !preventLoopBoolRef.current){
+              setPause();
+              setPreventLoopBool(true);
+            }
             if (!showAvatar) {
               setShowAvatar(true); // 아바타 표시
               if (audioRef.current) audioRef.current.play();
@@ -72,7 +79,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           // 자리이탈
           timeMia++;
           if (timeMia > 50) {
-            setPause();
+            if(!pause && !preventLoopBoolRef.current){
+              setPause();
+              setPreventLoopBool(true);
+            }
             /*
             if (!showAvatar) {
               setShowAvatar(true); // 아바타 표시
@@ -87,8 +97,14 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           timeSober++;
           // console.log(timeSober);
           if (timeSober > 25) {
-            if (pause) setResume();
-            if (audioRef.current) {audioRef.current.pause(); audioRef.current.currentTime = 0;}
+            if (pause && preventLoopBoolRef.current) {
+              setResume();
+              setPreventLoopBool(false);
+            }
+            if (audioRef.current){
+              audioRef.current.pause();
+              audioRef.current.currentTime = 0;
+            }
             timeDoze = 0;
             timeMia = 0;
           }
@@ -102,7 +118,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       }
     }
     requestRef.current = requestAnimationFrame(animate);
-  }, [showAvatar, setPause, setResume]);
+  }, [showAvatar]);
 
   useEffect(() => {
     const getUserCamera = async () => {

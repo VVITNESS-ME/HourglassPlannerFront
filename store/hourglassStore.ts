@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
+import {Simulate} from "react-dom/test-utils";
+import pause = Simulate.pause;
 
 interface DailyData {
   categoryName: string;
@@ -261,19 +263,67 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
 
-  setPause: () => set((state) => {
-    state.togglePause();
-    const newState = { ...state, pause: true };
-    saveStateToCookies(newState);
-    return newState;
-  }),
+  setPause: async () => {
+    const token = getToken();
+    if (token) {
+      set((state) => {
+        if (!state.pause) {
+          const pauseState = { ...state, pause: true };
+          saveStateToCookies(pauseState);
+          return pauseState;
+        }
+        return state;
+      });
 
-  setResume: () => set((state) => {
-    state.togglePause();
-    const newState = { ...state, pause: false };
-    saveStateToCookies(newState);
-    return newState;
-  }),
+      const state = get();
+      const hId = await sendPauseSignalToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeGoal: state.timeGoal,
+        hId: state.hId,
+        timeBurst: state.timeBurst,
+        pause: true,
+      });
+
+      if (hId) {
+        set((state) => {
+          const newState = { ...state, hId };
+          saveStateToCookies(newState);
+          return newState;
+        });
+      }
+    }
+  },
+
+  setResume: async () => {
+    const token = getToken();
+    if (token) {
+      set((state) => {
+        if (state.pause) {
+          const resumeState = { ...state, pause: false };
+          saveStateToCookies(resumeState);
+          return resumeState;
+        }
+        return state;
+      });
+
+      const state = get();
+      const hId = await sendResumeSignalToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeGoal: state.timeGoal,
+        hId: state.hId,
+        timeBurst: state.timeBurst,
+        pause: false,
+      });
+
+      if (hId) {
+        set((state) => {
+          const newState = { ...state, hId };
+          saveStateToCookies(newState);
+          return newState;
+        });
+      }
+    }
+  },
 
   togglePause: async () => {
     const token = getToken();
