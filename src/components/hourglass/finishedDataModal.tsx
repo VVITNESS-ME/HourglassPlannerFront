@@ -23,25 +23,27 @@ interface FinishedDataModalProps {
 }
 
 const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }) => {
-  const finishData = useHourglassStore<DailyData|undefined>(state => state.dailyData.at(-1));
+  const start = useHourglassStore<Date|null>(state => state.timeStart);
+  const end = useHourglassStore<Date|null>(state => state.timeEnd);
+  const burst = useHourglassStore<number|null>(state => state.timeBurst);
+  const categoryName = useHourglassStore(state => state.dailyData.at(-1)?.categoryName);
   if (!isOpen) return null;
-  if (!finishData) return null;
+  if (!start || !end || !burst || !categoryName) return null;
   else {
-  const total = (finishData.end.getTime()-finishData.start.getTime())/1000
+  const total = (end.getTime()-start.getTime())/1000
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
-  const netHours = Math.floor(finishData.burst / 3600);
-  const netMinutes = Math.floor((finishData.burst % 3600) / 60);
+  const netHours = Math.floor(burst / 3600);
+  const netMinutes = Math.floor((burst % 3600) / 60);
   const pieChartData = {
-    labels: [finishData.categoryName, "졸음/자리비움"],
+    labels: [categoryName?categoryName:"순 공부시간", "졸음/자리비움"],
     datasets: [
       {
-        data: [finishData.burst, (total-finishData.burst)],
-        backgroundColor: [finishData.color, "red"],
+        data: [burst, (total-burst)],
+        backgroundColor: ["green", "red"],
       },
     ],
   };
-  
   
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-800 bg-opacity-10">
@@ -66,7 +68,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
               순 공부시간: {netHours} 시간 {netMinutes} 분
             </div>
             <div className="flex flex-row text-2xl font-bold mb-4">
-              <div className='flex'>집중도: {(finishData.burst*100/total).toFixed(1)}</div> 
+              <div className='flex'>집중도: {(burst*100/total).toFixed(1)}</div> 
               <div className='flex text-red-500'>%</div> 
             </div>
             <p className="text-lg font-medium mb-4">집중도 통계</p>
@@ -83,7 +85,6 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
         </div>
       </div>
     </div>
-  );}
-};
+  );};}
 
 export default FinishedDataModal;

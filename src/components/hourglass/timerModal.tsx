@@ -79,10 +79,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   const handleSubmit = async () => {
     try {
       const result = await stopTimer(selectedActivity, rating, description);
-      console.log(result);
-      openResultModal();
+      // console.log(result);
       setDailyData(result);
-      console.log(result);
+      openResultModal();
+      // console.log(result);
     } catch (error) {
       console.error('Error stopping timer:', error);
     }
