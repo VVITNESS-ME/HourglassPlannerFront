@@ -35,7 +35,7 @@ app.prepare().then(() => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/together/participants/${roomId}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
