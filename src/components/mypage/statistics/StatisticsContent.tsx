@@ -4,10 +4,59 @@ import React, { useEffect, useState } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement, ArcElement } from 'chart.js';
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  PointElement,
+  ArcElement,
+  ChartOptions
+} from 'chart.js';
 import useStatisticsStore, { fetchDailyData, fetchWeeklyData, fetchMonthlyData } from '../../../../store/statisticsStore';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement, ArcElement);
+
+const options: ChartOptions<'bar'> = {
+  responsive: true,
+  indexAxis: 'y', // 가로 막대 그래프로 설정
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: true,
+      text: '오늘의 활동 시간',
+    },
+    tooltip: {
+      callbacks: {
+        label: (context: any) => {
+          const activityTime = context.raw;
+          return `${context.dataset.label}: ${activityTime}분`;
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      beginAtZero: true,
+      stacked: true, // 막대 그래프를 쌓아서 단일 막대처럼 보이게 설정
+      ticks: {
+        callback: function (value: string | number) {
+          return value + '분'; // 시간으로 표시
+        },
+      },
+    },
+    y: {
+      beginAtZero: true,
+      stacked: true, // 막대 그래프를 쌓아서 단일 막대처럼 보이게 설정
+    },
+  },
+};
 
 interface MonthlyData {
   month: number;
@@ -32,14 +81,17 @@ const fillMissingMonthlyData = (data: MonthlyData[]): MonthData[] => {
 };
 
 const StatisticsContent: React.FC = () => {
-  const { dailyData, weeklyData, monthlyData, selectedDate, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
-  const [selectedTab, setSelectedTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const { dailyData, weeklyData, monthlyData, pieData, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData, fetchDayData } = useStatisticsStore();
+  const [selectedTab, setSelectedTab] = useState<'24h' | 'daily' | 'weekly' | 'monthly'>('daily');
   useEffect(() => {
     const fetchDataAndSetState = async () => {
       try {
         let data;
         const state = useStatisticsStore.getState();
         switch (selectedTab) {
+          case '24h':
+            await state.fetchDayData(state.selectedDate);
+            break;
           case 'daily':
             data = await fetchDailyData(state);
             if (data) {
@@ -65,11 +117,11 @@ const StatisticsContent: React.FC = () => {
     };
 
     fetchDataAndSetState();
-  }, [selectedTab, selectedDate, setDailyData, setWeeklyData, setMonthlyData]);
+  }, [selectedTab, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData]);
 
   const handleTabSelect = (index: number) => {
-    const tabMapping = ['daily', 'weekly', 'monthly'];
-    setSelectedTab(tabMapping[index] as 'daily' | 'weekly' | 'monthly');
+    const tabMapping = ['24h', 'daily', 'weekly', 'monthly'];
+    setSelectedTab(tabMapping[index] as '24h' | 'daily' | 'weekly' | 'monthly');
   };
 
   const dailyChartData = {
@@ -107,16 +159,43 @@ const StatisticsContent: React.FC = () => {
     ],
   };
 
+  const dayChartData = {
+    labels: pieData.map(item => item.categoryName),
+    datasets: [
+      {
+        label: '활동 시간',
+        data: pieData.map(item => item.ratio),
+        backgroundColor: pieData.map(item => item.color),
+      },
+    ],
+  };
+
+  const data = {
+    labels: [''],
+    datasets: pieData.map((activity) => ({
+      label: activity.categoryName,
+      data: [activity.ratio],
+      backgroundColor: activity.color,
+      barThickness: 10, // 막대 두께 설정
+    })),
+  };
   return (
     <div className="p-8 bg-[#eeeeee] border min-w-[400px] h-[600px] flex flex-col items-center rounded-lg shadow-lg">
       <div className="w-full">
         <Tabs onSelect={handleTabSelect}>
           <TabList>
+            <Tab>24시간 통계</Tab>
+            <Tab>일일 통계</Tab>
             <Tab>주간 통계</Tab>
             <Tab>월간 통계</Tab>
-            <Tab>년간 통계</Tab>
           </TabList>
 
+          <TabPanel>
+            <h3 className="text-xl font-bold mb-4">24시간 활동 시간</h3>
+            <div className="relative w-full h-[400px]">
+              <Bar data={data} options={options}/>
+            </div>
+          </TabPanel>
           <TabPanel>
             <h3 className="text-xl font-bold mb-4">총 공부시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">

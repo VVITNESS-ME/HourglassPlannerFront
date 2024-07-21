@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { format } from 'date-fns';
+import {create} from 'zustand';
 
 interface PieData {
   categoryName: string;
@@ -17,6 +16,11 @@ interface MonthData {
   totalBurst: number;
 }
 
+interface MonthlyData {
+  month: number;
+  totalBurst: number;
+}
+
 interface Grass {
   date: string;
   timeBurst: number;
@@ -25,8 +29,6 @@ interface Grass {
 type RangeSelection = 'daily' | 'weekly' | 'monthly';
 
 interface StatisticsStore {
-  totalTime: number;
-  miaTime: number;
   selectedDate: Date | null;
   pieData: PieData[];
   dailyData: DailyData[];
@@ -34,9 +36,8 @@ interface StatisticsStore {
   monthlyData: MonthData[];
   grasses: Grass[];
   rangeSelection: RangeSelection;
-  fetchDayData: (date: Date | null) => void;
   setSelectedDate: (date: Date) => void;
-  setPieData: (data: PieData[]) => void;
+  fetchDayData: (date: Date | null) => void;
   setDailyData: (data: DailyData[]) => void;
   setWeeklyData: (data: MonthData[]) => void;
   setMonthlyData: (data: MonthData[]) => void;
@@ -45,8 +46,6 @@ interface StatisticsStore {
 }
 
 const useStatisticsStore = create<StatisticsStore>((set) => ({
-  totalTime: 0,
-  miaTime: 0,
   selectedDate: new Date(),
   pieData: [],
   dailyData: [],
@@ -66,7 +65,7 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
   fetchDayData: async (date: Date | null) => {
     if (date) {
       date.setHours(12);
-      const formattedDate = format(date, 'yyyy-MM-dd');
+      const formattedDate = date.toISOString().split('T')[0];
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
           method: 'GET',
@@ -83,10 +82,12 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
 
         const records = data.data.records;
         const categoryMap: { [key: string]: PieData } = {};
+        const categoryTimes: { [key: string]: { time: number, burst: number, color: string } } = {};
         let total_time = 0;
         let mia_time = 0;
 
         records.forEach((record: any) => {
+
           if (categoryMap[record.categoryName]) {
             categoryMap[record.categoryName].ratio += Math.floor(record.timeBurst / 60);
           } else {
@@ -103,6 +104,18 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
 
           total_time += activeTime;
           mia_time += miaTime;
+
+          if (!categoryTimes[record.categoryName]) {
+            categoryTimes[record.categoryName] = { time: 0, burst: 0, color: record.color };
+          }
+          categoryTimes[record.categoryName].time += Math.floor(activeTime/60);
+          categoryTimes[record.categoryName].burst += Math.floor(record.timeBurst / 60)
+          const activities = Object.keys(categoryTimes).map(key => ({
+            label: key,
+            time: categoryTimes[key].time,
+            burst: categoryTimes[key].burst,
+            color: categoryTimes[key].color,
+          }));
 
           if (categoryMap['졸음/ 자리비움']) {
             categoryMap['졸음/ 자리비움'].ratio += Math.floor(miaTime / 60);
@@ -126,7 +139,6 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
       }
     }
   },
-  setPieData: (data) => set({ pieData: data }),
   setDailyData: (data) => set({ dailyData: data }),
   setWeeklyData: (data) => set({ weeklyData: data }),
   setMonthlyData: (data) => set({ monthlyData: data }),
@@ -155,15 +167,15 @@ const formatDate = (date: Date): string => {
 };
 
 export const fetchDailyData = async (state: StatisticsStore) => {
-  const currentDate = state.selectedDate;
+  const currentDate = state.selectedDate
   if (currentDate) {
     currentDate.setHours(12);
     const formattedDate = formatDate(currentDate);
     const day = currentDate.getDay();
-    let weekDay = 0;
-    if (day === 0) {
+    let weekDay = 0
+    if (day === 0){
       weekDay = 7;
-    } else {
+    }else{
       weekDay = day;
     }
     return await fetchData(
