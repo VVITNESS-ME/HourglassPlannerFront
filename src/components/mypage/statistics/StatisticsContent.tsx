@@ -32,7 +32,7 @@ const fillMissingMonthlyData = (data: MonthlyData[]): MonthData[] => {
 };
 
 const StatisticsContent: React.FC = () => {
-  const { dailyData, weeklyData, monthlyData, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
+  const { dailyData, weeklyData, monthlyData, selectedDate, setDailyData, setWeeklyData, setMonthlyData } = useStatisticsStore();
   const [selectedTab, setSelectedTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   useEffect(() => {
     const fetchDataAndSetState = async () => {
@@ -43,21 +43,18 @@ const StatisticsContent: React.FC = () => {
           case 'daily':
             data = await fetchDailyData(state);
             if (data) {
-              setPieData(data.data.byCategory || []);
               setDailyData(data.data.byDays || []);
             }
             break;
           case 'weekly':
             data = await fetchWeeklyData(state);
             if (data) {
-              setPieData(data.data.byCategory || []);
               setWeeklyData(data.data.byDays || []);
             }
             break;
           case 'monthly':
             data = await fetchMonthlyData(state);
             if (data) {
-              setPieData(data.data.byCategory || []);
               setMonthlyData(fillMissingMonthlyData(data.data.byDays || []));
             }
             break;
@@ -68,7 +65,7 @@ const StatisticsContent: React.FC = () => {
     };
 
     fetchDataAndSetState();
-  }, [selectedTab, selectedDate, setPieData, setDailyData, setWeeklyData, setMonthlyData]);
+  }, [selectedTab, selectedDate, setDailyData, setWeeklyData, setMonthlyData]);
 
   const handleTabSelect = (index: number) => {
     const tabMapping = ['daily', 'weekly', 'monthly'];
