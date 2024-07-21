@@ -1,4 +1,3 @@
-// components/MainConsole.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -29,25 +28,25 @@ const MainConsole: React.FC = () => {
     <DndProvider backend={HTML5Backend}>
       <div className="p-8">
         <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-          <div className="flex w-[450px] h-[420px] mb-4 ">
-            <Calendar/>
+          <div className="flex flex-col gap-4">
+            <div className="flex w-[450px] h-[420px] mb-4">
+              <Calendar/>
+            </div>
+            <div className="flex w-[450px] h-[420px] mb-4">
+              <SandTimerSecretary/>
+            </div>
           </div>
-          <div className="flex w-[450px] h-[420px] mb-4 ">
-            <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/>
+          <div className="flex flex-col gap-4">
+            <div className="flex w-[450px] h-[420px] mb-4">
+              <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/>
+            </div>
+            <div className="flex w-[450px] h-[420px] mb-4">
+              <CompletedTasks tasks={completedTasks} setTasks={setCompletedTasks} onTaskComplete={handleTaskComplete}/>
+            </div>
           </div>
-          <div className="flex justify-center items-center w-[450px] h-[420px] mb-4 relative bg-[#eeeeee] rounded-lg shadow-lg border">
-            <Hourglass width={150}/>
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-          <div className="flex w-[450px] h-[410px]">
-            <SandTimerSecretary/>
-          </div>
-          <div className="flex w-[450px] h-[410px]">
-            <CompletedTasks tasks={completedTasks} setTasks={setCompletedTasks} onTaskComplete={handleTaskComplete}/>
-          </div>
-          <div className="flex w-[450px] h-[410px]">
-            <AchievementCard/>
+
+          <div className="flex justify-center items-center w-[450px] h-[874px] mb-4 relative bg-[#eeeeee] rounded-lg shadow-lg border">
+            <Hourglass width={250}/>
           </div>
         </div>
       </div>
