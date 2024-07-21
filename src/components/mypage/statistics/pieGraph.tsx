@@ -1,15 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import { Pie } from 'react-chartjs-2';
 import useStatisticsStore from '../../../../store/statisticsStore';
 import Button from '@/components/general/button';
+import {format} from "date-fns";
 
 const PieGraph: React.FC = () => {
-  const selectedDate = useStatisticsStore(state => state.selectedDate);
-  const setSelectedDate = useStatisticsStore(state => state.setSelectedDate);
-  const pieData = useStatisticsStore(state => state.pieData);
-
+  const { selectedDate, setSelectedDate, pieData} = useStatisticsStore();
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
   };
@@ -24,6 +22,9 @@ const PieGraph: React.FC = () => {
     ],
   };
 
+  useEffect(() => {
+
+  }, []);
   return (
     <div className="flex flex-col items-center border mb-8 w-full bg-[#eeeeee] shadow-lg rounded-lg">
       <div className="flex flex-col items-center mt-4 mb-4">

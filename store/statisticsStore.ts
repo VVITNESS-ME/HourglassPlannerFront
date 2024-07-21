@@ -1,4 +1,6 @@
 import {create} from 'zustand';
+import {useCallback} from "react";
+import {format} from "date-fns";
 
 interface PieData {
   categoryName: string;
@@ -13,11 +15,6 @@ interface DailyData {
 
 interface MonthData {
   date: string;
-  totalBurst: number;
-}
-
-interface MonthlyData {
-  month: number;
   totalBurst: number;
 }
 
@@ -71,6 +68,30 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
 }));
 
 export default useStatisticsStore;
+
+
+const fetchPieData = async (date: Date) => {
+  date.setHours(12);
+  const formattedDate = format(date, 'yyyy-MM-dd');
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+    const data = await response.json();
+    console.log(data)
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  } catch (error) {
+    console.error('Error fetching data', error);
+    // 데이터 로딩 실패 시 사용자에게 알림 (옵션)
+    alert('Failed to load data. Please try again later.');
+  }
+};
 
 const fetchData = async (url: string, errorMessage: string) => {
   try {

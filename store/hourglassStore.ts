@@ -1,7 +1,5 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
-import {Simulate} from "react-dom/test-utils";
-import pause = Simulate.pause;
 
 interface DailyData {
   categoryName: string;
@@ -34,7 +32,6 @@ interface TimeState {
   closeModal: () => void;
   toggleRunning: () => void;
   toggleBBMode: () => void;
-  togglePause: () => void;
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
@@ -263,71 +260,11 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
 
-  setPause: async () => {
-    const token = getToken();
-    if (token) {
-      set((state) => {
-        if (!state.pause) {
-          const pauseState = { ...state, pause: true };
-          saveStateToCookies(pauseState);
-          return pauseState;
-        }
-        return state;
-      });
-
-      const state = get();
-      const hId = await sendPauseSignalToServer({
-        timeStart: state.timeStart?.toISOString(),
-        timeGoal: state.timeGoal,
-        hId: state.hId,
-        timeBurst: state.timeBurst,
-      });
-
-      if (hId) {
-        set((state) => {
-          const newState = { ...state, hId };
-          saveStateToCookies(newState);
-          return newState;
-        });
-      }
-    }
-  },
-
-  setResume: async () => {
-    const token = getToken();
-    if (token) {
-      set((state) => {
-        if (state.pause) {
-          const resumeState = { ...state, pause: false };
-          saveStateToCookies(resumeState);
-          return resumeState;
-        }
-        return state;
-      });
-
-      const state = get();
-      const hId = await sendResumeSignalToServer({
-        timeStart: state.timeStart?.toISOString(),
-        timeGoal: state.timeGoal,
-        hId: state.hId,
-        timeBurst: state.timeBurst,
-      });
-
-      if (hId) {
-        set((state) => {
-          const newState = { ...state, hId };
-          saveStateToCookies(newState);
-          return newState;
-        });
-      }
-    }
-  },
-
-  togglePause: async () => {
+  setPause: () => async () => {
     const token = getToken();
     const state = get();
     if (token) {
-      const newState = { ...state, pause: !state.pause };
+      const newState = {...state, pause: !state.pause};
       set(newState);
       saveStateToCookies(newState);
       if (!state.pause) {
@@ -338,22 +275,32 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst,
         });
         if (hId) {
-          const newState = { ...state, hId };
+          const newState = {...state, hId};
           set(newState);
           saveStateToCookies(newState);
         }
-      } else {
-        const hId = await sendResumeSignalToServer({
-          timeStart: state.timeStart?.toISOString(),
-          timeGoal: state.timeGoal,
-          hId: state.hId,
-          timeBurst: state.timeBurst,
-        });
-        if (hId) {
-          const newState = { ...state, hId };
-          set(newState);
-          saveStateToCookies(newState);
-        }
+      }
+    }
+    else {
+      const newState = { ...state, pause: !state.pause };
+      set(newState);
+      saveStateToCookies(newState);
+    }
+  },
+  setResume: () =>async () => {
+    const token = getToken();
+    const state = get();
+    if (token) {
+      const hId = await sendResumeSignalToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeGoal: state.timeGoal,
+        hId: state.hId,
+        timeBurst: state.timeBurst,
+      });
+      if (hId) {
+        const newState = { ...state, hId };
+        set(newState);
+        saveStateToCookies(newState);
       }
     } else {
       const newState = { ...state, pause: !state.pause };
