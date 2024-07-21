@@ -1,4 +1,4 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 
 interface PieData {
   categoryName: string;
@@ -26,6 +26,13 @@ interface Grass {
   timeBurst: number;
 }
 
+interface Activity {
+  label: string;
+  time: number;
+  burst: number;
+  color: string;
+}
+
 type RangeSelection = 'daily' | 'weekly' | 'monthly';
 
 interface StatisticsStore {
@@ -35,7 +42,10 @@ interface StatisticsStore {
   weeklyData: MonthData[];
   monthlyData: MonthData[];
   grasses: Grass[];
+  activities: Activity[];
   rangeSelection: RangeSelection;
+  totalTime: number;
+  miaTime: number;
   setSelectedDate: (date: Date) => void;
   fetchDayData: (date: Date | null) => void;
   setDailyData: (data: DailyData[]) => void;
@@ -52,7 +62,10 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
   weeklyData: [],
   monthlyData: [],
   grasses: [],
+  activities: [],
   rangeSelection: 'daily',
+  totalTime: 0,
+  miaTime: 0,
   setSelectedDate: (date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간을 00:00:00으로 설정
@@ -63,80 +76,30 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
     }
   },
   fetchDayData: async (date: Date | null) => {
-    if (date) {
-      date.setHours(12);
-      const formattedDate = date.toISOString().split('T')[0];
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
-        const data = await response.json();
-        console.log(data);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+    if (!date) return;
 
-        const records = data.data.records;
-        const categoryMap: { [key: string]: PieData } = {};
-        const categoryTimes: { [key: string]: { time: number, burst: number, color: string } } = {};
-        let total_time = 0;
-        let mia_time = 0;
+    date.setHours(12);
+    const formattedDate = date.toISOString().split('T')[0];
 
-        records.forEach((record: any) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-          if (categoryMap[record.categoryName]) {
-            categoryMap[record.categoryName].ratio += Math.floor(record.timeBurst / 60);
-          } else {
-            categoryMap[record.categoryName] = {
-              categoryName: record.categoryName,
-              ratio: Math.floor(record.timeBurst / 60),
-              color: record.color,
-            };
-          }
-          const startTime = new Date(record.timeStart).getTime();
-          const endTime = new Date(record.timeEnd).getTime();
-          const activeTime = Math.floor((endTime - startTime) / 1000);
-          const miaTime = activeTime - record.timeBurst;
-
-          total_time += activeTime;
-          mia_time += miaTime;
-
-          if (!categoryTimes[record.categoryName]) {
-            categoryTimes[record.categoryName] = { time: 0, burst: 0, color: record.color };
-          }
-          categoryTimes[record.categoryName].time += Math.floor(activeTime/60);
-          categoryTimes[record.categoryName].burst += Math.floor(record.timeBurst / 60)
-          const activities = Object.keys(categoryTimes).map(key => ({
-            label: key,
-            time: categoryTimes[key].time,
-            burst: categoryTimes[key].burst,
-            color: categoryTimes[key].color,
-          }));
-
-          if (categoryMap['졸음/ 자리비움']) {
-            categoryMap['졸음/ 자리비움'].ratio += Math.floor(miaTime / 60);
-          } else {
-            categoryMap['졸음/ 자리비움'] = {
-              categoryName: '졸음/ 자리비움',
-              ratio: Math.floor(miaTime / 60),
-              color: "#eeeeee",
-            };
-          }
-        });
-
-        const pieData = Object.values(categoryMap);
-
-        set({ pieData, totalTime: total_time, miaTime: mia_time });
-        console.log({ pieData, totalTime: total_time, miaTime: mia_time });
-      } catch (error) {
-        console.error('Error fetching data', error);
-        // 데이터 로딩 실패 시 사용자에게 알림 (옵션)
-        alert('Failed to load data. Please try again later.');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
+
+      const data = await response.json();
+      processDayData(data.data.records, date, set);
+
+    } catch (error) {
+      console.error('Error fetching data', error);
+      alert('Failed to load data. Please try again later.');
     }
   },
   setDailyData: (data) => set({ dailyData: data }),
@@ -146,7 +109,113 @@ const useStatisticsStore = create<StatisticsStore>((set) => ({
   setRangeSelection: (range) => set({ rangeSelection: range }),
 }));
 
+const processDayData = (records: any[], date: Date, set: any) => {
+  const categoryMap: { [key: string]: PieData } = {};
+  const categoryTimes: { [key: string]: { time: number; burst: number; color: string } } = {};
+  let total_time = 0;
+  let mia_time = 0;
+  date.setHours(0, 0, 0, 0);
+  let last_activity_end = date.getTime();
+  let i = 0;
+  const activityList: Activity[] = [];
+
+  records.sort((a, b) => new Date(a.timeStart).getTime() - new Date(b.timeStart).getTime());
+
+  records.forEach((record) => {
+    updateCategoryMap(categoryMap, record);
+    updateCategoryTimes(categoryTimes, record);
+
+    const { startTime, endTime, activeTime, miaTime, unActiveTime } = calculateTimes(record, last_activity_end);
+    total_time += activeTime;
+    mia_time += miaTime;
+
+    addActivities(activityList, record, unActiveTime, activeTime, i);
+
+    if (categoryMap['졸음/ 자리비움']) {
+      categoryMap['졸음/ 자리비움'].ratio += Math.floor(miaTime / 60);
+    } else {
+      categoryMap['졸음/ 자리비움'] = {
+        categoryName: '졸음/ 자리비움',
+        ratio: Math.floor(miaTime / 60),
+        color: '#eeeeee',
+      };
+    }
+
+    i++;
+    last_activity_end = endTime;
+  });
+
+  const pieData = Object.values(categoryMap);
+  date.setHours(23, 59, 59, 999);
+  addFinalInactiveTime(activityList, last_activity_end, date, i);
+
+  set({ pieData, totalTime: total_time, miaTime: mia_time, activities: activityList });
+};
+
+const updateCategoryMap = (categoryMap: { [key: string]: PieData }, record: any) => {
+  if (categoryMap[record.categoryName]) {
+    categoryMap[record.categoryName].ratio += Math.floor(record.timeBurst / 60);
+  } else {
+    categoryMap[record.categoryName] = {
+      categoryName: record.categoryName,
+      ratio: Math.floor(record.timeBurst / 60),
+      color: record.color,
+    };
+  }
+};
+
+const updateCategoryTimes = (categoryTimes: { [key: string]: { time: number; burst: number; color: string } }, record: any) => {
+  const startTime = new Date(record.timeStart).getTime();
+  const endTime = new Date(record.timeEnd).getTime();
+  const activeTime = Math.floor((endTime - startTime) / 1000);
+
+  if (!categoryTimes[record.categoryName]) {
+    categoryTimes[record.categoryName] = { time: 0, burst: 0, color: record.color };
+  }
+  categoryTimes[record.categoryName].time += Math.floor(activeTime / 60);
+  categoryTimes[record.categoryName].burst += Math.floor(record.timeBurst / 60);
+};
+
+const calculateTimes = (record: any, last_activity_end: number) => {
+  const startTime = new Date(record.timeStart).getTime();
+  const endTime = new Date(record.timeEnd).getTime();
+  const activeTime = Math.floor((endTime - startTime) / 1000);
+  const miaTime = activeTime - record.timeBurst;
+  const unActiveTime = Math.floor((startTime - last_activity_end) / 1000);
+  return { startTime, endTime, activeTime, miaTime, unActiveTime };
+};
+
+const addActivities = (activityList: Activity[], record: any, unActiveTime: number, activeTime: number, i: number) => {
+  activityList.push({
+    label: `비활동${i}`,
+    time: new Date(record.timeStart).getTime(),
+    burst: Math.floor(unActiveTime / 3600),
+    color: '#eeeeee',
+  });
+  activityList.push({
+    label: `${record.categoryName}${i}`,
+    time: new Date(record.timeStart).getTime(),
+    burst: activeTime / 3600,
+    color: record.color,
+  });
+};
+
+const addFinalInactiveTime = (activityList: Activity[], last_activity_end: number, date: Date, i: number) => {
+  const dayEndTime = new Date(date.getTime() + 9 * 3600 * 1000).getTime();
+  if (last_activity_end <= dayEndTime) {
+    const unActiveTime = Math.floor((dayEndTime - last_activity_end) / 1000) - 9 * 3600;
+    activityList.push({
+      label: `비활동${i}`,
+      time: last_activity_end,
+      burst: Math.floor(unActiveTime / 3600),
+      color: '#eeeeee',
+    });
+  }
+};
+
 export default useStatisticsStore;
+
+
 
 const fetchData = async (url: string, errorMessage: string) => {
   try {

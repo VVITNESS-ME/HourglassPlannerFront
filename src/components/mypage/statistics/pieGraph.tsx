@@ -31,7 +31,7 @@ const PieGraph: React.FC = () => {
         <h2 className="text-2xl font-bold mb-1">{selectedDate?.toLocaleDateString('ko-KR')}</h2>
       </div>
       <div className="flex flex-col items-center">
-        <h3 className="text-xl font-bold mb-2">일일 통계</h3>
+        <h3 className="text-xl font-bold mb-2">일일 집중도 통계</h3>
         <div className="w-80 mb-4">
           <Pie data={pieChartData} />
         </div>
