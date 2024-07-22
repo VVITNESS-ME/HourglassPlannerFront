@@ -189,7 +189,7 @@ const addActivities = (activityList: Activity[], record: any, unActiveTime: numb
   activityList.push({
     label: `비활동${i}`,
     time: new Date(record.timeStart).getTime(),
-    burst: Math.floor(unActiveTime / 3600),
+    burst: unActiveTime / 3600,
     color: '#d8d8d8',
   });
   activityList.push({
@@ -207,7 +207,7 @@ const addFinalInactiveTime = (activityList: Activity[], last_activity_end: numbe
     activityList.push({
       label: `비활동${i}`,
       time: last_activity_end,
-      burst: Math.floor(unActiveTime / 3600),
+      burst: unActiveTime / 3600,
       color: '#d8d8d8',
     });
   }
