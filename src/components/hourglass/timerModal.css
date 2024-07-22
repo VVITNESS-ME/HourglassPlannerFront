@@ -18,9 +18,9 @@
     border: 2px solid #f1f1f1;
 }
 .modal-container {
-    z-index: 10000;
+    z-index: 40;
 }
 
 .modal-backdrop {
-    z-index: 9999;
+    z-index: 30;
 }
