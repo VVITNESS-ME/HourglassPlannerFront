@@ -28,7 +28,6 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
   const stopTimerWithNOAuth = useHourglassStore((state) => state.stopTimerWithNOAuth);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
   const popUpModal = useHourglassStore((state) => state.popUpModal);
-  const [beep, beepOn] = useState<boolean>(false);
   const [hideTimer, toggleTimer] = useState(true);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -49,6 +48,7 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
         const data = await response.json();
         if (response.ok) {
           setUserCategories(data.data.userCategoriesWithName);
+          if(audioRef.current) audioRef.current.play();
           popUpModal();
         }
       } catch (error) {
@@ -100,7 +100,6 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
           clearInterval(timer);
           setTimeEnd(new Date());
           stopTimerAndFetchCategories();
-          if(audioRef.current) audioRef.current.play();
         }
       }, 1000);
     }
@@ -143,11 +142,11 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
       <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10'/>
     </div>
     <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
-    <div style={{ display: "hidden" }}>
+    {/* <div style={{ display: "hidden" }}> */}
         <audio ref={audioRef}>
-          <source src="../따르릉.mp3" type="audio/mpeg" />
+          <source src="../beep.mp3" type="audio/mpeg" />
         </audio>
-    </div>
+    {/* </div> */}
   </div>
   )
 };
