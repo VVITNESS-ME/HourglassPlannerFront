@@ -58,7 +58,7 @@ const HourglassDetail: React.FC = () => {
   return (
     <div className="w-full h-full">
       <div className="p-4 box-border border bg-mypage-layout rounded mypage-md">
-        <div className="pb-2 pl-2 pl-2">
+        <div className=" text-2xl font-bold pb-2 pl-2 pr-2">
           <h3>작업 기록</h3>
         </div>
         {isEditing ? (
@@ -66,7 +66,7 @@ const HourglassDetail: React.FC = () => {
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className={`${styles.textarea} bg-mypage-active-1`}
+              className={`${styles.textarea} text-2xl bg-mypage-active-1`}
             />
             <div className={styles.buttonContainer}>
               <button onClick={handleSave} className={styles.saveButton}>저장</button>
@@ -75,8 +75,8 @@ const HourglassDetail: React.FC = () => {
           </div>
         ) : (
           <div className=' bg-mypage-layout '>
-            <p className={`${styles.textDisplay} bg-mypage-active-1`}>{text}</p>
-            <button onClick={handleEditClick} className={styles.editButton}>수정</button>
+            <p className={`${styles.textDisplay} text-2xl bg-mypage-active-1`}>{text}</p>
+            <button onClick={handleEditClick} className={`${styles.editButton} font-bold`}>수정</button>
           </div>
         )}
       </div>

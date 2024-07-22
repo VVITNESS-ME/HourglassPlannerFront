@@ -25,13 +25,13 @@ const PieGraph: React.FC = () => {
       },
       tooltip: {
         bodyFont: {
-          size: 20, // 툴팁 본문 글꼴 크기
+          size: 30, // 툴팁 본문 글꼴 크기
         },
         titleFont: {
-          size: 20, // 툴팁 제목 글꼴 크기
+          size: 30, // 툴팁 제목 글꼴 크기
         },
         footerFont: {
-          size: 20, // 툴팁 바닥 글꼴 크기
+          size: 30, // 툴팁 바닥 글꼴 크기
         },
       },
     },
