@@ -36,7 +36,7 @@ const options: ChartOptions<'bar'> = {
       callbacks: {
         label: (context: any) => {
           const activityTime = context.raw;
-          return `${context.dataset.label}: ${activityTime}시간`;
+          return `${context.dataset.label}: ${activityTime.toFixed(1)}시간`;
         },
       },
     },
@@ -166,7 +166,7 @@ const StatisticsContent: React.FC = () => {
       label: activity.label,
       data: [activity.burst], // 배열로 감싸기
       backgroundColor: activity.color, // 각 활동의 색상
-      barThickness: 10, // 막대 두께 설정
+      barThickness: 100, // 막대 두께 설정
     })),
   };
 
