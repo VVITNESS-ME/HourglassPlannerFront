@@ -57,26 +57,26 @@ const HourglassDetail: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="p-4 box-border border bg-[#eeeeee] rounded-lg shadow-lg">
-        <div className="pb-2 pl-2 pl-2">
+      <div className="p-4 box-border border bg-mypage-layout rounded mypage-md">
+        <div className=" text-2xl font-bold pb-2 pl-2 pr-2">
           <h3>작업 기록</h3>
         </div>
         {isEditing ? (
-          <div>
+          <div className=' bg-mypage-layout '>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className={styles.textarea}
+              className={`${styles.textarea} text-2xl bg-mypage-active-1`}
             />
-            <div className={styles.buttonContainer}>
+            <div className={`${styles.buttonContainer} h-12 text-xl font-semibold`}>
               <button onClick={handleSave} className={styles.saveButton}>저장</button>
               <button onClick={handleCancelClick} className={styles.cancelButton}>취소</button>
             </div>
           </div>
         ) : (
-          <div>
-            <p className={styles.textDisplay}>{text}</p>
-            <button onClick={handleEditClick} className={styles.editButton}>수정</button>
+          <div className=' bg-mypage-layout '>
+            <p className={`${styles.textDisplay} text-2xl bg-mypage-active-1`}>{text}</p>
+            <button onClick={handleEditClick} className={`${styles.editButton} h-10 font-bold`}>수정</button>
           </div>
         )}
       </div>

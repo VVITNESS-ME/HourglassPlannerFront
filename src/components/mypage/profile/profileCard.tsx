@@ -52,25 +52,25 @@ const ProfileCard: React.FC<ProfileCardProps> = ({mainTitle }) => {
   };
 
   return (
-    <div className="relative box-border flex-1 w-full bg-[#EEEEEE] border shadow-lg rounded-lg p-6 mb-4">
+    <div className="relative box-border flex-1 w-full bg-mypage-layout border mypage-md rounded p-6 mb-4">
       <div className=''>
-        <div className="flex flex-wrap w-full justify-between font-MangoDdobak text-3xl leading-[60px] text-black mb-4">
+        <div className="flex flex-wrap w-full justify-between text-3xl leading-[60px] text-black font-bold mb-4">
           나의 정보
         <button
           onClick={handleLogout}
-          className="w-[150px] h-[51px] bg-red-500 rounded-lg text-white text-2xl font-MangoDdobak flex items-center justify-center"
+          className="w-[150px] h-[51px] bg-sandy-2 rounded text-black text-2xl flex items-center justify-center"
         >
           로그아웃
         </button>
         </div>
       </div>
-      <div className="w-full bg-[rgba(223,208,179,0.5)] rounded-2xl p-6">
+      <div className="w-full bg-mypage-active-3 rounded-sm p-6">
         <div className="font-MangoDdobak text-2xl leading-[40px] text-black mb-4">
           <div className="flex items-center justify-between mb-2">
             <p><strong>닉네임:</strong> {username}</p>
             <button
               onClick={handleNicknameChange}
-              className="w-[70px] h-[38px] bg-[#4C6C73] rounded-lg text-white text-xl font-MangoDdobak flex items-center justify-center"
+              className="w-[70px] h-[38px] bg-sandy-1 rounded text-black text-xl flex items-center justify-center"
             >
               변경
             </button>
@@ -83,13 +83,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({mainTitle }) => {
         <div className="flex justify-end space-x-4">
           <button
             onClick={handlePasswordChange}
-            className="w-[150px] h-[38px] bg-[#4C6C73] rounded-lg text-white text-xl font-MangoDdobak flex items-center justify-center"
+            className="w-[150px] h-[38px] bg-sandy-1 rounded text-black text-xl flex items-center justify-center"
           >
             비밀번호 변경
           </button>
           <button
             onClick={handleSignOut}
-            className="w-[150px] h-[38px] bg-[#D8A039] rounded-lg text-white text-xl font-MangoDdobak flex items-center justify-center"
+            className="w-[150px] h-[38px] bg-red-500 rounded text-black text-xl flex items-center justify-center"
           >
             탈퇴하기
           </button>

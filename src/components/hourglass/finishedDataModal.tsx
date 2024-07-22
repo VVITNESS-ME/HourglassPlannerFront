@@ -31,24 +31,25 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
   if (!start || !end || !burst1000|| !categoryName) return null;
   else {
   const burst = burst1000/1000;
-  const total = (end.getTime()-start.getTime())/1000;
+  const total = (end.getTime()-start.getTime())*6/100;
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const netHours = Math.floor(burst / 3600);
   const netMinutes = Math.floor((burst % 3600) / 60);
+  const paused = total-burst;
   const pieChartData = {
     labels: [categoryName?categoryName:"순 공부시간", "졸음/자리비움"],
     datasets: [
       {
-        data: [burst, (total-burst)],
-        backgroundColor: ["green", "red"],
+        data: [Math.floor(burst/60), Math.floor(paused/60)],
+        backgroundColor: ["#6ecc7e", "red"],
       },
     ],
   };
   
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-800 bg-opacity-10">
-      <div className="bg-white z-50 rounded-lg overflow-hidden shadow-lg w-96">
+      <div className="bg-white z-50 rounded overflow-hidden mypage-md w-96">
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-lg font-bold mb-4">Hourglass Data Summary</div>
@@ -69,8 +70,10 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
               순 공부시간: {netHours} 시간 {netMinutes} 분
             </div>
             <div className="flex flex-row text-2xl font-bold mb-4">
-              <div className='flex'>집중도: {(burst*100/total).toFixed(1)}</div> 
-              <div className='flex text-red-500'>%</div> 
+              <div className='flex'>집중도: </div>
+              {paused>3?<div className='flex text-red-500'>{(burst*100/total).toFixed(1)}%</div>:
+              <div className='flex text-red-500'>100%</div>}
+              
             </div>
             <p className="text-lg font-medium mb-4">집중도 통계</p>
             <div className="w-96">
@@ -78,7 +81,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
             </div>
           </div>
           <button
-            className="mt-4 px-4 py-2 bg-sandy-2 text-white rounded hover:bg-sandy-3 w-full"
+            className="mt-4 px-4 py-2 bg-sandy-2 text-black rounded hover:bg-sandy-3 w-full"
             onClick={onClose}
           >
             확인

@@ -78,21 +78,21 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, fetch
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                   할 일 추가
                 </Dialog.Title>
                 <div className="mt-2">
                   <input
                     type="text"
-                    className="w-full p-2 border border-gray-300 rounded mt-2"
+                    className="w-full p-2 border border-gray-700 rounded mt-2"
                     placeholder="할 일을 입력하세요"
                     value={taskText}
                     onChange={(e) => setTaskText(e.target.value)}
                   />
                   <div className="relative mt-2">
                     <select
-                      className="w-full p-2 border border-gray-300 rounded appearance-none"
+                      className="w-full p-2 border border-gray-700 rounded appearance-none"
                       value={selectedCategory ? selectedCategory.userCategoryId : ''}
                       onChange={(e) => {
                         const selected = userCategories.find(category => category.userCategoryId === Number(e.target.value));

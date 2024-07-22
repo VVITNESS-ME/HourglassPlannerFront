@@ -14,7 +14,7 @@ const ParticipantList: React.FC = () => {
   return (
     <div className="flex flex-col space-y-2">
       {participants.map((participant, index) => (
-        <div key={index} className={`flex items-center p-2 rounded-lg ${participant.color} text-white`}>
+        <div key={index} className={`flex items-center p-2 rounded ${participant.color} text-black`}>
           <VideoChat />
           <div className="ml-2 flex flex-col">
             <span>{participant.name}</span>

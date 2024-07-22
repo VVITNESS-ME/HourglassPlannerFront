@@ -85,7 +85,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, onRegist
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                   일정 등록
                 </Dialog.Title>
@@ -94,7 +94,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, onRegist
                   <div className="flex space-x-2 mb-4">
                     <input
                       type="text"
-                      className="w-full p-2 border border-gray-300 rounded"
+                      className="w-full p-2 border border-gray-700 rounded"
                       placeholder="일정을 입력하세요"
                       value={scheduleText}
                       onChange={(e) => setScheduleText(e.target.value)}
@@ -108,7 +108,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, onRegist
                     />
                   </div>
                   <div className="text-left mb-2">추가 목록</div>
-                  <div className="overflow-y-auto h-32 border border-gray-300 p-2 rounded">
+                  <div className="overflow-y-auto h-32 border border-gray-700 p-2 rounded">
                     {schedules.map((schedule, index) => (
                       <div key={index} className="bg-yellow-200 p-2 rounded mb-2">
                         {schedule}
