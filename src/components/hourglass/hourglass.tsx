@@ -75,7 +75,7 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
 
   return (
     <div className={`flex flex-col items-center justify-center max-w-[600px] max-h-[800px] w-[${width}px]`}>
-      <h2 className="min-h-[20px]">{taskName}</h2>
+      <h2 className="min-h-[40px] text-3xl font-semibold text-[#333333]">{taskName}</h2>
       <HourglassAni wd={width*5/6} />
       {isRunning ? <TimerRunning wd={width} /> : <TimerSelector wd={width} />}
       <FinishedDataModal isOpen={resultModalOpen} onClose={closeResultModal} />

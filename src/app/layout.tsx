@@ -4,7 +4,7 @@ import Navbar from "../components/navbar/navbar";
 import localFont from "next/font/local";
 
 const mango = localFont({
-  src: "../../public/fonts/MangoDdobak-B.ttf",
+  src: "../../public/fonts/PretendardVariable.ttf",
   display: "swap",
   variable: "--font-mango",
 });

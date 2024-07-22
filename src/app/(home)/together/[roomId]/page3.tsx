@@ -330,11 +330,11 @@ export default function VideoChat() {
 
       <button
         onClick={() => connectVideo(localStream!)}
-        className="px-4 py-2 border border-black mr-2"
+        className="px-4 py-2 border border-gray-700 mr-2"
       >
         Connect Video
       </button>
-      <button onClick={startCall} className="px-4 py-2 border border-black">
+      <button onClick={startCall} className="px-4 py-2 border border-gray-700">
         Start Call
       </button>
     </div>

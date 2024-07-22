@@ -47,7 +47,7 @@ const HourglassAni = ({wd}:any) => {
       <div className="mt-4 mb-2 flex flex-col justify-center items-center relative" style={{width: wd*2, height: wd*2}}>
         <div className='absolute flex'><OuterSVG wd = {wd*2.20} /></div>
         <div className='absolute flex'><ClippathSVG wd={wd*1.68}/></div>
-        <div className='absolute flex' style={styles.container}>
+        {/* <div className='absolute flex' style={styles.container}> */}
         {isRunning&&
           <div>
             <div style={styles.maskR}>
@@ -56,19 +56,19 @@ const HourglassAni = ({wd}:any) => {
             {/* {(pause || (timeBurst! > (timeGoal!-1000)))?null: */
               !pause&&
               <div className='waterfall-container' style={{backgroundColor: loadingBarColor(timeGoal!)}}>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
               </div>}
               <div style={{...styles.loadingBar, height: (timeBurst!/timeGoal!)*30+"%", backgroundColor: loadingBarColor(timeGoal!)}}></div>
           </div>
         }
         </div>
-      </div>
+      // </div>
     )
 }
 

@@ -57,7 +57,7 @@ export default function TestWS() {
             <button 
                 onClick={sendToSignal} 
                 disabled={!isSocketOpen}
-                className={`px-4 py-2 border border-black ${!isSocketOpen ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`px-4 py-2 border border-gray-700 ${!isSocketOpen ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
                 Send Message
             </button>

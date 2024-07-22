@@ -333,7 +333,7 @@ export default function VideoChat() {
               ref={localVideoRef}
               autoPlay
               muted
-              className="w-3/4 h-auto rounded-lg mb-4"
+              className="w-3/4 h-auto rounded mb-4"
             />
           </div>
           <div className="menu-bar flex justify-center items-center space-x-4">
@@ -392,13 +392,13 @@ export default function VideoChat() {
           <div className="call-menu py-5">
             <button
               onClick={connectVideo}
-              className="px-4 py-2 border border-black mr-2"
+              className="px-4 py-2 border border-gray-700 mr-2"
             >
               Connect Video
             </button>
             <button
               onClick={startCall}
-              className="px-4 py-2 border border-black"
+              className="px-4 py-2 border border-gray-700"
             >
               Start Call
             </button>

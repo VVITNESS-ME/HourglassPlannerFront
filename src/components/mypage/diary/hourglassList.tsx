@@ -60,8 +60,8 @@ const HourglassList: React.FC = () => {
   }
 
   return (
-    <div className="w-[450px] h-full">
-      <div className="p-4 box-border border bg-mypage-layout h-full rounded-lg shadow-lg">
+    <div className="w-full h-full">
+      <div className="p-4 box-border border bg-mypage-layout h-full rounded mypage-md">
         <div className="pl-2 pr-2 pb-2">
           <h3>일간 작업 목록</h3>
         </div>

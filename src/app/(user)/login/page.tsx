@@ -35,7 +35,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-20 pt-28">
-      <div className="flex flex-col items-center w-full max-w-md p-8 space-y-8 bg-mono-1 border-gray-200 shadow-md rounded-xl">
+      <div className="flex flex-col items-center w-full max-w-md p-8 space-y-8 bg-mono-1 border-gray-200 shadow-md rounded">
         <Image src="/img/logo_binary.svg" alt="Hourglass Planner Logo" width={250} height={250} />
         <h1 className="text-4xl font-bold">로 그 인</h1>
         <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
@@ -44,14 +44,14 @@ export default function Login() {
             placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="p-2 text-sm border rounded-md bg-sandy-1"
+            className="p-2 text-sm border rounded bg-sandy-1"
           />
           <input
             type="password"
             placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="p-2 text-sm border rounded-md bg-sandy-1"
+            className="p-2 text-sm border rounded bg-sandy-1"
           />
 
           {formError && <p className="text-red-500 text-sm">{formError}</p>}
@@ -60,7 +60,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="p-2 text-white text-2xl bg-black rounded-md hover:bg-mono-4"
+            className="p-2 text-black text-2xl bg-black rounded hover:bg-mono-4"
           >
             {isLoading ? '로그인 중...' : 'Change your life'}
           </button>

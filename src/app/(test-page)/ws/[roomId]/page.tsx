@@ -148,7 +148,7 @@ export default function VideoChat() {
                 <video ref={localVideoRef} autoPlay muted className="local-video w-10 h-10" />
                 <video ref={remoteVideoRef} autoPlay className="remote-video w-10 h-10" />
             </div>
-            <button onClick={startCall} className="px-4 py-2 border border-black mr-2">
+            <button onClick={startCall} className="px-4 py-2 border border-gray-700 mr-2">
                 Start Call
             </button>
         </div>

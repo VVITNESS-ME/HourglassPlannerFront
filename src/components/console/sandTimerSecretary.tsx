@@ -28,11 +28,11 @@ const SandTimerSecretary: React.FC = () => {
   }, [schedules]); // schedules가 변경될 때마다 이 effect를 다시 실행
 
   return (
-    <div className="w-full h-full text-2xl rounded-lg shadow-lg">
+    <div className="w-full h-full text-2xl rounded-sm shadow-md">
       <CardLayout title="모래시계 비서" width="w-full" height="h-full" color="bg-console-layout"> {/* 배경색 수정 */}
         <ul>
           {sortedTasks.map((task, index) => (
-            <li key={index} className="flex justify-between items-center mb-2 bg-console-active h-14 rounded-lg whitespace-nowrap pr-4">
+            <li key={index} className="flex justify-between items-center p-3 mb-2 bg-console-active h-14 rounded whitespace-nowrap pr-4">
               <span>{task.text}</span>
               <span className="text-red-500">{task.status}</span>
             </li>

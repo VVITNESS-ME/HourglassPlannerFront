@@ -53,28 +53,28 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                   비밀번호 변경
                 </Dialog.Title>
                 <div className="mt-2">
                   <input
                     type="password"
-                    className="w-full p-2 border border-gray-300 rounded mt-2"
+                    className="w-full p-2 border border-gray-700 rounded mt-2"
                     placeholder="현재 비밀번호를 입력하세요"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                   />
                   <input
                     type="password"
-                    className="w-full p-2 border border-gray-300 rounded mt-2"
+                    className="w-full p-2 border border-gray-700 rounded mt-2"
                     placeholder="새 비밀번호를 입력하세요"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <input
                     type="password"
-                    className="w-full p-2 border border-gray-300 rounded mt-2"
+                    className="w-full p-2 border border-gray-700 rounded mt-2"
                     placeholder="새 비밀번호 확인"
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}

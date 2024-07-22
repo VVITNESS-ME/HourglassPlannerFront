@@ -7,6 +7,14 @@ import AvatarCanvas from "@/components/general/localVideo2"; // Update this with
 import useRoomStore from "../../../../../store/roomStore";
 import Hourglass from "@/components/hourglass/hourglass";
 import { Task } from "@/type/types";
+import TitleStore from "../../../../../store/titleStore";
+import useTitleStore from "../../../../../store/titleStore";
+
+type User = {
+  userId: string;
+  userName: string;
+  mainTitle: string;
+};
 
 export default function VideoChat() {
   const params = useParams();
@@ -14,7 +22,7 @@ export default function VideoChat() {
   const socketRef = useRef<Socket | null>(null);
   const peerConnections = useRef<{ [key: string]: RTCPeerConnection }>({});
   const roomId = params.roomId as string;
-  const [users, setUsers] = useState<string[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const [videoOn, setVideoOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
@@ -27,6 +35,9 @@ export default function VideoChat() {
   const { password } = useRoomStore((state) => ({
     password: state.roomPassword,
   }));
+
+  const { userName, mainTitle, fetchTitles } = useTitleStore();
+
   const router = useRouter();
 
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
@@ -39,7 +50,12 @@ export default function VideoChat() {
   const createPeerConnection = useCallback(
     (userId: string) => {
       const pc = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun1.l.google.com:19302" },
+          { urls: "stun:stun2.l.google.com:19302" },
+          { urls: "stun:stun3.l.google.com:19302" },
+        ],
       });
 
       pc.onicecandidate = (event) => {
@@ -63,7 +79,20 @@ export default function VideoChat() {
             remoteVideo.id = `remoteVideo-${userId}`;
             remoteVideo.autoplay = true;
             remoteVideo.className = "remote-video w-40 h-40";
+
+            const user = users.find((user) => user.userId === userId);
+
+            // 사용자 이름과 타이틀 추가
+            const userInfo = document.createElement("div");
+            userInfo.id = `userInfo-${userId}`;
+            userInfo.innerHTML =
+              user?.mainTitle !== null
+                ? `<p>${user?.userName}</p><br/><p>${user?.mainTitle}</p>`
+                : `<p>${user?.userName}</p>`;
+
             remoteVideoRefs.current.appendChild(remoteVideo);
+            remoteVideoRefs.current.appendChild(userInfo);
+
             setRemoteVideoAdded(true);
           }
           remoteVideo.srcObject = event.streams[0];
@@ -79,7 +108,7 @@ export default function VideoChat() {
       peerConnections.current[userId] = pc;
       return pc;
     },
-    [roomId, localStream]
+    [roomId, localStream, users]
   );
 
   const handleJoinRoom = useCallback(async () => {
@@ -179,18 +208,22 @@ export default function VideoChat() {
 
   const startCall = useCallback(async () => {
     console.log("Starting call with users:", users);
-    for (const userId of users) {
-      if (userId !== socketRef.current?.id) {
-        let pc = peerConnections.current[userId];
+    for (const user of users) {
+      if (user.userId !== socketRef.current?.id) {
+        let pc = peerConnections.current[user.userId];
         if (!pc) {
-          pc = createPeerConnection(userId);
+          pc = createPeerConnection(user.userId);
         }
         try {
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
-          socketRef.current?.emit("offer", { roomId, toUserId: userId, offer });
+          socketRef.current?.emit("offer", {
+            roomId,
+            toUserId: user.userId,
+            offer,
+          });
         } catch (error) {
-          console.error("Error starting call with", userId, error);
+          console.error("Error starting call with", user.userId, error);
         }
       }
     }
@@ -215,10 +248,10 @@ export default function VideoChat() {
 
     newSocket.on("connect", () => {
       console.log("Socket.IO connection established");
-      newSocket.emit("join", roomId);
+      newSocket.emit("join", { roomId, userName, mainTitle });
     });
 
-    newSocket.on("users", (userList: string[]) => {
+    newSocket.on("users", (userList: User[]) => {
       console.log("Received user list:", userList);
       setUsers(userList);
     });
@@ -227,15 +260,15 @@ export default function VideoChat() {
     newSocket.on("answer", handleAnswer);
     newSocket.on("candidate", handleCandidate);
 
-    newSocket.on("userJoined", (userId: string) => {
+    newSocket.on("userJoined", ({ userId, userName, mainTitle }) => {
       console.log("User joined:", userId);
-      setUsers((prevUsers) => [...prevUsers, userId]);
+      setUsers((prevUsers) => [...prevUsers, { userId, userName, mainTitle }]);
     });
 
     newSocket.on("userLeft", (userId: string) => {
       console.log("User left:", userId);
       setUsers((prevUsers) => {
-        const updatedUsers = prevUsers.filter((id) => id !== userId);
+        const updatedUsers = prevUsers.filter((user) => user.userId !== userId);
         // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
         if (updatedUsers.length === 1) {
           setRemoteVideoAdded(false);
@@ -248,8 +281,12 @@ export default function VideoChat() {
         delete peerConnections.current[userId];
       }
       const remoteVideo = document.getElementById(`remoteVideo-${userId}`);
+      const userInfo = document.getElementById(`userInfo-${userId}`);
       if (remoteVideo) {
         remoteVideo.remove();
+      }
+      if (userInfo) {
+        userInfo.remove();
       }
     });
 
@@ -260,7 +297,15 @@ export default function VideoChat() {
     return () => {
       newSocket.disconnect();
     };
-  }, [roomId, handleOffer, handleAnswer, handleCandidate]);
+  }, [
+    roomId,
+    handleOffer,
+    handleAnswer,
+    handleCandidate,
+    handleJoinRoom,
+    userName,
+    mainTitle,
+  ]);
 
   const OnVideo = () => {
     if (localStream) {

@@ -13,7 +13,7 @@ interface MenuTabProps {
 const MenuTab: React.FC<MenuTabProps> = ({ icon, label, isActive, onClick }) => {
   return (
     <div
-      className={`flex items-center p-4 cursor-pointer rounded-2xl ${
+      className={`flex items-center p-4 cursor-pointer rounded-sm ${
         isActive ? 'bg-mypage-active-2' : ''
       }`}
       onClick={onClick}

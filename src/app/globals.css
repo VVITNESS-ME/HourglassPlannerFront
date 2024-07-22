@@ -10,7 +10,7 @@ body {
   font-family: 'Mango';
   font-weight: 600;
   font-style: normal;
-  src: url(/public/fonts/MangoDdobak-B.ttf) format("truetype");
+  src: url(/public/fonts/PretendardVariable.ttf) format("truetype");
 }
 
 html, body {
@@ -21,4 +21,8 @@ html, body {
   min-height: 100vh; /* Ensure it covers at least the viewport height */
 }
 
+.react-tabs__tab--selected {
+  background-color: black;
+  color: white; /* 선택된 탭의 글자색을 흰색으로 설정 */
+}
 

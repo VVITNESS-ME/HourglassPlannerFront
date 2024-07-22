@@ -38,14 +38,14 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
   };
 
   return (
-    <div className="border shadow-lg rounded-lg text-2xl">
+    <div className="border mypage-md rounded text-2xl">
       <CardLayout title="카테고리 설정" width="flex-1 w-full" height="h-[370px]" color="bg-mypage-layout">
         <ul className="p-2 h-[265px] overflow-y-auto">
           {categories.map((category, index) => (
-            <li key={index} className="relative p-2 mb-2 text-white rounded flex justify-between items-center group" style={{ backgroundColor: category.color }}>
+            <li key={index} className="relative p-2 mb-2 text-black rounded flex justify-between items-center group" style={{ backgroundColor: category.color }}>
               {category.categoryName}
               <button
-                className="absolute right-2 top-2 p-1 text-black rounded-full bg-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute right-2 top-2 p-1 text-black rounded bg-transparent opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={() => handleDeleteCategory(index)}
               >
                 X
@@ -54,7 +54,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
           ))}
         </ul>
         <button
-          className="text-gray-500 mt-2"
+          className="text-gray-700 mt-2"
           onClick={() => setIsModalOpen(true)}
         >
           + 카테고리 추가

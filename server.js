@@ -4,6 +4,7 @@ const cors = require("cors");
 const next = require("next");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const socketIo = require("socket.io");
+const fetch = require("node-fetch");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -78,17 +79,19 @@ app.prepare().then(() => {
   });
 
   io.on("connection", (socket) => {
-    socket.on("join", async (roomId) => {
+    socket.on("join", async ({ roomId, userName, mainTitle }) => {
       socket.join(roomId);
       const room = rooms.get(roomId) || new Set();
-      room.add(socket.id);
+      room.add({ socketId: socket.id, userName, mainTitle });
       rooms.set(roomId, room);
 
       // 새로운 들어온 유저에게 해당 방에 있는 유저 목록을 전송
       socket.emit("users", Array.from(room));
 
-      // 해당 방에 접속 중인 유저들에게 새로운 유저가 접속했음을 알림
-      socket.to(roomId).emit("userJoined", socket.id);
+      // 해당 방에 접속 중인 유저에게 새로운 유저가 접속했음을 알림
+      socket
+        .to(roomId)
+        .emit("userJoined", { userId: socket.id, userName, mainTitle });
 
       // 인원 수 변동 fetch
       fetchParticipants(roomId, room.size);
@@ -110,14 +113,18 @@ app.prepare().then(() => {
       for (const room of socket.rooms) {
         if (rooms.has(room)) {
           const users = rooms.get(room);
-          users.delete(socket.id);
+          users.forEach((user) => {
+            if (user.socketId === socket.id) {
+              users.delete(user);
+            }
+          });
           if (users.size === 0) {
             rooms.delete(room);
           } else {
             socket.to(room).emit("userLeft", socket.id);
           }
           // 인원 수 변동 fetch
-          fetchParticipants(room, users.size);
+          fetchParticipants(room.roomId, users.size);
         }
       }
     });

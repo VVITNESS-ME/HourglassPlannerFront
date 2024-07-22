@@ -123,18 +123,18 @@ const Profile: React.FC = () => {
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 w-[450px] mb-4">
+        <div className="flex-1 w-[600px] mb-4">
           <ProfileCard mainTitle={mainTitle} />
         </div>
-        <div className="flex-1 w-[450px] mb-4">
+        <div className="flex-1 w-[600px] mb-4">
           <CategorySettings categories={userCategories} setCategories={setUserCategories} onAddCategory={handleAddCategory} />
         </div>
       </div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 w-[450px] mb-4">
+        <div className="flex-1 w-[600px] mb-4">
           <TitleList />
         </div>
-        <div className="flex-1 w-[450px] mb-4">
+        <div className="flex-1 w-[600px] mb-4">
         </div>
       </div>
     </div>
