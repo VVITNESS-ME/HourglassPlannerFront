@@ -72,3 +72,4 @@ jobs:
           npm run server > npm.log 2>&1 &
           exit
         EOF
+

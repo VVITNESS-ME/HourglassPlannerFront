@@ -12,18 +12,18 @@ const Diary: React.FC = () => {
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+        <div className="flex-1 w-[450px] mb-4">
           <Calendar/>
         </div>
-        <div className="flex-1 w-[426.5px] h-[442px] mb-4">
+        <div className="flex-1 w-[450px] mb-4">
           <TilConsole/>
         </div>
       </ div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+        <div className="flex-1 w-[450px] h-[380px] mb-4">
           <HourglassList/>
         </div>
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+        <div className="flex-1 w-[450px] h-[380px] mb-4">
           <HourglassDetail/>
         </div>
       </div>

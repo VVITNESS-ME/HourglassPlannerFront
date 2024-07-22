@@ -6,7 +6,7 @@ import Image from "next/image";
 import AvatarCanvas from "@/components/general/localVideo2"; // Update this with the correct path to AvatarCanvas
 import useRoomStore from "../../../../../store/roomStore";
 import Hourglass from "@/components/hourglass/hourglass";
-import { Task } from '@/type/types';
+import { Task } from "@/type/types";
 
 export default function VideoChat() {
   const params = useParams();
@@ -24,35 +24,17 @@ export default function VideoChat() {
   const [remoteVideoAdded, setRemoteVideoAdded] = useState(false); // 원격 접속자가 있을 때만 remote video 추가
   const [clickedConnect, setClickedConnect] = useState<boolean>(false); // Connect Video 버튼 클릭 여부
 
-
-  const { password } = useRoomStore(state => ({password: state.roomPassword}));
+  const { password } = useRoomStore((state) => ({
+    password: state.roomPassword,
+  }));
   const router = useRouter();
-  const handleJoinRoom = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({password: password}),
-        credentials: 'include',
-      });
-      const data = await response.json();
-      console.log(data);
-      if (response.ok) {
-        return;
-      } else {router.push("/together");}
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [todayTasks, setTodayTasks] = useState<Task[]>([]);
 
-  const handleTaskComplete = (taskId: number) => {
+  const handleTaskComplete = useCallback((taskId: number) => {
     return;
-  };
+  }, []);
 
   const createPeerConnection = useCallback(
     (userId: string) => {
@@ -99,6 +81,31 @@ export default function VideoChat() {
     },
     [roomId, localStream]
   );
+
+  const handleJoinRoom = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ password: password }),
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        return;
+      } else {
+        router.push("/together");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [roomId, password, router]);
 
   const handleOffer = useCallback(
     async ({
@@ -202,7 +209,7 @@ export default function VideoChat() {
 
   useEffect(() => {
     if (!roomId) return;
-    handleJoinRoom()
+    handleJoinRoom();
     const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
     socketRef.current = newSocket;
 
@@ -313,9 +320,7 @@ export default function VideoChat() {
           className="remote-videos"
           style={remoteVideoAdded ? { border: "10px solid #F2CD88" } : {}}
         ></div>
-        <div
-          className="flex flex-col items-center max-w-[600px]"
-        >
+        <div className="flex flex-col items-center max-w-[600px]">
           <h1 className="text-xl font-bold mt-3 mb-4 flex justify-center items-center">
             Video Chat - Room {roomId}
           </h1>
@@ -375,30 +380,34 @@ export default function VideoChat() {
               />
             )}
           </div>
-            <div className="call-menu py-5">
-              {
-                clickedConnect ? (<Image
-                  onClick={startCall}
-                  src="/img/videochat/start-call.png"
-                  alt="Start Call"
-                  width={60}
-                  height={60}
-                  />) : (<Image
-                onClick={() => {connectVideo(localStream!); setClickedConnect(true);}}
+          <div className="call-menu py-5">
+            {clickedConnect ? (
+              <Image
+                onClick={startCall}
+                src="/img/videochat/start-call.png"
+                alt="Start Call"
+                width={60}
+                height={60}
+              />
+            ) : (
+              <Image
+                onClick={() => {
+                  connectVideo(localStream!);
+                  setClickedConnect(true);
+                }}
                 src="/img/videochat/connect-video.png"
                 alt="Connect Video"
                 width={60}
                 height={60}
-              />)
-              }
-            </div>
+              />
+            )}
+          </div>
         </div>
         <div className="flex flex-row w-[400px] justify-center items-center relative">
-        <Hourglass width={200}/>
-        {/* <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/> */}
+          <Hourglass width={200} />
+          {/* <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/> */}
         </div>
       </div>
-
     </div>
   );
 }

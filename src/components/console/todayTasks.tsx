@@ -148,19 +148,21 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   }, [fetchTasks, fetchUserCategories]);
 
   return (
-    <div className="border rounded-lg bg-[#eeeeee] p-4 shadow-lg">
-      <CardLayout title="오늘의 할일" color='bg-white'>
-        <ul>
-          {tasks.map((task) => (
-            <DraggableTask
-              key={task.taskId}
-              task={task}
-              selectedTask={selectedTask}
-              onTaskClick={handleTaskClick}
-            />
-          ))}
-        </ul>
-      </CardLayout>
+    <div className=" border rounded-lg bg-[#eeeeee] w-full shadow-lg">
+      <div className=" h-[360px] ">
+        <CardLayout title="오늘의 할일">
+          <ul>
+            {tasks.map((task) => (
+              <DraggableTask
+                key={task.taskId}
+                task={task}
+                selectedTask={selectedTask}
+                onTaskClick={handleTaskClick}
+              />
+            ))}
+          </ul>
+        </CardLayout>
+      </div>
       <div className="flex justify-center mt-2">
         <button className="text-gray-500 p-2" onClick={() => setIsTodoModalOpen(true)}>
           + 할 일 추가

@@ -1,4 +1,3 @@
-// components/SandTimerTasks.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -10,7 +9,7 @@ interface Task {
   status: string;
 }
 
-const SandTimerTasks: React.FC = () => {
+const SandTimerSecretary: React.FC = () => {
   const { schedules } = useConsoleStore(); // useConsoleStore에서 schedules 상태 사용
   const [sortedTasks, setSortedTasks] = useState<Task[]>([]); // 정렬된 태스크 상태
 
@@ -29,17 +28,20 @@ const SandTimerTasks: React.FC = () => {
   }, [schedules]); // schedules가 변경될 때마다 이 effect를 다시 실행
 
   return (
-    <CardLayout title="모래시계 비서"> {/* 배경색 수정 */}
-      <ul>
-        {sortedTasks.map((task, index) => (
-          <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap pr-4">
-            <span>{task.text}</span>
-            <span className="text-red-500">{task.status}</span>
-          </li>
-        ))}
-      </ul>
-    </CardLayout>
+    <div className="w-full h-full border rounded-lg shadow-lg">
+      <CardLayout title="모래시계 비서" width="w-full" height="h-full" color="bg-[#eeeeee]"> {/* 배경색 수정 */}
+        <ul>
+          {sortedTasks.map((task, index) => (
+            <li key={index} className="flex justify-between items-center mb-2 whitespace-nowrap pr-4">
+              <span>{task.text}</span>
+              <span className="text-red-500">{task.status}</span>
+            </li>
+          ))}
+        </ul>
+      </CardLayout>
+    </div>
   );
 };
 
-export default SandTimerTasks;
+export default SandTimerSecretary;
+``

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import useAuthStore from "../../../store/(auth)/authStore";
@@ -20,7 +20,7 @@ const Navbar = () => {
     // if (!isInitialized) return null;
 
     return (
-      <div className="w-full pt-8 h-50 top-5 mb-10">
+      <div className="w-full pt-8 h-50 top-5 mb-2">
           <div className="container mx-auto px-4 w-full h-full">
               <div className="flex justify-between items-center h-full">
                   <div className="flex flex-row">
@@ -29,7 +29,7 @@ const Navbar = () => {
                       </Link>
                       <Link href="/" className="py-2 ml-2 text-xl hidden sm:block">모래시계 플래너</Link>
                   </div>
-                  {!isInitialized?null:username === "" ? <LoginMenu /> : <UserMenu username={username} />}
+                  {!isInitialized?null:username === "" ? <LoginMenu /> : <UserMenu username={username}/>}
               </div>
           </div>
       </div>
