@@ -7,9 +7,7 @@ import AvatarCanvas from "@/components/general/localVideo2"; // Update this with
 import useRoomStore from "../../../../../store/roomStore";
 import Hourglass from "@/components/hourglass/hourglass";
 import { Task } from "@/type/types";
-import TitleStore from "../../../../../store/titleStore";
 import useTitleStore from "../../../../../store/titleStore";
-import { start } from "repl";
 
 type User = {
   userId: string;
@@ -228,7 +226,7 @@ export default function VideoChat() {
         }
       }
     }
-  }, [roomId, users, createPeerConnection]);
+  }, []);
 
   // 특정 userId에게 통화 시작
   const startCallWithUser = useCallback(
@@ -250,7 +248,7 @@ export default function VideoChat() {
         console.error("Error starting call with", userId, error);
       }
     },
-    [roomId, createPeerConnection]
+    []
   );
 
   const connectVideo = useCallback(
@@ -265,7 +263,7 @@ export default function VideoChat() {
         console.error("Error accessing media devices:", error);
       }
     },
-    [startCall]
+    []
   );
 
   useEffect(() => {
