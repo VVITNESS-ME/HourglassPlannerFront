@@ -31,7 +31,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
   if (!start || !end || !burst1000|| !categoryName) return null;
   else {
   const burst = burst1000/1000;
-  const total = (end.getTime()-start.getTime())/1000;
+  const total = (end.getTime()-start.getTime())*6/100;
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const netHours = Math.floor(burst / 3600);
