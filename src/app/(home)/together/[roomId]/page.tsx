@@ -297,15 +297,7 @@ export default function VideoChat() {
     return () => {
       newSocket.disconnect();
     };
-  }, [
-    roomId,
-    handleOffer,
-    handleAnswer,
-    handleCandidate,
-    handleJoinRoom,
-    userName,
-    mainTitle,
-  ]);
+  }, []);
 
   const OnVideo = () => {
     if (localStream) {

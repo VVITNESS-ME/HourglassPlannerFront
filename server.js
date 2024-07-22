@@ -1,10 +1,11 @@
 const express = require("express");
 const http = require("http");
+const fs = require("fs");
 const cors = require("cors");
 const next = require("next");
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const socketIo = require("socket.io");
-const fetch = require("node-fetch");
+const { Server: SocketIO } = require("socket.io");
+const axios = require("axios");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -17,7 +18,7 @@ app.prepare().then(() => {
   server.use(
     "/api",
     createProxyMiddleware({
-      target: "http://localhost:8080", // API 서버 주소
+      target: "http://localhost:8080",
       changeOrigin: true,
       pathRewrite: {
         "^/api": "", // URL에서 /api를 제거합니다.
@@ -33,20 +34,10 @@ app.prepare().then(() => {
   // Backend 서버에 인원 수 변동 fetch
   const fetchParticipants = async (roomId, roomSize) => {
     try {
-      const response = await fetch(
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/api/together/participants/${roomId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ current: roomSize }),
-        }
+        { current: roomSize }
       );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
 
       console.log(`방 ${roomId}의 인원 수: ${roomSize}`);
     } catch (error) {
@@ -71,7 +62,7 @@ app.prepare().then(() => {
   const PORT = process.env.PORT || 3000;
   const httpServer = http.createServer(server);
 
-  const io = socketIo(httpServer, {
+  const io = new SocketIO(httpServer, {
     cors: {
       origin: "*", // 모든 도메인 허용
       methods: ["GET", "POST"],
