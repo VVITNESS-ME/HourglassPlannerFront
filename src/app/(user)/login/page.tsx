@@ -37,7 +37,7 @@ export default function Login() {
     <div className="flex flex-col items-center justify-center min-h-20 pt-28">
       <div className="flex flex-col items-center w-full max-w-md p-8 space-y-8 bg-mono-1 border-gray-200 shadow-md rounded-xl">
         <Image src="/img/logo_binary.svg" alt="Hourglass Planner Logo" width={250} height={250} />
-        <h1 className="text-2xl font-bold">로 그 인</h1>
+        <h1 className="text-4xl font-bold">로 그 인</h1>
         <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
           <input
             type="email"
@@ -60,7 +60,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="p-2 text-white bg-black rounded-md hover:bg-mono-4"
+            className="p-2 text-white text-2xl bg-black rounded-md hover:bg-mono-4"
           >
             {isLoading ? '로그인 중...' : 'Change your life'}
           </button>
