@@ -36,12 +36,13 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
   const minutes = Math.floor((total % 3600) / 60);
   const netHours = Math.floor(burst / 3600);
   const netMinutes = Math.floor((burst % 3600) / 60);
+  const paused = total-burst;
   const pieChartData = {
     labels: [categoryName?categoryName:"순 공부시간", "졸음/자리비움"],
     datasets: [
       {
-        data: [burst, (total-burst)],
-        backgroundColor: ["green", "red"],
+        data: [Math.floor(burst/60), Math.floor(paused/60)],
+        backgroundColor: ["#6ecc7e", "red"],
       },
     ],
   };
@@ -69,8 +70,10 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
               순 공부시간: {netHours} 시간 {netMinutes} 분
             </div>
             <div className="flex flex-row text-2xl font-bold mb-4">
-              <div className='flex'>집중도: {(burst*100/total).toFixed(1)}</div> 
-              <div className='flex text-red-500'>%</div> 
+              <div className='flex'>집중도: </div>
+              {paused>3?<div className='flex text-red-500'>{(burst*100/total).toFixed(1)}%</div>:
+              <div className='flex text-red-500'>100%</div>}
+              
             </div>
             <p className="text-lg font-medium mb-4">집중도 통계</p>
             <div className="w-96">
