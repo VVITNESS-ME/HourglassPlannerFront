@@ -13,4 +13,12 @@ body {
   src: url(/public/fonts/MangoDdobak-B.ttf) format("truetype");
 }
 
+html, body {
+  height: 100%;
+}
+
+.dynamic-height {
+  min-height: 100vh; /* Ensure it covers at least the viewport height */
+}
+
 

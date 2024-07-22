@@ -127,7 +127,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className="w-full border box-border bg-[#eeeeee] rounded-lg shadow-lg pt-10 pb-14">
+    <div className="w-full border box-border bg-mypage-layout rounded-lg shadow-lg pt-10 pb-14">
       {renderHeader()}
       {renderDays()}
       {renderCells()}

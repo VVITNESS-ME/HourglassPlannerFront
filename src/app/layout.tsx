@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: Readonly<{children: React.ReactNode;}>) {
   return (
     <html lang="ko">
-      <body className={mango.className}>
-        <div className="bg-transparent w-screen h-screen -z-50">
+      <body className={mango.className }>
+        <div className="bg-wallpaper w-screen dynamic-height -z-50">
           <Navbar />
           <div className="flex flex-col items-center justify-center">
             {children}

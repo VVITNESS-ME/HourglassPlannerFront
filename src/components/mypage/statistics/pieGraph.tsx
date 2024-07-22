@@ -26,7 +26,7 @@ const PieGraph: React.FC = () => {
     fetchDayData(selectedDate);
   }, [selectedDate]);
   return (
-    <div className="flex flex-col items-center border mb-8 w-full h-[457px] bg-[#eeeeee] shadow-lg rounded-lg">
+    <div className="flex flex-col items-center border mb-8 w-full h-[457px] bg-mypage-layout shadow-lg rounded-lg">
       <div className="flex flex-col items-center mt-4 mb-1">
         <h2 className="text-2xl font-bold mb-1">{selectedDate?.toLocaleDateString('ko-KR')}</h2>
       </div>

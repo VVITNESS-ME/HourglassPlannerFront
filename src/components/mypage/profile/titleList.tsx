@@ -17,7 +17,7 @@ const TitleList: React.FC = () => {
 
   return (
     <div className="border shadow-lg rounded-lg">
-      <CardLayout title="칭호" width="flex-1 w-full" height="h-auto" color="bg-[#EEEEEE]">
+      <CardLayout title="칭호" width="flex-1 w-full" height="h-auto" color="bg-mypage-layout">
         <ul className="p-2 max-h-80 overflow-y-auto">
           {achievedTitles.map((title, index) => (
             <li

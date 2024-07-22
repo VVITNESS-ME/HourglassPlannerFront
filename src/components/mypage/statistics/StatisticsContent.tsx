@@ -30,6 +30,9 @@ const options: ChartOptions<'bar'> = {
     },
     title: {
       display: true,
+      font: {
+        size: 24 // Font size for tick labels
+      },
       text: '오늘의 활동 시간',
     },
     tooltip: {
@@ -48,6 +51,10 @@ const options: ChartOptions<'bar'> = {
       min: 0,
       max: 24,
       ticks: {
+        font: {
+          size: 24 // Font size for tick labels
+        },
+        stepSize: 2,
         callback: function (value: string | number) {
           return value + '시'; // 시간으로 표시
         },
@@ -171,7 +178,7 @@ const StatisticsContent: React.FC = () => {
   };
 
   return (
-    <div className="p-8 bg-[#eeeeee] border min-w-[400px] h-[600px] flex flex-col items-center rounded-lg shadow-lg">
+    <div className="p-8 bg-mypage-layout border min-w-[400px] h-[600px] flex flex-col text-3xl items-center rounded-lg shadow-lg">
       <div className="w-full">
         <Tabs onSelect={handleTabSelect}>
           <TabList>
@@ -182,25 +189,25 @@ const StatisticsContent: React.FC = () => {
           </TabList>
 
           <TabPanel>
-            <h3 className="text-xl font-bold mb-4">24시간 활동 시간</h3>
+            <h3 className="text-3xl font-bold mb-4">24시간 활동 시간</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={data} options={options} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-xl font-bold mb-4">총 공부시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 공부시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Line data={dailyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-xl font-bold mb-4">총 공부시간: {weeklyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 공부시간: {weeklyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={weeklyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-xl font-bold mb-4">총 공부시간: {monthlyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 공부시간: {monthlyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={monthlyChartData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>

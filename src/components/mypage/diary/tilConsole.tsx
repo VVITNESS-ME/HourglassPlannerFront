@@ -95,12 +95,12 @@ const TilConsole: React.FC = () => {
   };
 
   return (
-    <div className="p-4 bg-[#eeeeee] border rounded shadow-lg w-full h-full">
+    <div className="p-4 bg-mypage-layout border rounded shadow-lg w-full h-full">
       <input
         type="date"
         value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
         onChange={handleDateChange}
-        className="mb-4 w-full p-2 border rounded"
+        className="mb-4 w-full p-2 border bg-mypage-active-1 rounded"
       />
       {isEditing ? (
         <div className="text-lg mb-4">

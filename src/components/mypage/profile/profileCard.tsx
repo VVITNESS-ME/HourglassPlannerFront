@@ -52,7 +52,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({mainTitle }) => {
   };
 
   return (
-    <div className="relative box-border flex-1 w-full bg-[#EEEEEE] border shadow-lg rounded-lg p-6 mb-4">
+    <div className="relative box-border flex-1 w-full bg-mypage-layout border shadow-lg rounded-lg p-6 mb-4">
       <div className=''>
         <div className="flex flex-wrap w-full justify-between font-MangoDdobak text-3xl leading-[60px] text-black mb-4">
           나의 정보
@@ -64,7 +64,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({mainTitle }) => {
         </button>
         </div>
       </div>
-      <div className="w-full bg-[rgba(223,208,179,0.5)] rounded-2xl p-6">
+      <div className="w-full bg-mypage-active-1 rounded-2xl p-6">
         <div className="font-MangoDdobak text-2xl leading-[40px] text-black mb-4">
           <div className="flex items-center justify-between mb-2">
             <p><strong>닉네임:</strong> {username}</p>

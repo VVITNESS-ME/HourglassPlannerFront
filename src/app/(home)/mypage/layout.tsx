@@ -21,7 +21,7 @@ export default function MypageLayout({ children }: Readonly<{ children: React.Re
   return (
     <div className="flex">
       <div
-        className="fixed left-0 h-full w-full md:w-64 pt-[30px] bg-white z-10"
+        className="fixed left-0 h-full w-full md:w-64 pt-[30px] bg-transparent z-10"
         style={{left: `${(windowSize.width)/2-500 - 140}px`}}
       >
         <Sidebar />
