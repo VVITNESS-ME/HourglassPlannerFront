@@ -269,11 +269,11 @@ export default function VideoChat() {
   useEffect(() => {
     if (!roomId) return;
     handleJoinRoom();
-    // const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string); // polling -> websocket 방식
-    const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, { // 바로 websocket 방식
-      transports: ["websocket"],
-      upgrade: false,
-    });
+    const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string); // polling -> websocket 방식
+    // const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, { // 바로 websocket 방식
+    //   transports: ["websocket"],
+    //   upgrade: false,
+    // });
     socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
