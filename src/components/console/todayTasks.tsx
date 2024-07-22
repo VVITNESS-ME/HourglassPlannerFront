@@ -148,7 +148,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   }, [fetchTasks, fetchUserCategories]);
 
   return (
-    <div className=" border rounded-lg bg-[#eeeeee] w-full shadow-lg">
+    <div className=" border rounded bg-console-layout w-full mypage-md">
       <div className=" h-[360px] ">
         <CardLayout title="오늘의 할일">
           <ul>
@@ -164,7 +164,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
         </CardLayout>
       </div>
       <div className="flex justify-center mt-2">
-        <button className="text-gray-500 p-2" onClick={() => setIsTodoModalOpen(true)}>
+        <button className="text-gray-500 text-xl p-2" onClick={() => setIsTodoModalOpen(true)}>
           + 할 일 추가
         </button>
       </div>
@@ -204,13 +204,13 @@ const DraggableTask: React.FC<{
   return (
     <li
       ref={ref}
-      className={`flex justify-between items-center mb-2 p-2 border rounded-lg cursor-pointer ${
-        selectedTask === task.taskId ? 'bg-gray-300' : ''
+      className={`flex justify-between items-center mb-2 p-3 text-2xl bg-console-active rounded-sm cursor-pointer ${
+        selectedTask === task.taskId ? 'bg-console-active' : ''
       } ${isDragging ? 'opacity-50' : ''}`}
       onClick={() => onTaskClick(task.taskId, task.title)}
     >
       <span>{task.title}</span>
-      <span className={`ml-2 w-3 h-3 rounded-full`} style={{ backgroundColor: task.color }}></span>
+      <span className={`ml-2 w-8 h-8 rounded-full`} style={{ backgroundColor: task.color }}></span>
     </li>
   );
 };

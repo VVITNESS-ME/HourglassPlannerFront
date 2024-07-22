@@ -49,7 +49,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
   
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-800 bg-opacity-10">
-      <div className="bg-white z-50 rounded-lg overflow-hidden shadow-lg w-96">
+      <div className="bg-white z-50 rounded overflow-hidden mypage-md w-96">
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-lg font-bold mb-4">Hourglass Data Summary</div>
@@ -81,7 +81,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
             </div>
           </div>
           <button
-            className="mt-4 px-4 py-2 bg-sandy-2 text-white rounded hover:bg-sandy-3 w-full"
+            className="mt-4 px-4 py-2 bg-sandy-2 text-black rounded hover:bg-sandy-3 w-full"
             onClick={onClose}
           >
             확인

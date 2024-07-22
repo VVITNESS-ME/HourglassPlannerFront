@@ -42,19 +42,39 @@ const TimerSelector = ({wd}:any) => {
       </div>
       }
 
-      <div className='flex justify-center'>
-        <input
-          type="text"
-          className="p-2 m-2 border border-mono-2 rounded w-28"
-          placeholder="직접 입력 (분)"
-          value={inputValue}
-          onChange={handleInputChange}
-        />
-        {
-          (!isValidInput) ? <button disabled className={`w-20 h-10 p-2 m-2 text-black rounded bg-mono-2`}>시작</button>
-          : <Button label="시작" onClick={() => {handleClick('시작', parseInt(inputValue) * 60)}} isActive={false} />
-        }
-      </div>
+      {wd>240? <div className='flex justify-center'>
+          <input
+            type="text"
+            className="p-2 m-2 border text-2xl border-mono-2 rounded w-64"
+            placeholder="직접 입력 (분)"
+            value={inputValue}
+            onChange={handleInputChange}
+          />
+          {
+            (!isValidInput) ?
+              <button disabled className={`w-[136px] h-14 p-2 m-2 text-black text-2xl rounded bg-mono-2`}>시작</button>
+              : <Button label="시작" onClick={() => {
+                handleClick('시작', parseInt(inputValue) * 60)
+              }} isActive={false}/>
+          }
+        </div>
+        : <div className='flex justify-center'>
+          <input
+            type="text"
+            className="p-2 m-2 border text-l border-mono-2 rounded w-32"
+            placeholder="직접 입력 (분)"
+            value={inputValue}
+            onChange={handleInputChange}
+          />
+          {
+            (!isValidInput) ?
+              <button disabled className={`w-16 h-10 p-2 m-2 text-black text-xl rounded bg-mono-2`}>시작</button>
+              : <Button label="시작" onClick={() => {
+                handleClick('시작', parseInt(inputValue) * 60)
+              }} isActive={false}/>
+          }
+        </div>
+      }
     </div>
   );
 };

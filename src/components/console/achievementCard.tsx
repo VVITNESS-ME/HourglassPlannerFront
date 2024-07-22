@@ -137,7 +137,7 @@ const AchievementCard: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full border rounded-lg shadow-lg">
+    <div className="w-full h-full border rounded mypage-md">
       <CardLayout title="오늘의 성취도" width="w-full" height="h-full">
         <div className="text-center pt-4 pl-4 pr-4">
           <div className="text-2xl font-bold">
@@ -151,7 +151,7 @@ const AchievementCard: React.FC = () => {
             {activities.map((activity) => (
               <div key={activity.label} className="flex flex-col items-center">
                 <div className="flex items-center mb-1">
-                  <span className="w-3 h-3 rounded-full mr-1" style={{backgroundColor: activity.color}}></span>{' '}
+                  <span className="w-3 h-3 rounded mr-1" style={{backgroundColor: activity.color}}></span>{' '}
                   {activity.label}
                 </div>
                 <div className="font-bold">{activity.time}분</div>

@@ -94,7 +94,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-10 modal-backdrop">
-      <div className="bg-white rounded-lg overflow-hidden shadow-lg w-96 modal-container">
+      <div className="bg-white rounded overflow-hidden mypage-md w-96 modal-container">
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-lg font-bold mb-4">활동을 선택하세요</div>
@@ -108,7 +108,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
           {(tId === null || tId === undefined) && (
             <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
               {userCategories.map((category) => (
-                <label key={category.userCategoryId} className="block p-2 border-b border-gray-300"
+                <label key={category.userCategoryId} className="block p-2 border-b border-gray-700"
                        style={{backgroundColor: category.color}}>
                   <input
                     type="radio"
@@ -138,7 +138,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
           />
           <div className="mb-4">
             <textarea
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-2 border border-gray-700 rounded"
               placeholder="코멘트를 입력하세요"
               value={description}
               onChange={handleCommentChange}
@@ -164,7 +164,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
             {
               !isValidInput
                 ? <button disabled
-                          className="px-4 py-2 font-bold text-white bg-gray-500 rounded opacity-50 cursor-not-allowed">확인</button>
+                          className="px-4 py-2 font-bold text-black bg-gray-500 rounded opacity-50 cursor-not-allowed">확인</button>
                 : <Button label="확인" onClick={handleSubmit} isActive={true}/>
             }
           </div>

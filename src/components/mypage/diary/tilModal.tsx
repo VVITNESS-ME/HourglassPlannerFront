@@ -109,7 +109,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
       <LoadingModal isOpen={isLoadingModalOpen} />
-      <div className="bg-yellow-300 rounded-lg p-8 shadow-lg w-full max-w-4xl relative">
+      <div className="bg-yellow-300 rounded p-8 mypage-md w-[1400px] h-[800px] relative">
         <button
           className="absolute top-4 right-4 text-black text-2xl font-bold"
           onClick={onClose}
@@ -117,13 +117,13 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
           &times;
         </button>
         <h2 className="text-center text-2xl font-bold mb-4">일지 작성 도우미</h2>
-        <div className="text-center mb-4">{new Date().toLocaleDateString()}</div>
+        <div className="text-center text-xl font-bold mb-4">{new Date().toLocaleDateString()}</div>
         <div className="flex">
-          <div className="w-1/4 bg-yellow-400 p-4 rounded-lg mr-4">
+          <div className="w-[170px] h-[600px] bg-yellow-400 p-4 rounded mr-4">
             <h3 className="font-bold mb-2">카테고리</h3>
             <ul>
               {uniqueCategories.map(category => (
-                <li key={category} className="flex items-center mb-2">
+                <li key={category} className="flex items-center text-xl font-bold mb-2">
                   <input
                     type="checkbox"
                     className="mr-2"
@@ -135,16 +135,12 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
               ))}
             </ul>
           </div>
-          <div className="flex-1 bg-white p-4 rounded-lg mr-4">
-            <input
-              type="text"
-              className="w-full p-2 border border-gray-300 rounded mt-2"
-              placeholder="제목을 입력해주세요."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+          <div className="flex-1  bg-white p-4 rounded mr-4">
+            <p className="w-full text-2xl font-bold p-2 border border-gray-700 rounded mt-2 text-center">
+              카테고리를 선택하거나 간단한 일지를 작성해주세요.
+            </p>
             <textarea
-              className="w-full p-2 border border-gray-300 rounded mt-2 h-[200px] overflow-y-scroll"
+              className="w-full p-2 border text-2xl border-gray-700 rounded mt-2 h-[440px] overflow-y-scroll"
               placeholder="카테고리를 선택해 주세요."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -158,16 +154,16 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
               disabledColor="bg-gray-300"
             />
           </div>
-          <div className="flex-1 bg-white p-4 rounded-lg">
+          <div className="flex-1 bg-white p-4 rounded">
             <input
               type="text"
-              className="w-full p-2 border border-gray-300 rounded mt-2"
+              className="w-full p-2 text-2xl font-bold border border-gray-700 rounded mt-2"
               placeholder="제목을 입력해주세요."
               value={aiTitle}
               onChange={(e) => setAiTitle(e.target.value)}
             />
             <textarea
-              className="w-full p-2 border border-gray-300 rounded mt-2 h-[200px] overflow-y-scroll"
+              className="w-full p-2 text-2xl border border-gray-700 rounded mt-2 h-[440px] overflow-y-scroll"
               placeholder="카테고리를 선택해 주세요."
               value={aiResult}
               onChange={(e) => setAiResult(e.target.value)}

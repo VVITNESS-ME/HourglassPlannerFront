@@ -54,13 +54,13 @@ const HourglassAni = ({wd}:any) => {
             </div>
             {!pause&&
               <div className='waterfall-container' style={{backgroundColor: loadingBarColor(timeGoal!)}}>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
-                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
+                <div className="waterfall rounded"></div>
               </div>}
               <div style={{...styles.loadingBar, height: (timeBurst!/timeGoal!)*30+"%", backgroundColor: loadingBarColor(timeGoal!)}}></div>
           </div>

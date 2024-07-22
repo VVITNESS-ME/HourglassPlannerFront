@@ -131,7 +131,7 @@ const Calendar: React.FC = () => {
 
         days.push(
           <div
-            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDayInSchedules ? 'bg-[#f4a261] text-white' : ''} ${isSelected ? 'bg-orange-500 text-white' : ''} ${isFutureOrTodayDate ? styles.future : ""}`}
+            className={`${styles.col} ${styles.cell} ${!isSameMonth(day, monthStart) ? 'text-gray-400' : ''} ${isSameDayInSchedules ? 'bg-[#f4a261] text-black' : ''} ${isSelected ? 'bg-orange-500 text-black' : ''} ${isFutureOrTodayDate ? styles.future : ""}`}
             key={day.toString()}
             onClick={() => isFutureOrTodayDate && handleDayClick(cloneDay)}
           >
@@ -159,7 +159,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className={`${styles.calendar} p-4 w-full mx-auto bg-[#eeeeee] border rounded-lg shadow-lg h-full`}>
+    <div className={`${styles.calendar} p-4 w-full mx-auto bg-console-layout border rounded mypage-md h-full`}>
       {renderHeader()}
       {renderDays()}
       {renderCells()}

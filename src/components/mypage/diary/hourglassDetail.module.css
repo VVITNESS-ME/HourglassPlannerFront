@@ -30,27 +30,29 @@
 }
 
 .saveButton, .cancelButton, .editButton {
-    padding: 10px 20px;
-    margin: 5px;
+    padding: 2px 15px;
+    margin-top: 8px;
+    margin-right: 4px;
+    margin-left: 4px;
     border: none;
     border-radius: 4px;
-    font-size: 1em;
+    font-size: 20px;
     cursor: pointer;
 }
 
 .saveButton {
     background-color: #F2A950;
-    color: white;
+    color: black;
 }
 
 .cancelButton {
     background-color: #F2A950;
-    color: white;
+    color: black;
 }
 
 .editButton {
     background-color: #F2A950;
-    color: white;
+    color: black;
 }
 
 .textDisplay {
@@ -59,6 +61,5 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    background-color: #f5f5f5;
     min-height: 150px;
 }
