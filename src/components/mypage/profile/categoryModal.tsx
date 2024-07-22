@@ -29,7 +29,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCat
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-20" onClose={onClose}> {/* z-index 설정 */}
+      <Dialog as="div" className="relative z-50" onClose={onClose}> {/* z-index 설정 */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
