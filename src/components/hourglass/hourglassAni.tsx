@@ -9,18 +9,18 @@ import OuterSVG from './outerSVG';
 const HourglassAni = ({wd}:any) => {
   const styles = {
     container: {
-      width: wd+'px',
-      height: wd*1.6+'px',
-      clipPath: `path("M0,0 C 0 ${wd*0.72}, ${wd*0.42} ${wd*0.6}, ${wd*0.42} ${wd*0.8} C ${wd*0.42} ${wd}, 0 ${wd*0.88}, 0 ${wd*1.6} H${wd} C ${wd} ${wd*0.88}, ${wd*0.58} ${wd}, ${wd*0.58} ${wd*0.8} C ${wd*0.58} ${wd*0.6}, ${wd} ${wd*0.72}, ${wd} 0 L 0 0")`,
-      backgroundColor: '#eeeeee',
-      position: 'relative' as 'relative',
+      width: wd*1.02+'px',
+      height: wd*1.02*1.6+'px',
+      clipPath: `path("M0,0 C 0 ${wd*1.02*0.72}, ${wd*1.02*0.42} ${wd*1.02*0.6}, ${wd*1.02*0.42} ${wd*1.02*0.8} C ${wd*1.02*0.42} ${wd*1.02}, 0 ${wd*1.02*0.88}, 0 ${wd*1.02*1.6} H${wd*1.02} C ${wd*1.02} ${wd*1.02*0.88}, ${wd*1.02*0.58} ${wd*1.02}, ${wd*1.02*0.58} ${wd*1.02*0.8} C ${wd*1.02*0.58} ${wd*1.02*0.6}, ${wd*1.02} ${wd*1.02*0.72}, ${wd*1.02} 0 L 0 0")`,
+      // backgroundColor: '#eeeeee',
+      // position: 'relative' as 'relative',
     },
     loadingBar: {
       width: '100%',
       // backgroundColor: '#F2CD88',
       position: 'absolute' as 'absolute',
       bottom: 0,
-      transition: 'height 2s',
+      transition: 'height 1s',
     },
     maskR: {
       width: '100%',
@@ -46,15 +46,13 @@ const HourglassAni = ({wd}:any) => {
     return (
       <div className="mt-4 mb-2 flex flex-col justify-center items-center relative" style={{width: wd*2, height: wd*2}}>
         <div className='absolute flex'><OuterSVG wd = {wd*2.20} /></div>
-        <div className='absolute flex'><ClippathSVG wd={wd*1.68}/></div>
-        {/* <div className='absolute flex' style={styles.container}> */}
+        <div className='absolute flex' style={styles.container}>
         {isRunning&&
           <div>
             <div style={styles.maskR}>
               <div style={{...styles.loadingBar, height: (54+(1-timeBurst!/timeGoal!)*30)+"%", backgroundColor: loadingBarColor(timeGoal!)}}></div>
             </div>
-            {/* {(pause || (timeBurst! > (timeGoal!-1000)))?null: */
-              !pause&&
+            {!pause&&
               <div className='waterfall-container' style={{backgroundColor: loadingBarColor(timeGoal!)}}>
                 <div className="waterfall rounded-lg"></div>
                 <div className="waterfall rounded-lg"></div>
@@ -68,7 +66,9 @@ const HourglassAni = ({wd}:any) => {
           </div>
         }
         </div>
-      // </div>
+        <div className='absolute flex justify-center items-center' ><ClippathSVG wd={wd*1.68}/>
+        </div>
+      </div>
     )
 }
 
