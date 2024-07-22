@@ -7,6 +7,8 @@ import AvatarCanvas from "@/components/general/localVideo2"; // Update this with
 import useRoomStore from "../../../../../store/roomStore";
 import Hourglass from "@/components/hourglass/hourglass";
 import { Task } from "@/type/types";
+import TitleStore from "../../../../../store/titleStore";
+import useTitleStore from "../../../../../store/titleStore";
 
 export default function VideoChat() {
   const params = useParams();
@@ -27,6 +29,9 @@ export default function VideoChat() {
   const { password } = useRoomStore((state) => ({
     password: state.roomPassword,
   }));
+
+  const { userName, mainTitle, fetchTitles } = useTitleStore();
+
   const router = useRouter();
 
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
@@ -44,7 +49,6 @@ export default function VideoChat() {
           { urls: "stun:stun1.l.google.com:19302" },
           { urls: "stun:stun2.l.google.com:19302" },
           { urls: "stun:stun3.l.google.com:19302" },
-          { urls: "stun:stun4.l.google.com:19302" }
         ],
       });
 
@@ -54,6 +58,9 @@ export default function VideoChat() {
             roomId,
             userId,
             candidate: event.candidate,
+            // TODO: 여기에 userName, mainTitle 추가
+            userName,
+            mainTitle,
           });
         }
       };
@@ -69,7 +76,15 @@ export default function VideoChat() {
             remoteVideo.id = `remoteVideo-${userId}`;
             remoteVideo.autoplay = true;
             remoteVideo.className = "remote-video w-40 h-40";
+
+            // 사용자 이름과 타이틀 추가
+            const userInfo = document.createElement("div");
+            userInfo.className = "user-info";
+            userInfo.innerHTML = `<p>${userName}</p><p>${mainTitle}</p>`;
+
             remoteVideoRefs.current.appendChild(remoteVideo);
+            remoteVideoRefs.current.appendChild(userInfo);
+
             setRemoteVideoAdded(true);
           }
           remoteVideo.srcObject = event.streams[0];
@@ -215,6 +230,7 @@ export default function VideoChat() {
 
   useEffect(() => {
     if (!roomId) return;
+    fetchTitles();
     handleJoinRoom();
     const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
     socketRef.current = newSocket;

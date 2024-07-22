@@ -4,6 +4,7 @@ const cors = require("cors");
 const next = require("next");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const socketIo = require("socket.io");
+const fetch = require("node-fetch");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -117,7 +118,7 @@ app.prepare().then(() => {
             socket.to(room).emit("userLeft", socket.id);
           }
           // 인원 수 변동 fetch
-          fetchParticipants(room, users.size);
+          fetchParticipants(room.roomId, users.size);
         }
       }
     });
