@@ -9,6 +9,7 @@ import Hourglass from "@/components/hourglass/hourglass";
 import { Task } from "@/type/types";
 import TitleStore from "../../../../../store/titleStore";
 import useTitleStore from "../../../../../store/titleStore";
+import { start } from "repl";
 
 type User = {
   userId: string;
@@ -78,17 +79,17 @@ export default function VideoChat() {
             remoteVideo = document.createElement("video");
             remoteVideo.id = `remoteVideo-${userId}`;
             remoteVideo.autoplay = true;
+            remoteVideo.playsInline = true;
             remoteVideo.className = "remote-video w-40 h-40";
 
             const user = users.find((user) => user.userId === userId);
 
-            // 사용자 이름과 타이틀 추가
+            // 사용자 이름과 칭호를 추가
             const userInfo = document.createElement("div");
             userInfo.id = `userInfo-${userId}`;
-            userInfo.innerHTML =
-              user?.mainTitle !== null
-                ? `<p>${user?.userName}</p><br/><p>${user?.mainTitle}</p>`
-                : `<p>${user?.userName}</p>`;
+            userInfo.innerHTML = user?.mainTitle
+              ? `<p>${user.userName}</p><br/><p>${user.mainTitle}</p>`
+              : `<p>${user?.userName}</p>`;
 
             remoteVideoRefs.current.appendChild(remoteVideo);
             remoteVideoRefs.current.appendChild(userInfo);
@@ -229,21 +230,52 @@ export default function VideoChat() {
     }
   }, [roomId, users, createPeerConnection]);
 
-  const connectVideo = useCallback(async (stream: MediaStream) => {
-    try {
-      setLocalStream(stream);
-      setVideoOn(true);
-      setMicOn(true);
-      setAudioOn(true);
-    } catch (error) {
-      console.error("Error accessing media devices:", error);
-    }
-  }, []);
+  // 특정 userId에게 통화 시작
+  const startCallWithUser = useCallback(
+    async (userId: string) => {
+      console.log("Starting call with user:", userId);
+      let pc = peerConnections.current[userId];
+      if (!pc) {
+        pc = createPeerConnection(userId);
+      }
+      try {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socketRef.current?.emit("offer", {
+          roomId,
+          toUserId: userId,
+          offer,
+        });
+      } catch (error) {
+        console.error("Error starting call with", userId, error);
+      }
+    },
+    [roomId, createPeerConnection]
+  );
+
+  const connectVideo = useCallback(
+    async (stream: MediaStream) => {
+      try {
+        setLocalStream(stream);
+        setVideoOn(true);
+        setMicOn(true);
+        setAudioOn(true);
+        startCall(); // 비디오가 연결되면 자동으로 통화 시작
+      } catch (error) {
+        console.error("Error accessing media devices:", error);
+      }
+    },
+    [startCall]
+  );
 
   useEffect(() => {
     if (!roomId) return;
     handleJoinRoom();
-    const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
+    // const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string); // polling -> websocket 방식
+    const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, { // 바로 websocket 방식
+      transports: ["websocket"],
+      upgrade: false,
+    });
     socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
@@ -254,6 +286,10 @@ export default function VideoChat() {
     newSocket.on("users", (userList: User[]) => {
       console.log("Received user list:", userList);
       setUsers(userList);
+      // user list를 받으면 자동으로 통화시작
+      if (localStream) {
+        startCall();
+      }
     });
 
     newSocket.on("offer", handleOffer);
@@ -263,6 +299,10 @@ export default function VideoChat() {
     newSocket.on("userJoined", ({ userId, userName, mainTitle }) => {
       console.log("User joined:", userId);
       setUsers((prevUsers) => [...prevUsers, { userId, userName, mainTitle }]);
+      // Start call with the new user
+      if (localStream) {
+        startCallWithUser(userId);
+      }
     });
 
     newSocket.on("userLeft", (userId: string) => {
@@ -297,7 +337,7 @@ export default function VideoChat() {
     return () => {
       newSocket.disconnect();
     };
-  }, []);
+  }, [roomId, handleOffer, handleAnswer, handleCandidate]); // 여기 잘못 건들면 통화 터져요
 
   const OnVideo = () => {
     if (localStream) {
