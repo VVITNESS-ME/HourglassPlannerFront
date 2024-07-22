@@ -32,8 +32,7 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const hideToggle = () => { toggleTimer(!hideTimer); };
-
+  const hideToggle = () => { toggleTimer(!hideTimer);};
   const stopTimerAndFetchCategories = useCallback(async () => {
     const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
     if (token) {
@@ -48,7 +47,6 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
         const data = await response.json();
         if (response.ok) {
           setUserCategories(data.data.userCategoriesWithName);
-          if(audioRef.current) audioRef.current.play();
           popUpModal();
         }
       } catch (error) {
@@ -89,13 +87,13 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
       }
     }
   }, [setTimeEnd, stopTimer, incrementTimeBurst]);
+
+
   useEffect(() => {
     let timer: NodeJS.Timeout | number;
-
     if (isRunning && !pause) {
       timer = setInterval(() => {
         incrementTimeBurst();
-
         if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
           clearInterval(timer);
           setTimeEnd(new Date());
@@ -103,7 +101,6 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
         }
       }, 1000);
     }
-
     return () => clearInterval(timer as NodeJS.Timeout);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
 
@@ -124,7 +121,14 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
       <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
+      {timeBurst!>=timeGoal!?<div style={{ display: "hidden" }}>
+        <audio ref={audioRef} autoPlay>
+          <source src="../beep.mp3" type="audio/mpeg" />
+        </audio>
+      </div>:null}
+
     </div>
+
   );
   else return(
     <div className='flex flex-col w-max justify-center items-center text-lg md:text-lg'>
@@ -142,11 +146,11 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
       <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10'/>
     </div>
     <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
-    {/* <div style={{ display: "hidden" }}> */}
-        <audio ref={audioRef}>
+    {timeBurst!>=timeGoal!?<div style={{ display: "hidden" }}>
+        <audio ref={audioRef} autoPlay>
           <source src="../beep.mp3" type="audio/mpeg" />
         </audio>
-    {/* </div> */}
+      </div>:null}
   </div>
   )
 };
