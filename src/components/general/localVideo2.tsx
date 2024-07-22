@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import AvatarManager from "@/components/together/facelandmark-demo/class/AvatarManager";
 import { useHourglassStore } from "../../../store/hourglassStore";
-import { flattenJSON } from "three/src/animation/AnimationUtils.js";
 
 interface VideoProps {
   stream: MediaStream | null;
@@ -60,7 +59,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           // 눈감음
           timeDoze++;
           if (timeDoze > 50) {
-            if(!isPausedRef.current){
+            if (!isPausedRef.current) {
               setPause();
               isPausedRef.current = true;
             }
@@ -75,7 +74,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           // 자리이탈
           timeMia++;
           if (timeMia > 50) {
-            if(!isPausedRef.current){
+            if (!isPausedRef.current) {
               setPause();
               isPausedRef.current = true;
             }
@@ -97,7 +96,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
               setResume();
               isPausedRef.current = false;
             }
-            if (audioRef.current) {audioRef.current.pause(); audioRef.current.currentTime = 0;}
+            if (audioRef.current) {
+              audioRef.current.pause();
+              audioRef.current.currentTime = 0;
+            }
             timeDoze = 0;
             timeMia = 0;
           }
@@ -128,9 +130,15 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           };
         }
         streamRef.current = stream; // 스트림을 저장해 둡니다.
-      } catch (e) {
+      } catch (e: any) {
         console.log(e);
-        alert("Failed to load webcam or microphone!");
+        if (e.name === "NotAllowedError") {
+          alert("Permissions denied for accessing webcam or microphone!");
+        } else if (e.name === "NotFoundError") {
+          alert("Webcam or microphone not found!");
+        } else {
+          alert("Failed to load webcam or microphone!");
+        }
       }
     };
     getUserCamera();
@@ -175,7 +183,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
     useEffect(() => {
       rendererRef.current = gl;
       const render = () => {
-        if (showAvatar&& combinedCanvasRef.current && videoRef.current) {
+        if (showAvatar && combinedCanvasRef.current && videoRef.current) {
           const ctx = combinedCanvasRef.current.getContext("2d");
           if (ctx) {
             ctx.save();

@@ -30,6 +30,7 @@ export default function VideoChat() {
 
   const [remoteVideoAdded, setRemoteVideoAdded] = useState(false); // 원격 접속자가 있을 때만 remote video 추가
   const [clickedConnect, setClickedConnect] = useState<boolean>(false); // Connect Video 버튼 클릭 여부
+  const [socketConnected, setSocketConnected] = useState(false); // 소켓 연결 여부
 
   const { password } = useRoomStore((state) => ({
     password: state.roomPassword,
@@ -107,7 +108,7 @@ export default function VideoChat() {
       peerConnections.current[userId] = pc;
       return pc;
     },
-    [roomId, localStream, users]
+    [roomId, localStream]
   );
 
   const handleJoinRoom = useCallback(async () => {
@@ -205,28 +206,15 @@ export default function VideoChat() {
     []
   );
 
-  const startCall = useCallback(async () => {
+  // users 리스트에 있는 모든 유저들에게 통화 시작
+  const startCall = useCallback(() => {
     console.log("Starting call with users:", users);
-    for (const user of users) {
+    users.forEach((user) => {
       if (user.userId !== socketRef.current?.id) {
-        let pc = peerConnections.current[user.userId];
-        if (!pc) {
-          pc = createPeerConnection(user.userId);
-        }
-        try {
-          const offer = await pc.createOffer();
-          await pc.setLocalDescription(offer);
-          socketRef.current?.emit("offer", {
-            roomId,
-            toUserId: user.userId,
-            offer,
-          });
-        } catch (error) {
-          console.error("Error starting call with", user.userId, error);
-        }
+        startCallWithUser(user.userId);
       }
-    }
-  }, []);
+    });
+  }, [users]);
 
   // 특정 userId에게 통화 시작
   const startCallWithUser = useCallback(
@@ -248,23 +236,20 @@ export default function VideoChat() {
         console.error("Error starting call with", userId, error);
       }
     },
-    []
+    [roomId, createPeerConnection]
   );
 
-  const connectVideo = useCallback(
-    async (stream: MediaStream) => {
-      try {
-        setLocalStream(stream);
-        setVideoOn(true);
-        setMicOn(true);
-        setAudioOn(true);
-        startCall(); // 비디오가 연결되면 자동으로 통화 시작
-      } catch (error) {
-        console.error("Error accessing media devices:", error);
-      }
-    },
-    []
-  );
+  const connectVideo = useCallback(async (stream: MediaStream) => {
+    try {
+      setLocalStream(stream);
+      setVideoOn(true);
+      setMicOn(true);
+      setAudioOn(true);
+      startCall(); // 비디오가 연결되면 자동으로 통화 시작
+    } catch (error) {
+      console.error("Error accessing media devices:", error);
+    }
+  }, []);
 
   useEffect(() => {
     if (!roomId) return;
@@ -278,7 +263,7 @@ export default function VideoChat() {
 
     newSocket.on("connect", () => {
       console.log("Socket.IO connection established");
-      newSocket.emit("join", { roomId, userName, mainTitle });
+      setSocketConnected(true);
     });
 
     newSocket.on("users", (userList: User[]) => {
@@ -330,12 +315,78 @@ export default function VideoChat() {
 
     newSocket.on("disconnect", () => {
       console.log("Socket.IO connection closed");
+      setSocketConnected(false);
     });
 
     return () => {
       newSocket.disconnect();
     };
-  }, [roomId, handleOffer, handleAnswer, handleCandidate]); // 여기 잘못 건들면 통화 터져요
+  }, [roomId]); // 여기 잘못 건들면 통화 터져요
+
+  // 채팅방 입장과 새로운 유저 들어오는 경우 처리
+  useEffect(() => {
+    if (!socketConnected || !socketRef.current) return;
+
+    handleJoinRoom();
+
+    socketRef.current.emit("join", { roomId, userName, mainTitle });
+
+    socketRef.current.on("users", (userList: User[]) => {
+      console.log("Received user list:", userList);
+      setUsers(userList);
+      if (localStream) {
+        startCall();
+      }
+    });
+
+    socketRef.current.on("offer", handleOffer);
+    socketRef.current.on("answer", handleAnswer);
+    socketRef.current.on("candidate", handleCandidate);
+
+    socketRef.current.on("userJoined", ({ userId, userName, mainTitle }) => {
+      console.log("User joined:", userId);
+      setUsers((prevUsers) => [...prevUsers, { userId, userName, mainTitle }]);
+      if (localStream) {
+        startCallWithUser(userId);
+      }
+    });
+
+    socketRef.current.on("userLeft", (userId: string) => {
+      console.log("User left:", userId);
+      setUsers((prevUsers) => {
+        const updatedUsers = prevUsers.filter((user) => user.userId !== userId);
+        // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
+        if (updatedUsers.length === 1) {
+          setRemoteVideoAdded(false);
+        }
+        return updatedUsers;
+      });
+
+      if (peerConnections.current[userId]) {
+        peerConnections.current[userId].close();
+        delete peerConnections.current[userId];
+      }
+      const remoteVideo = document.getElementById(`remoteVideo-${userId}`);
+      const userInfo = document.getElementById(`userInfo-${userId}`);
+      if (remoteVideo) {
+        remoteVideo.remove();
+      }
+      if (userInfo) {
+        userInfo.remove();
+      }
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("users");
+        socketRef.current.off("offer");
+        socketRef.current.off("answer");
+        socketRef.current.off("candidate");
+        socketRef.current.off("userJoined");
+        socketRef.current.off("userLeft");
+      }
+    };
+  }, [socketConnected, roomId, userName, mainTitle]);
 
   const OnVideo = () => {
     if (localStream) {
