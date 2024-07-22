@@ -36,7 +36,7 @@ const options: ChartOptions<'bar'> = {
       callbacks: {
         label: (context: any) => {
           const activityTime = context.raw;
-          return `${context.dataset.label}: ${activityTime}시간`;
+          return `${context.dataset.label}: ${activityTime.toFixed(1)}시간`;
         },
       },
     },
