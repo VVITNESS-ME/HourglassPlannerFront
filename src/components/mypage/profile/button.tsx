@@ -28,7 +28,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={`${width} ${height} p-2 m-2 text-black rounded ${
+      className={`${width} ${height} p-2 m-2 text-xl font-bold text-black rounded ${
         disabled ? disabledColor : isActive ? activeColor : inactiveColor
       } ${!disabled && !isActive ? 'hover:bg-sandy-2' : ''}`}
       onClick={onClick}

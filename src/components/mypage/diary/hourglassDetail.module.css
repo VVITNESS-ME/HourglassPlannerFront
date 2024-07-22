@@ -31,7 +31,9 @@
 
 .saveButton, .cancelButton, .editButton {
     padding: 2px 15px;
-    margin-top: 12px;
+    margin-top: 8px;
+    margin-right: 4px;
+    margin-left: 4px;
     border: none;
     border-radius: 4px;
     font-size: 20px;
@@ -40,12 +42,12 @@
 
 .saveButton {
     background-color: #F2A950;
-    color: white;
+    color: black;
 }
 
 .cancelButton {
     background-color: #F2A950;
-    color: white;
+    color: black;
 }
 
 .editButton {
