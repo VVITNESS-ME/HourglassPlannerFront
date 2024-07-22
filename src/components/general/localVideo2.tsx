@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import AvatarManager from "@/components/together/facelandmark-demo/class/AvatarManager";
 import { useHourglassStore } from "../../../store/hourglassStore";
+import { flattenJSON } from "three/src/animation/AnimationUtils.js";
 
 interface VideoProps {
   stream: MediaStream | null;
@@ -13,13 +14,10 @@ interface VideoProps {
 }
 
 const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
-  const pause = useHourglassStore((state) => state.pause);
-  const setPause = useHourglassStore((state) => state.setPause);
-  const setResume = useHourglassStore((state) => state.setResume);
+  const {setPause, setResume, pause} = useHourglassStore();
   let timeDoze = 0;
   let timeMia = 0;
   let timeSober = 0;
-  let timeSober2 = 0;
 
   const width = 500; // width를 컴포넌트 내부에서 정의
   const height = 400; // height를 컴포넌트 내부에서 정의
@@ -28,6 +26,8 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const [scene, setScene] = useState<THREE.Scene | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAvatar, setShowAvatar] = useState(false); // 아바타 표시 여부 상태 추가
+  const [preventLoopBool,_setPreventLoopBool] = useState<boolean>(pause);
+  const preventLoopBoolRef = useRef(false);
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -37,6 +37,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const setPreventLoopBool = (value:boolean) => {
+    preventLoopBoolRef.current = value;
+    _setPreventLoopBool(value);
+  };
   const animate = useCallback(() => {
     if (
       videoRef.current &&
@@ -56,39 +60,57 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
         );
 
         if (faceStatus == 1) {
+          // console.log("눈감음");
           // 눈감음
           timeDoze++;
           if (timeDoze > 50) {
-            setPause();
-            // setShowAvatar(true); // 아바타 표시
-            avatarManagerRef.current.setAvatarVisibility(true)
-            if (audioRef.current) audioRef.current.play();
+            if(!pause && !preventLoopBoolRef.current){
+              setPause();
+              setPreventLoopBool(true);
+            }
+            if (!showAvatar) {
+              setShowAvatar(true); // 아바타 표시
+              if (audioRef.current) audioRef.current.play();
+            }
             timeSober = 0;
           }
         } else if (faceStatus == 3) {
+          // console.log("자리이탈");
           // 자리이탈
           timeMia++;
           if (timeMia > 50) {
-            setPause();
-            // setShowAvatar(true); // 아바타 표시
-            if (audioRef.current) audioRef.current.play();
+            if(!pause && !preventLoopBoolRef.current){
+              setPause();
+              setPreventLoopBool(true);
+            }
+            /*
+            if (!showAvatar) {
+              setShowAvatar(true); // 아바타 표시
+              if (audioRef.current) audioRef.current.play();
+            }
+            */
             timeSober = 0;
           }
         } else {
+          // console.log("정상상태");
           // 정상상태
           timeSober++;
-          timeSober2++;
+          // console.log(timeSober);
           if (timeSober > 25) {
-            setResume();
-            if (audioRef.current) audioRef.current.pause();
+            if (pause && preventLoopBoolRef.current) {
+              setResume();
+              setPreventLoopBool(false);
+            }
+            if (audioRef.current){
+              audioRef.current.pause();
+              audioRef.current.currentTime = 0;
+            }
             timeDoze = 0;
             timeMia = 0;
-            timeSober = 0;
           }
-          if (timeSober2 > 125) {
-            // setShowAvatar(false); // 아바타 숨기기
-            avatarManagerRef.current.setAvatarVisibility(false);
-            timeSober2 = 0;
+          if (timeSober > 200) {
+            setShowAvatar(false); // 아바타 숨기기
+            timeSober = 0;
           }
         }
       } catch (e) {
@@ -96,7 +118,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       }
     }
     requestRef.current = requestAnimationFrame(animate);
-  }, []);
+  }, [showAvatar]);
 
   useEffect(() => {
     const getUserCamera = async () => {
@@ -160,7 +182,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
     useEffect(() => {
       rendererRef.current = gl;
       const render = () => {
-        if (combinedCanvasRef.current && videoRef.current) {
+        if (showAvatar&& combinedCanvasRef.current && videoRef.current) {
           const ctx = combinedCanvasRef.current.getContext("2d");
           if (ctx) {
             ctx.save();
@@ -218,7 +240,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             enableZoom={false}
             enablePan={false}
           />
-          {scene && <primitive object={scene} />}
+          {showAvatar && scene && <primitive object={scene} />}
           {isLoading && (
             <Float floatIntensity={1} speed={1}>
               <Text3D
@@ -237,7 +259,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
       </div>
       <div style={{ display: "hidden" }}>
         <audio ref={audioRef}>
-          <source src="../wakeupCall.mp3" type="audio/mpeg" />
+          <source src="../wakeupCall.wav" type="audio/wav" />
         </audio>
       </div>
     </div>

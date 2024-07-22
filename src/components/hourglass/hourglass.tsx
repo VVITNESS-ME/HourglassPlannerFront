@@ -5,7 +5,8 @@ import TimerSelector from './timerSelector';
 import HourglassAni from './hourglassAni';
 import TimerRunning from './timerRunning';
 import { useHourglassStore } from '../../../store/hourglassStore';
-import DailyDataModal from "@/components/hourglass/dailyDataModal";
+// import DailyDataModal from "@/components/hourglass/dailyDataModal";
+import FinishedDataModal from './finishedDataModal';
 import Cookies from "js-cookie";
 
 interface Props{
@@ -77,7 +78,7 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
       <h2 className="min-h-[20px]">{taskName}</h2>
       <HourglassAni wd={width*5/6} />
       {isRunning ? <TimerRunning wd={width} /> : <TimerSelector wd={width} />}
-      <DailyDataModal isOpen={resultModalOpen} onClose={closeResultModal} />
+      <FinishedDataModal isOpen={resultModalOpen} onClose={closeResultModal} />
     </div>
   );
 

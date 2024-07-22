@@ -25,7 +25,7 @@ const HourglassAni = ({wd}:any) => {
     maskR: {
       width: '100%',
       height: '100%',
-      clipPath: `path("M0,0 C 0 ${wd*0.72}, ${wd*0.46} ${wd*0.6}, ${wd*0.46} ${wd*0.8} H${wd*0.54} C ${wd*0.54} ${wd*0.6}, ${wd} ${wd*0.72}, ${wd} 0 L 0 0")`,
+      clipPath: `path("M0,0 C 0 ${wd*0.72}, ${wd*0.46} ${wd*0.6}, ${wd*0.3} ${wd*0.8} H${wd*0.7} C ${wd*0.7} ${wd*0.6}, ${wd} ${wd*0.72}, ${wd} 0 L 0 0")`,
       position: 'absolute' as 'absolute',
       backgroungColor: 'transparent'
     },
@@ -56,11 +56,13 @@ const HourglassAni = ({wd}:any) => {
             {/* {(pause || (timeBurst! > (timeGoal!-1000)))?null: */
               !pause&&
               <div className='waterfall-container' style={{backgroundColor: loadingBarColor(timeGoal!)}}>
-                <div className="waterfall"></div>
-                <div className="waterfall"></div>
-                <div className="waterfall"></div>
-                <div className="waterfall"></div>
-                <div className="waterfall"></div>
+                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded-lg"></div>
+                <div className="waterfall rounded-lg"></div>
               </div>}
               <div style={{...styles.loadingBar, height: (timeBurst!/timeGoal!)*30+"%", backgroundColor: loadingBarColor(timeGoal!)}}></div>
           </div>

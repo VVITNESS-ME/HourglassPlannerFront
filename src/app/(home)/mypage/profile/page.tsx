@@ -36,6 +36,7 @@ const Profile: React.FC = () => {
     isInitialized: state.isInitialized,
     initialize: state.initialize,
   }));
+  const [initialized, setInitialized] = useState<boolean>(false);
 
   const handleAddCategory = async (category: { categoryName: string; color: string }) => {
     const maxId = userCategories.reduce((max, category) => (category.categoryId > max ? category.categoryId : max), 0);
@@ -90,11 +91,12 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     initialize();
+    fetchCategoriesInfo();
+    fetchTitles();
   }, [initialize]);
 
   useEffect(() => {
     if (isInitialized) {
-      fetchTitles();
       setUserInfo({
         userEmail: email,
         userName: username,
@@ -105,28 +107,34 @@ const Profile: React.FC = () => {
           titleColor: mainTitle?.titleColor ?? '',
         },
       });
+      setInitialized(true);
     }
-  }, []);
+  }, [isInitialized, fetchTitles, email, username, mainTitle]);
 
-  useEffect(() => {
-    fetchCategoriesInfo();
-  }, []);
+
+  if (!initialized) {
+    return (
+      <div>
+        loading...
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
-          <ProfileCard userInfo={userInfo} mainTitle={mainTitle} />
+        <div className="flex-1 w-[450px] mb-4">
+          <ProfileCard mainTitle={mainTitle} />
         </div>
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+        <div className="flex-1 w-[450px] mb-4">
           <CategorySettings categories={userCategories} setCategories={setUserCategories} onAddCategory={handleAddCategory} />
         </div>
       </div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
-          <TitleList/>
+        <div className="flex-1 w-[450px] mb-4">
+          <TitleList />
         </div>
-        <div className="flex-1 min-w-[400px] max-w-[700px] mb-4">
+        <div className="flex-1 w-[450px] mb-4">
         </div>
       </div>
     </div>

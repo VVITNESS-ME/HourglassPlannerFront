@@ -68,8 +68,8 @@ const AchievementCard: React.FC = () => {
   const [activities, setActivities] = useState<{ label: string, time: number, burst: number, color: string }[]>([]);
   const [totalTime, setTotalTime] = useState(0);
   const [totalBurstTime, setTotalBurstTime] = useState(0);
-  const { isRunning } = useHourglassStore();
-  const fetchData = useCallback(async (date: Date) => {
+  const { dailyData } = useHourglassStore();
+  const fetchData = (async (date: Date) => {
     const formattedDate = format(date, 'yyyy-MM-dd');
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/diary/calendar?date=${formattedDate}`, {
@@ -120,11 +120,11 @@ const AchievementCard: React.FC = () => {
     } catch (error) {
       console.error('Error fetching data', error);
     }
-  }, []);
+  });
 
   useEffect(() => {
     fetchData(new Date());
-  }, [fetchData, isRunning]);
+  }, [dailyData]);
 
   const data = {
     labels: [''],
@@ -137,28 +137,30 @@ const AchievementCard: React.FC = () => {
   };
 
   return (
-    <CardLayout title="오늘의 성취도" width="w-80" height="h-auto">
-      <div className="text-center p-4">
-        <div className="text-2xl font-bold mb-2">
-          {Math.floor(totalBurstTime / 60)}시간 {totalBurstTime % 60}분 <span className="text-xl font-normal">/ 총 {Math.floor(totalTime / 60)}시간 {totalTime % 60}분</span>
-        </div>
-        <div className="text-xl font-bold mb-4">집중도 {(totalBurstTime / totalTime * 100).toFixed(2)}%</div>
-        <div className="mb-4">
-          <Bar data={data} options={options}/>
-        </div>
-        <div className="flex justify-around text-sm text-gray-700">
-          {activities.map((activity) => (
-            <div key={activity.label} className="flex flex-col items-center">
-              <div className="flex items-center mb-1">
-                <span className="w-3 h-3 rounded-full mr-1" style={{backgroundColor: activity.color}}></span>{' '}
-                {activity.label}
+    <div className="w-full h-full border rounded-lg shadow-lg">
+      <CardLayout title="오늘의 성취도" width="w-full" height="h-full">
+        <div className="text-center pt-4 pl-4 pr-4">
+          <div className="text-2xl font-bold">
+            {Math.floor(totalBurstTime / 60)}시간 {totalBurstTime % 60}분 <span className="text-xl font-normal">/ 총 {Math.floor(totalTime / 60)}시간 {totalTime % 60}분</span>
+          </div>
+          <div className="text-xl font-bold mb-4">집중도 {(totalBurstTime / totalTime * 100).toFixed(2)}%</div>
+          <div className="mb-4">
+            <Bar data={data} options={options}/>
+          </div>
+          <div className="flex justify-around text-sm text-gray-700">
+            {activities.map((activity) => (
+              <div key={activity.label} className="flex flex-col items-center">
+                <div className="flex items-center mb-1">
+                  <span className="w-3 h-3 rounded-full mr-1" style={{backgroundColor: activity.color}}></span>{' '}
+                  {activity.label}
+                </div>
+                <div className="font-bold">{activity.time}분</div>
               </div>
-              <div className="font-bold">{activity.time}분</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </CardLayout>
+      </CardLayout>
+    </div>
   );
 };
 

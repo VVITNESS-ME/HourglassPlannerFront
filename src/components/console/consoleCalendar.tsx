@@ -159,7 +159,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className={`${styles.calendar} p-4 max-w-md mx-auto bg-[#eeeeee] border rounded-lg shadow-lg h-[450px]`}>
+    <div className={`${styles.calendar} p-4 w-full mx-auto bg-[#eeeeee] border rounded-lg shadow-lg h-full`}>
       {renderHeader()}
       {renderDays()}
       {renderCells()}

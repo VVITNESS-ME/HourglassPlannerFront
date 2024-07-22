@@ -60,9 +60,11 @@ const HourglassList: React.FC = () => {
   }
 
   return (
-    <div className="max-w-[800px] min-w-[400px]">
-      <h3>일간 작업 목록</h3>
-      <div className="p-4 box-border border bg-[#eeeeee] rounded-lg shadow-lg">
+    <div className="w-[450px] h-full">
+      <div className="p-4 box-border border bg-[#eeeeee] h-full rounded-lg shadow-lg">
+        <div className="pl-2 pr-2 pb-2">
+          <h3>일간 작업 목록</h3>
+        </div>
         <div className={styles.list}>
           {hourglasses.map((task) => (
             <div
@@ -70,7 +72,7 @@ const HourglassList: React.FC = () => {
               className={`${styles.task} ${selectedHourglass && selectedHourglass.hid === task.hid ? styles.selected : ''}`}
               onClick={() => handleTaskClick(task)}
             >
-              <div className={styles.category} style={{ backgroundColor: task.color }}>{task.categoryName}</div>
+              <div className={styles.category} style={{backgroundColor: task.color}}>{task.categoryName}</div>
               <div className={styles.details}>
                 <p className={styles.taskName} title={task.taskName}>{task.taskName}</p>
                 <p className={styles.description} title={task.content}>{task.content}</p>
