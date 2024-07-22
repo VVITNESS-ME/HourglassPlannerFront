@@ -32,6 +32,7 @@ interface TimeState {
   closeModal: () => void;
   toggleRunning: () => void;
   toggleBBMode: () => void;
+  togglePause: () => void;
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
   incrementTimeBurst: () => void;
@@ -260,11 +261,71 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
 
-  setPause: () => async () => {
+  setPause: async () => {
+    const token = getToken();
+    if (token) {
+      set((state) => {
+        if (!state.pause) {
+          const pauseState = { ...state, pause: true };
+          saveStateToCookies(pauseState);
+          return pauseState;
+        }
+        return state;
+      });
+
+      const state = get();
+      const hId = await sendPauseSignalToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeGoal: state.timeGoal,
+        hId: state.hId,
+        timeBurst: state.timeBurst,
+      });
+
+      if (hId) {
+        set((state) => {
+          const newState = { ...state, hId };
+          saveStateToCookies(newState);
+          return newState;
+        });
+      }
+    }
+  },
+
+  setResume: async () => {
+    const token = getToken();
+    if (token) {
+      set((state) => {
+        if (state.pause) {
+          const resumeState = { ...state, pause: false };
+          saveStateToCookies(resumeState);
+          return resumeState;
+        }
+        return state;
+      });
+
+      const state = get();
+      const hId = await sendResumeSignalToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeGoal: state.timeGoal,
+        hId: state.hId,
+        timeBurst: state.timeBurst,
+      });
+
+      if (hId) {
+        set((state) => {
+          const newState = { ...state, hId };
+          saveStateToCookies(newState);
+          return newState;
+        });
+      }
+    }
+  },
+
+  togglePause: async () => {
     const token = getToken();
     const state = get();
     if (token) {
-      const newState = {...state, pause: !state.pause};
+      const newState = { ...state, pause: !state.pause };
       set(newState);
       saveStateToCookies(newState);
       if (!state.pause) {
@@ -275,32 +336,22 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           timeBurst: state.timeBurst,
         });
         if (hId) {
-          const newState = {...state, hId};
+          const newState = { ...state, hId };
           set(newState);
           saveStateToCookies(newState);
         }
-      }
-    }
-    else {
-      const newState = { ...state, pause: !state.pause };
-      set(newState);
-      saveStateToCookies(newState);
-    }
-  },
-  setResume: () =>async () => {
-    const token = getToken();
-    const state = get();
-    if (token) {
-      const hId = await sendResumeSignalToServer({
-        timeStart: state.timeStart?.toISOString(),
-        timeGoal: state.timeGoal,
-        hId: state.hId,
-        timeBurst: state.timeBurst,
-      });
-      if (hId) {
-        const newState = { ...state, hId };
-        set(newState);
-        saveStateToCookies(newState);
+      } else {
+        const hId = await sendResumeSignalToServer({
+          timeStart: state.timeStart?.toISOString(),
+          timeGoal: state.timeGoal,
+          hId: state.hId,
+          timeBurst: state.timeBurst,
+        });
+        if (hId) {
+          const newState = { ...state, hId };
+          set(newState);
+          saveStateToCookies(newState);
+        }
       }
     } else {
       const newState = { ...state, pause: !state.pause };
@@ -397,7 +448,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         resultModalOpen: false,
         dailyData: [],
         taskName: parsedState.taskName || '',
-        checkHourglassInProgress: parsedState.taskName || false,
+        checkHourglassInProgress: parsedState.checkHourglassInProgress || false,
       });
     } else {
       set({
@@ -450,8 +501,8 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     return newState;
   }),
   fetchHourglassInProgress: async () => {
-    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token')
-    if(token){
+    const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
+    if (token) {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/timer/progress`, {
           method: 'GET',
@@ -466,7 +517,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
           if (data.data && data.data.hid !== null) {
             let timeDifference = 0;
             if (data.data.timeBurst !== null) {
-              timeDifference = data.data.timeBurst
+              timeDifference = data.data.timeBurst;
             } else {
               if (data.data.timeResume !== null) {
                 const resumeTime = new Date(data.data.timeResume);
@@ -489,8 +540,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
               isInitialized: true,
             }));
             console.log(get());// Log the current state
-          }
-          else {
+          } else {
             set({
               timeStart: null,
               timeBurst: null,
@@ -515,7 +565,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       } catch (error) {
         console.error('Error fetching hourglass progress', error);
       }
-    }else{
+    } else {
       set({
         timeStart: null,
         timeBurst: null,
