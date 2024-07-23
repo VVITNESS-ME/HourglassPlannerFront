@@ -35,7 +35,7 @@ interface TimeState {
   togglePause: () => void;
   setTimeEnd: (time: Date) => void;
   handleSetTime: (hours: number, minutes: number, seconds: number) => void;
-  incrementTimeBurst: () => void;
+  incrementTimeBurst: (burst:number) => void;
   stopTimer: (categoryName: string, rating: number, content: string) => Promise<any[]>;
   stopTimerWithNOAuth: () => void;
   checkAndStopTimer: () => void;
@@ -390,8 +390,8 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       }
     }
   },
-  incrementTimeBurst: () => set((state) => {
-    const newTimeBurst = state.timeBurst !== null ? state.timeBurst + 60000 : 60000;
+  incrementTimeBurst: (burst) => set((state) => {
+    const newTimeBurst = state.timeBurst !== null ? state.timeBurst + burst * 60 : 60000;
     const newState = { ...state, timeBurst: newTimeBurst };
     saveStateToCookies(newState);
     get().checkAndStopTimer();

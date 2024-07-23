@@ -14,10 +14,10 @@ interface UserCategory {
 }
 
 interface Props {
-  wd: number
+  wd: number;
 }
 
-const TimerRunning: React.FC<Props> = ({wd}) => {
+const TimerRunning: React.FC<Props> = ({ wd }) => {
   const timeBurst = useHourglassStore((state) => state.timeBurst);
   const timeGoal = useHourglassStore((state) => state.timeGoal);
   const isRunning = useHourglassStore((state) => state.isRunning);
@@ -31,8 +31,11 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
   const [hideTimer, toggleTimer] = useState(true);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const workerRef = useRef<Worker | null>(null);
+  const last_check_time = useRef<number>(new Date().getTime());
 
-  const hideToggle = () => { toggleTimer(!hideTimer);};
+  const hideToggle = () => { toggleTimer(!hideTimer); };
+
   const stopTimerAndFetchCategories = useCallback(async () => {
     const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
     if (token) {
@@ -55,7 +58,7 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
     } else {
       stopTimerWithNOAuth();
     }
-  }, [popUpModal, stopTimer]);
+  }, [popUpModal, stopTimerWithNOAuth]);
 
   useEffect(() => {
     console.log(userCategories);
@@ -74,38 +77,54 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
 
   useEffect(() => {
     const savedState = Cookies.get('timerState');
+    console.log("11");
     if (savedState) {
-      const { timeStart, timeBurst, timeGoal, isRunning } = JSON.parse(savedState);
-      const now = new Date().getTime();
-      const endTime = new Date(timeStart).getTime() + timeGoal;
-      if (isRunning && now < endTime) {
-        incrementTimeBurst();
-      } else if (isRunning && now >= endTime) {
-        setTimeEnd(new Date());
-        stopTimerWithNOAuth();
-        // alert('Time is up!');
+      const { timeStart, timeGoal, isRunning } = JSON.parse(savedState);
+      if (isRunning) {
+        const now = new Date().getTime();
+        const endTime = new Date(timeStart).getTime() + timeGoal;
+        workerRef.current = new Worker('/workers/timerWorker.js');
+        workerRef.current.postMessage({ action: 'start', timeStart });
+        workerRef.current.onmessage = (event) => {
+          const { type, elapsed } = event.data;
+          if (isRunning && now < endTime) {
+            incrementTimeBurst(elapsed);
+            last_check_time.current = new Date().getTime();
+          } else if (isRunning && now >= endTime) {
+            setTimeEnd(new Date());
+            stopTimerAndFetchCategories();
+            workerRef.current?.terminate();
+          }
+        };
       }
     }
-  }, [setTimeEnd, stopTimer, incrementTimeBurst]);
-
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, [setTimeEnd, incrementTimeBurst]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout | number;
     if (isRunning && !pause) {
       timer = setInterval(() => {
-        incrementTimeBurst();
+        const now = new Date().getTime();
+        incrementTimeBurst(now - last_check_time.current);
+        last_check_time.current = now;
         if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
           clearInterval(timer);
           setTimeEnd(new Date());
           stopTimerAndFetchCategories();
         }
       }, 1000);
+    } else if (pause && workerRef.current) {
+      workerRef.current.postMessage({ action: 'stop' });
+    } else if (!isRunning && workerRef.current) {
+      workerRef.current.postMessage({ action: 'resume' });
     }
     return () => clearInterval(timer as NodeJS.Timeout);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
 
-
-  if(wd>250) return (
+  if (wd > 250) return (
     <div className='flex flex-col w-max justify-center items-center text-lg md:text-2xl mb-4'>
       <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
       <div {...(hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" })}>
@@ -120,39 +139,39 @@ const TimerRunning: React.FC<Props> = ({wd}) => {
       <div>
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
-      <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
-      {timeBurst!>=timeGoal!?<div style={{ display: "hidden" }}>
+      <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories} />
+      {timeBurst! >= timeGoal! ? <div style={{ display: "hidden" }}>
         <audio ref={audioRef} autoPlay>
           <source src="../beep.mp3" type="audio/mpeg" />
         </audio>
-      </div>:null}
+      </div> : null}
 
     </div>
 
   );
-  else return(
+  else return (
     <div className='flex flex-col w-max justify-center items-center text-lg md:text-lg'>
-    <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
-    <div {...(hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" })}>
-      <div className='mt-1'>
-        {timeGoal !== null ? (
-          timeGoal - (timeBurst || 0) > 86400000
-            ? <p>진행시간: {formatRemainingTime(timeBurst || 0)}</p>
-            : <p>남은시간: {formatRemainingTime(timeGoal - (timeBurst || 0))}</p>
-        ) : 'N/A'}
+      <ToggleSwitch hideTimer={hideTimer} toggleTimer={hideToggle} />
+      <div {...(hideTimer ? { className: "flex flex-col items-center" } : { className: "hidden" })}>
+        <div className='mt-1'>
+          {timeGoal !== null ? (
+            timeGoal - (timeBurst || 0) > 86400000
+              ? <p>진행시간: {formatRemainingTime(timeBurst || 0)}</p>
+              : <p>남은시간: {formatRemainingTime(timeGoal - (timeBurst || 0))}</p>
+          ) : 'N/A'}
+        </div>
       </div>
-    </div>
-    <div>
-      <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10'/>
-    </div>
-    <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories}/>
-    {timeBurst!>=timeGoal!?<div style={{ display: "hidden" }}>
+      <div>
+        <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10' />
+      </div>
+      <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories} />
+      {timeBurst! >= timeGoal! ? <div style={{ display: "hidden" }}>
         <audio ref={audioRef} autoPlay>
           <source src="../beep.mp3" type="audio/mpeg" />
         </audio>
-      </div>:null}
-  </div>
-  )
+      </div> : null}
+    </div>
+  );
 };
 
 export default TimerRunning;

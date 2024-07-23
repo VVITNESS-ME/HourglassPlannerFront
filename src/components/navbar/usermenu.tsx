@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from 'next/navigation'
 import useConsoleStore from '../../../store/consoleStore'; // useConsoleStore 훅 임포트
 import Image from "next/image";
-
+import './tooltip.css';
 interface Task {
   text: string;
   dday: number;
@@ -13,7 +13,17 @@ type UserMenuProps = {
   username: string;
 };
 
+
 const UserMenu: React.FC<UserMenuProps> = ({ username}) => {
+  const [tooltip, setTooltip] = useState('');
+
+  const handleMouseOver = (text) => {
+    setTooltip(text);
+  };
+
+  const handleMouseOut = () => {
+    setTooltip('');
+  };
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tasksOn, setTasksOn] = useState<boolean>(false);
@@ -60,21 +70,36 @@ const UserMenu: React.FC<UserMenuProps> = ({ username}) => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">
-        <button className="flex" onClick={handleMessageClick}>{tasks.length>0?<Image className="" width={30} height={30} src="/img/bellRedDot.svg" alt="alarm"/>:<Image className="" width={30} height={30} src="/img/bell.svg" alt="alarm"/>}</button>
-        <Link href="/together"> <Image className="ml-4" width={30} height={30} src="/img/together.svg" alt="together"/> </Link>
-        <Link href="/console"> <Image className="ml-4" width={30} height={30} src="/img/todo.svg" alt="todo"/></Link>
-        <Link href="/mypage/statistics"> <button className="ml-4 w-48 bg-transparent rounded hover:bg-mono-1 text-3xl">{username}</button> </Link>
+        <div className="tooltip" onMouseOver={() => handleMouseOver('알림 목록')} onMouseOut={handleMouseOut}>
+          <button className="flex" onClick={handleMessageClick}>{tasks.length > 0 ?
+            <Image className="" width={30} height={30} src="/img/bellRedDot.svg" alt="alarm"/> :
+            <Image className="" width={30} height={30} src="/img/bell.svg" alt="alarm"/>}</button>
+          <span className="tooltiptext text-3xl">알림 목록</span>
+        </div>
+        <div className="tooltip" onMouseOver={() => handleMouseOver('함께 공부하기')} onMouseOut={handleMouseOut}>
+          <Link href="/together"> <Image className="ml-4" width={30} height={30} src="/img/together.svg"
+                                         alt="together"/></Link>
+          <span className="tooltiptext text-3xl">함께 공부하기</span>
+        </div>
+        <div className="tooltip" onMouseOver={() => handleMouseOver('일정 관리')} onMouseOut={handleMouseOut}>
+          <Link href="/console"> <Image className="ml-4" width={30} height={30} src="/img/todo.svg" alt="todo"/></Link>
+          <span className="tooltiptext text-3xl">일정 관리</span>
+        </div>
+        <Link href="/mypage/statistics">
+          <button className="ml-4 w-48 bg-transparent rounded hover:bg-mono-1 text-3xl">{username}</button>
+        </Link>
       </div>
-      {tasksOn&&(<div className="flex flex-col absolute top-20 w-96 h-24 border rounded-sm text-balance text-2xl bg-sandy-1 items-center justify-center z-50 overflow-auto">
-        {tasks?.map((task, index)=>
-          <div key={index}  className="w-full pl-6 pr-6 flex justify-between items-center">
+      {tasksOn && (<div
+        className="flex flex-col absolute top-20 w-96 h-24 border rounded-sm text-balance text-2xl bg-sandy-1 items-center justify-center z-50 opacity-70 overflow-auto">
+        {tasks?.map((task, index) =>
+          <div key={index} className="w-full pl-6 pr-6 flex justify-between items-center">
             <div>{task.text}</div>
             <div className="text-red-500">D - {task.dday}</div>
           </div>)}
       </div>)}
 
     </div>
-  )
+  );
 }
 
 export default UserMenu;
