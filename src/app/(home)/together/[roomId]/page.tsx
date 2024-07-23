@@ -204,17 +204,17 @@ export default function VideoChat() {
 
   useEffect(() => {
     if (!roomId) return;
-    handleJoinRoom()
+    // handleJoinRoom()
     const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
     socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
-      console.log("Socket.IO connection established");
+      // console.log("Socket.IO connection established");
       newSocket.emit("join", roomId);
     });
 
     newSocket.on("users", (userList: string[]) => {
-      console.log("Received user list:", userList);
+      // console.log("Received user list:", userList);
       setUsers(userList);
     });
 
@@ -223,12 +223,12 @@ export default function VideoChat() {
     newSocket.on("candidate", handleCandidate);
 
     newSocket.on("userJoined", (userId: string) => {
-      console.log("User joined:", userId);
+      // console.log("User joined:", userId);
       setUsers((prevUsers) => [...prevUsers, userId]);
     });
 
     newSocket.on("userLeft", (userId: string) => {
-      console.log("User left:", userId);
+      // console.log("User left:", userId);
       setUsers((prevUsers) => {
         const updatedUsers = prevUsers.filter((id) => id !== userId);
         // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
@@ -249,7 +249,7 @@ export default function VideoChat() {
     });
 
     newSocket.on("disconnect", () => {
-      console.log("Socket.IO connection closed");
+      // console.log("Socket.IO connection closed");
     });
 
     return () => {
