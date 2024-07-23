@@ -4,16 +4,11 @@ import { useParams, useRouter } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 import Image from "next/image";
 import AvatarCanvas from "@/components/general/localVideo2"; // Update this with the correct path to AvatarCanvas
+import { set } from "date-fns";
 import useRoomStore from "../../../../../store/roomStore";
 import Hourglass from "@/components/hourglass/hourglass";
-import { Task } from "@/type/types";
-import useTitleStore from "../../../../../store/titleStore";
-
-type User = {
-  userId: string;
-  userName: string;
-  mainTitle: string;
-};
+import { Task } from '@/type/types';
+import TodayTasks from "@/components/console/todayTasks";
 
 export default function VideoChat() {
   const params = useParams();
@@ -21,7 +16,7 @@ export default function VideoChat() {
   const socketRef = useRef<Socket | null>(null);
   const peerConnections = useRef<{ [key: string]: RTCPeerConnection }>({});
   const roomId = params.roomId as string;
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<string[]>([]);
 
   const [videoOn, setVideoOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
@@ -30,32 +25,41 @@ export default function VideoChat() {
 
   const [remoteVideoAdded, setRemoteVideoAdded] = useState(false); // 원격 접속자가 있을 때만 remote video 추가
   const [clickedConnect, setClickedConnect] = useState<boolean>(false); // Connect Video 버튼 클릭 여부
-  const [socketConnected, setSocketConnected] = useState(false); // 소켓 연결 여부
 
-  const { password } = useRoomStore((state) => ({
-    password: state.roomPassword,
-  }));
 
-  const { userName, mainTitle, fetchTitles } = useTitleStore();
-
+  const { password } = useRoomStore(state => ({password: state.roomPassword}));
   const router = useRouter();
+  const handleJoinRoom = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({password: password}),
+        credentials: 'include',
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        return;
+      } else {router.push("/together");}
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [todayTasks, setTodayTasks] = useState<Task[]>([]);
 
-  const handleTaskComplete = useCallback((taskId: number) => {
+  const handleTaskComplete = (taskId: number) => {
     return;
-  }, []);
+  };
 
   const createPeerConnection = useCallback(
     (userId: string) => {
       const pc = new RTCPeerConnection({
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "stun:stun2.l.google.com:19302" },
-          { urls: "stun:stun3.l.google.com:19302" },
-        ],
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
       });
 
       pc.onicecandidate = (event) => {
@@ -78,21 +82,8 @@ export default function VideoChat() {
             remoteVideo = document.createElement("video");
             remoteVideo.id = `remoteVideo-${userId}`;
             remoteVideo.autoplay = true;
-            remoteVideo.playsInline = true;
             remoteVideo.className = "remote-video w-40 h-40";
-
-            const user = users.find((user) => user.userId === userId);
-
-            // 사용자 이름과 칭호를 추가
-            const userInfo = document.createElement("div");
-            userInfo.id = `userInfo-${userId}`;
-            userInfo.innerHTML = user?.mainTitle
-              ? `<p>${user.userName}</p><br/><p>${user.mainTitle}</p>`
-              : `<p>${user?.userName}</p>`;
-
             remoteVideoRefs.current.appendChild(remoteVideo);
-            remoteVideoRefs.current.appendChild(userInfo);
-
             setRemoteVideoAdded(true);
           }
           remoteVideo.srcObject = event.streams[0];
@@ -111,36 +102,11 @@ export default function VideoChat() {
     [roomId, localStream]
   );
 
-  const handleJoinRoom = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/together/join/${roomId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ password: password }),
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      if (response.ok) {
-        return;
-      } else {
-        router.push("/together");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [roomId, password, router]);
-
   const handleOffer = useCallback(
     async ({
-      fromUserId,
-      offer,
-    }: {
+             fromUserId,
+             offer,
+           }: {
       fromUserId: string;
       offer: RTCSessionDescriptionInit;
     }) => {
@@ -167,9 +133,9 @@ export default function VideoChat() {
 
   const handleAnswer = useCallback(
     async ({
-      fromUserId,
-      answer,
-    }: {
+             fromUserId,
+             answer,
+           }: {
       fromUserId: string;
       answer: RTCSessionDescriptionInit;
     }) => {
@@ -188,9 +154,9 @@ export default function VideoChat() {
 
   const handleCandidate = useCallback(
     async ({
-      fromUserId,
-      candidate,
-    }: {
+             fromUserId,
+             candidate,
+           }: {
       fromUserId: string;
       candidate: RTCIceCandidateInit;
     }) => {
@@ -206,38 +172,24 @@ export default function VideoChat() {
     []
   );
 
-  // users 리스트에 있는 모든 유저들에게 통화 시작
-  const startCall = useCallback(() => {
+  const startCall = useCallback(async () => {
     console.log("Starting call with users:", users);
-    users.forEach((user) => {
-      if (user.userId !== socketRef.current?.id) {
-        startCallWithUser(user.userId);
+    for (const userId of users) {
+      if (userId !== socketRef.current?.id) {
+        let pc = peerConnections.current[userId];
+        if (!pc) {
+          pc = createPeerConnection(userId);
+        }
+        try {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          socketRef.current?.emit("offer", { roomId, toUserId: userId, offer });
+        } catch (error) {
+          console.error("Error starting call with", userId, error);
+        }
       }
-    });
-  }, [users]);
-
-  // 특정 userId에게 통화 시작
-  const startCallWithUser = useCallback(
-    async (userId: string) => {
-      console.log("Starting call with user:", userId);
-      let pc = peerConnections.current[userId];
-      if (!pc) {
-        pc = createPeerConnection(userId);
-      }
-      try {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socketRef.current?.emit("offer", {
-          roomId,
-          toUserId: userId,
-          offer,
-        });
-      } catch (error) {
-        console.error("Error starting call with", userId, error);
-      }
-    },
-    [roomId, createPeerConnection]
-  );
+    }
+  }, [roomId, users, createPeerConnection]);
 
   const connectVideo = useCallback(async (stream: MediaStream) => {
     try {
@@ -245,7 +197,6 @@ export default function VideoChat() {
       setVideoOn(true);
       setMicOn(true);
       setAudioOn(true);
-      startCall(); // 비디오가 연결되면 자동으로 통화 시작
     } catch (error) {
       console.error("Error accessing media devices:", error);
     }
@@ -253,45 +204,33 @@ export default function VideoChat() {
 
   useEffect(() => {
     if (!roomId) return;
-    handleJoinRoom();
-    const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string); // polling -> websocket 방식
-    // const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, { // 바로 websocket 방식
-    //   transports: ["websocket"],
-    //   upgrade: false,
-    // });
+    handleJoinRoom()
+    const newSocket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
     socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
       console.log("Socket.IO connection established");
-      setSocketConnected(true);
+      newSocket.emit("join", roomId);
     });
 
-    newSocket.on("users", (userList: User[]) => {
+    newSocket.on("users", (userList: string[]) => {
       console.log("Received user list:", userList);
       setUsers(userList);
-      // user list를 받으면 자동으로 통화시작
-      if (localStream) {
-        startCall();
-      }
     });
 
     newSocket.on("offer", handleOffer);
     newSocket.on("answer", handleAnswer);
     newSocket.on("candidate", handleCandidate);
 
-    newSocket.on("userJoined", ({ userId, userName, mainTitle }) => {
+    newSocket.on("userJoined", (userId: string) => {
       console.log("User joined:", userId);
-      setUsers((prevUsers) => [...prevUsers, { userId, userName, mainTitle }]);
-      // Start call with the new user
-      if (localStream) {
-        startCallWithUser(userId);
-      }
+      setUsers((prevUsers) => [...prevUsers, userId]);
     });
 
     newSocket.on("userLeft", (userId: string) => {
       console.log("User left:", userId);
       setUsers((prevUsers) => {
-        const updatedUsers = prevUsers.filter((user) => user.userId !== userId);
+        const updatedUsers = prevUsers.filter((id) => id !== userId);
         // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
         if (updatedUsers.length === 1) {
           setRemoteVideoAdded(false);
@@ -304,89 +243,19 @@ export default function VideoChat() {
         delete peerConnections.current[userId];
       }
       const remoteVideo = document.getElementById(`remoteVideo-${userId}`);
-      const userInfo = document.getElementById(`userInfo-${userId}`);
       if (remoteVideo) {
         remoteVideo.remove();
-      }
-      if (userInfo) {
-        userInfo.remove();
       }
     });
 
     newSocket.on("disconnect", () => {
       console.log("Socket.IO connection closed");
-      setSocketConnected(false);
     });
 
     return () => {
       newSocket.disconnect();
     };
-  }, [roomId]); // 여기 잘못 건들면 통화 터져요
-
-  // 채팅방 입장과 새로운 유저 들어오는 경우 처리
-  useEffect(() => {
-    if (!socketConnected || !socketRef.current) return;
-
-    handleJoinRoom();
-
-    socketRef.current.emit("join", { roomId, userName, mainTitle });
-
-    socketRef.current.on("users", (userList: User[]) => {
-      console.log("Received user list:", userList);
-      setUsers(userList);
-      if (localStream) {
-        startCall();
-      }
-    });
-
-    socketRef.current.on("offer", handleOffer);
-    socketRef.current.on("answer", handleAnswer);
-    socketRef.current.on("candidate", handleCandidate);
-
-    socketRef.current.on("userJoined", ({ userId, userName, mainTitle }) => {
-      console.log("User joined:", userId);
-      setUsers((prevUsers) => [...prevUsers, { userId, userName, mainTitle }]);
-      if (localStream) {
-        startCallWithUser(userId);
-      }
-    });
-
-    socketRef.current.on("userLeft", (userId: string) => {
-      console.log("User left:", userId);
-      setUsers((prevUsers) => {
-        const updatedUsers = prevUsers.filter((user) => user.userId !== userId);
-        // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
-        if (updatedUsers.length === 1) {
-          setRemoteVideoAdded(false);
-        }
-        return updatedUsers;
-      });
-
-      if (peerConnections.current[userId]) {
-        peerConnections.current[userId].close();
-        delete peerConnections.current[userId];
-      }
-      const remoteVideo = document.getElementById(`remoteVideo-${userId}`);
-      const userInfo = document.getElementById(`userInfo-${userId}`);
-      if (remoteVideo) {
-        remoteVideo.remove();
-      }
-      if (userInfo) {
-        userInfo.remove();
-      }
-    });
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.off("users");
-        socketRef.current.off("offer");
-        socketRef.current.off("answer");
-        socketRef.current.off("candidate");
-        socketRef.current.off("userJoined");
-        socketRef.current.off("userLeft");
-      }
-    };
-  }, [socketConnected, roomId, userName, mainTitle]);
+  }, [roomId, handleOffer, handleAnswer, handleCandidate]);
 
   const OnVideo = () => {
     if (localStream) {
@@ -440,13 +309,15 @@ export default function VideoChat() {
 
   return (
     <div className="flex flex-col justify-around p-4">
-      <div className="flex flex-wrap justify-center">
+      <div className="flex flex-row flex-wrap justify-center items-center">
         <div
           ref={remoteVideoRefs}
           className="remote-videos"
           style={remoteVideoAdded ? { border: "10px solid #F2CD88" } : {}}
         ></div>
-        <div className="flex flex-col items-center max-w-[600px]">
+        <div
+          className="flex-1 flex flex-col items-center"
+        >
           <h1 className="text-xl font-bold mt-3 mb-4 flex justify-center items-center">
             Video Chat - Room {roomId}
           </h1>
@@ -507,33 +378,29 @@ export default function VideoChat() {
             )}
           </div>
           <div className="call-menu py-5">
-            {clickedConnect ? (
-              <Image
+            {
+              clickedConnect ? (<Image
                 onClick={startCall}
                 src="/img/videochat/start-call.png"
                 alt="Start Call"
                 width={60}
                 height={60}
-              />
-            ) : (
-              <Image
-                onClick={() => {
-                  connectVideo(localStream!);
-                  setClickedConnect(true);
-                }}
+              />) : (<Image
+                onClick={() => {connectVideo(localStream!); setClickedConnect(true);}}
                 src="/img/videochat/connect-video.png"
                 alt="Connect Video"
                 width={60}
                 height={60}
-              />
-            )}
+              />)
+            }
           </div>
         </div>
-        <div className="flex flex-row w-[400px] justify-center items-center relative">
-          <Hourglass width={200} />
+        <div className="flex flex-row max-w-[500px] justify-center items-center relative">
+          <Hourglass width={220}/>
           {/* <TodayTasks tasks={todayTasks} setTasks={setTodayTasks} onTaskComplete={handleTaskComplete}/> */}
         </div>
       </div>
+
     </div>
   );
 }
