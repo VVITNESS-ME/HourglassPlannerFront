@@ -18,7 +18,7 @@ const AttentionMetric: React.FC = () => {
       </div>
       <div className="flex flex-col items-center justify-center">
         <p className="text-3xl"><strong>집중도:</strong> {attentionRatio.toFixed(0)}%</p>
-        <p className="text-3xl"><strong>총 공부 시간:</strong> {Math.floor(totalTime / 3600)} 시간 {Math.floor((totalTime % 3600) / 60)} 분</p>
+        <p className="text-3xl"><strong>활동시간 시간:</strong> {Math.floor(totalTime / 3600)} 시간 {Math.floor((totalTime % 3600) / 60)} 분</p>
         <p className="text-3xl"><strong>졸음, 자리이탈:</strong> {Math.floor(miaTime / 3600)} 시간 {Math.floor((miaTime % 3600) / 60)} 분</p>
       </div>
     </div>
