@@ -38,7 +38,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
   const netMinutes = Math.floor((burst % 3600) / 60);
   const paused = total-burst;
   const pieChartData = {
-    labels: [categoryName?categoryName:"순 공부시간", "졸음/자리비움"],
+    labels: [categoryName?categoryName:"순 활동시간", "졸음/자리비움"],
     datasets: [
       {
         data: [Math.floor(burst/60), Math.floor(paused/60)],
@@ -64,10 +64,10 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
           </div>
           <div className="flex flex-col items-center mb-4">
             <div className="text-xl font-bold mb-2">
-              총 공부시간: {hours} 시간 {minutes} 분
+              총 활동시간: {hours} 시간 {minutes} 분
             </div>
             <div className="text-xl font-bold mb-2">
-              순 공부시간: {netHours} 시간 {netMinutes} 분
+              집중시간: {netHours} 시간 {netMinutes} 분
             </div>
             <div className="flex flex-row text-2xl font-bold mb-4">
               <div className='flex'>집중도: </div>
