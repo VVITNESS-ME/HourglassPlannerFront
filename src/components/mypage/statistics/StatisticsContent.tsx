@@ -146,7 +146,7 @@ const StatisticsContent: React.FC = () => {
     labels: dailyData.map(item => item.weekDay),
     datasets: [
       {
-        label: '공부 시간',
+        label: '활동 시간',
         data: dailyData.map(item => item.totalBurst),
         borderColor: '#1E90FF',
         fill: false,
@@ -158,7 +158,7 @@ const StatisticsContent: React.FC = () => {
     labels: weeklyData.map(item => item.date),
     datasets: [
       {
-        label: '공부 시간',
+        label: '활동 시간',
         data: weeklyData.map(item => item.totalBurst),
         borderColor: '#1E90FF',
         fill: false,
@@ -170,7 +170,7 @@ const StatisticsContent: React.FC = () => {
     labels: monthlyData.map(item => item.date),
     datasets: [
       {
-        label: '공부 시간',
+        label: '활동 시간',
         data: monthlyData.map(item => item.totalBurst),
         backgroundColor: '#1E90FF',
       },
