@@ -218,19 +218,19 @@ const StatisticsContent: React.FC = () => {
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-3xl font-bold mb-4">총 공부시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 활동시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Line data={dailyChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: tooltipOption }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-3xl font-bold mb-4">총 공부시간: {weeklyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 활동시간: {weeklyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={weeklyChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: tooltipOption }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-3xl font-bold mb-4">총 공부시간: {monthlyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 활동시간: {monthlyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={monthlyChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: tooltipOption}} />
             </div>

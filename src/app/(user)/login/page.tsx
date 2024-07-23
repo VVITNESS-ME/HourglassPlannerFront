@@ -60,7 +60,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="p-2 text-black text-2xl bg-black rounded hover:bg-mono-4"
+            className="p-2 text-white text-2xl bg-black rounded hover:bg-mono-4"
           >
             {isLoading ? '로그인 중...' : 'Change your life'}
           </button>
