@@ -63,7 +63,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ username}) => {
         <button className="flex" onClick={handleMessageClick}>{tasks.length>0?<Image className="" width={30} height={30} src="/img/bellRedDot.svg" alt="alarm"/>:<Image className="" width={30} height={30} src="/img/bell.svg" alt="alarm"/>}</button>
         <Link href="/together"> <Image className="ml-4" width={30} height={30} src="/img/together.svg" alt="together"/> </Link>
         <Link href="/console"> <Image className="ml-4" width={30} height={30} src="/img/todo.svg" alt="todo"/></Link>
-        <Link href="/mypage/diary"> <button className="ml-4 w-48 bg-transparent rounded hover:bg-mono-1 text-3xl">{username}</button> </Link>
+        <Link href="/mypage/statistics"> <button className="ml-4 w-48 bg-transparent rounded hover:bg-mono-1 text-3xl">{username}</button> </Link>
       </div>
       {tasksOn&&(<div className="flex flex-col absolute top-20 w-96 h-24 border rounded-sm text-balance text-2xl bg-sandy-1 items-center justify-center z-50 overflow-auto">
         {tasks?.map((task, index)=>

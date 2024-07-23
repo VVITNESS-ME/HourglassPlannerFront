@@ -141,7 +141,7 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
       {tooltip && (
         <div className={styles.tooltip}>
           <p>{tooltip.date}</p>
-          <p>공부시간(분): {tooltip.timeBurst}</p>
+          <p>활동시간(분): {tooltip.timeBurst}</p>
         </div>
       )}
     </div>

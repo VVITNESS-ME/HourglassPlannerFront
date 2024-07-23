@@ -107,7 +107,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
       <LoadingModal isOpen={isLoadingModalOpen} />
       <div className="bg-yellow-300 rounded p-8 mypage-md w-[1400px] h-[800px] relative">
         <button

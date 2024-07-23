@@ -32,9 +32,10 @@ const options: ChartOptions<'bar'> = {
     title: {
       display: true,
       font: {
-        size: 24 // Font size for tick labels
+        size: 35 // Font size for tick labels
       },
       text: '오늘의 활동 시간',
+      color: '#000000',
     },
     tooltip: {
         bodyFont: {
@@ -146,7 +147,7 @@ const StatisticsContent: React.FC = () => {
     labels: dailyData.map(item => item.weekDay),
     datasets: [
       {
-        label: '공부 시간',
+        label: '활동 시간',
         data: dailyData.map(item => item.totalBurst),
         borderColor: '#1E90FF',
         fill: false,
@@ -158,7 +159,7 @@ const StatisticsContent: React.FC = () => {
     labels: weeklyData.map(item => item.date),
     datasets: [
       {
-        label: '공부 시간',
+        label: '활동 시간',
         data: weeklyData.map(item => item.totalBurst),
         borderColor: '#1E90FF',
         fill: false,
@@ -170,7 +171,7 @@ const StatisticsContent: React.FC = () => {
     labels: monthlyData.map(item => item.date),
     datasets: [
       {
-        label: '공부 시간',
+        label: '활동 시간',
         data: monthlyData.map(item => item.totalBurst),
         backgroundColor: '#1E90FF',
       },
@@ -188,6 +189,15 @@ const StatisticsContent: React.FC = () => {
   };
 
   const tooltipOption = {
+    legend: {
+      display: true,
+      labels: {
+        font: {
+          size: 35, // 범례 글꼴 크기
+        },
+        color: "#000000",
+      },
+    },
     tooltip: {
       bodyFont: {
         size: 30, // 툴팁 본문 글꼴 크기
@@ -218,19 +228,19 @@ const StatisticsContent: React.FC = () => {
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-3xl font-bold mb-4">총 공부시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 활동시간: {dailyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Line data={dailyChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: tooltipOption }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-3xl font-bold mb-4">총 공부시간: {weeklyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 활동시간: {weeklyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={weeklyChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: tooltipOption }} />
             </div>
           </TabPanel>
           <TabPanel>
-            <h3 className="text-3xl font-bold mb-4">총 공부시간: {monthlyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
+            <h3 className="text-3xl font-bold mb-4">총 활동시간: {monthlyData.reduce((acc, cur) => acc + cur.totalBurst, 0)}분</h3>
             <div className="relative w-full h-[400px]">
               <Bar data={monthlyChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: tooltipOption}} />
             </div>

@@ -8,6 +8,7 @@ const config: {
       textColor: { "selected-tab": string };
       colors: {
         wallpaper: string;
+        "ui-title-text": string;
         "console-layout": string;
         "console-active": string;
         "sandy-1": string;
@@ -46,6 +47,7 @@ const config: {
         'selected-tab': 'white', // Change this to your desired text color
       },
       colors: {
+        'ui-title-text' : '#000000',
         'sandy-1' : '#F2CD88',
         'sandy-2' : '#F2BA52',
         'sandy-3' : '#F2A950',
