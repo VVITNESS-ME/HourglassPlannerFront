@@ -64,8 +64,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
     }
   }, [isOpen]);
 
-  const handleActivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedActivity(e.target.value);
+  const handleActivityChange = (activity: string) => {
+    setSelectedActivity(activity);
   };
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -79,10 +79,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   const handleSubmit = async () => {
     try {
       const result = await stopTimer(selectedActivity, rating, description);
-      // console.log(result);
       setDailyData(result);
       openResultModal();
-      // console.log(result);
     } catch (error) {
       console.error('Error stopping timer:', error);
     }
@@ -93,11 +91,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-10 modal-backdrop">
-      <div className="bg-white rounded overflow-hidden mypage-md w-96 modal-container">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 modal-backdrop">
+      <div className="bg-white rounded overflow-hidden mypage-md w-[500px] h-[800px] modal-container">
         <div className="p-6">
           <div className='flex w-full justify-between'>
-            <div className="text-lg font-bold mb-4">활동을 선택하세요</div>
+            <div className="text-3xl text-ui-title-text font-bold mb-4">활동을 선택하세요</div>
             <div className='' onClick={closeModal}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" color='#aaaaaa' viewBox="0 0 24 24" strokeWidth={3}
                    stroke="currentColor" className="size-6">
@@ -106,26 +104,27 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
             </div>
           </div>
           {(tId === null || tId === undefined) && (
-            <div className="mb-4 max-h-[220px] overflow-y-auto custom-scrollbar">
+            <div className="mb-4 h-[320px] overflow-y-auto custom-scrollbar">
               {userCategories.map((category) => (
-                <label key={category.userCategoryId} className="block p-2 border-b border-gray-700"
-                       style={{backgroundColor: category.color}}>
-                  <input
-                    type="radio"
-                    name="activity"
-                    value={category.categoryName}
-                    checked={selectedActivity === category.categoryName}
-                    onChange={handleActivityChange}
-                    className="mr-2"
-                    style={{backgroundColor: category.color}}
-                  />
+                <button
+                  key={category.userCategoryId}
+                  className={`h-[80px] text-5xl block p-2 border-b border-gray-700 text-left w-full ${
+                    selectedActivity === category.categoryName ? 'bg-blue-500 text-black' : 'bg-white text-black'
+                  }`}
+                  style={{
+                    backgroundColor: selectedActivity === category.categoryName ? category.color : '#EEEEEE',
+                    color: selectedActivity === category.categoryName ? 'black' : 'gray',
+                    fontWeight: "bold"
+                  }}
+                  onClick={() => handleActivityChange(category.categoryName)}
+                >
                   {category.categoryName}
-                </label>
+                </button>
               ))}
             </div>
           )}
           <button
-            className="text-gray-500 mt-2"
+            className=" text-3xl text-gray-700 font-semibold mt-2"
             onClick={() => setIsModalOpen(true)}
           >
             + 카테고리 추가
@@ -138,7 +137,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
           />
           <div className="mb-4">
             <textarea
-              className="w-full p-2 border border-gray-700 rounded"
+              className="w-full text-2xl p-2 border border-gray-700 rounded"
               placeholder="코멘트를 입력하세요"
               value={description}
               onChange={handleCommentChange}
@@ -149,7 +148,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
             {[1, 2, 3, 4, 5].map((star) => (
               <svg
                 key={star}
-                className={`w-8 h-8 cursor-pointer ${rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
+                className={`w-16 h-16 cursor-pointer ${rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

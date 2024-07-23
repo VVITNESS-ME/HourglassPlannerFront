@@ -8,7 +8,7 @@ interface AchievementModalProps {
 
 const AchievementModal: React.FC<AchievementModalProps> = ({ title, onClose }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
       <div className="relative bg-white rounded overflow-hidden mypage-md w-96 transform transition-all duration-300 ease-in-out scale-110">
         <div className="p-6 text-center relative z-10">
           <h2 className="text-2xl font-bold text-green-500 mb-4 animate-bounce">Congratulations!</h2>

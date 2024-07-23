@@ -190,7 +190,7 @@ const addActivities = (activityList: Activity[], record: any, unActiveTime: numb
     label: `비활동${i}`,
     time: new Date(record.timeStart).getTime(),
     burst: unActiveTime / 3600,
-    color: '#d8d8d8',
+    color: '#aaaaaa',
   });
   activityList.push({
     label: `${record.categoryName}${i}`,
@@ -208,7 +208,7 @@ const addFinalInactiveTime = (activityList: Activity[], last_activity_end: numbe
       label: `비활동${i}`,
       time: last_activity_end,
       burst: unActiveTime / 3600,
-      color: '#d8d8d8',
+      color: '#aaaaaa',
     });
   }
 };

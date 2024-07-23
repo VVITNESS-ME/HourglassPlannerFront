@@ -14,7 +14,7 @@ const AttentionMetric: React.FC = () => {
   return (
     <div className="flex flex-col border w-full h-[190px] bg-mypage-layout mypage-md rounded p-4">
       <div>
-        <p className="text-2xl font-semibold">집중도</p>
+        <p className="text-3xl font-semibold">집중도</p>
       </div>
       <div className="flex flex-col items-center justify-center">
         <p className="text-3xl"><strong>집중도:</strong> {attentionRatio.toFixed(0)}%</p>
