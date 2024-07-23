@@ -23,7 +23,7 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const drawCanvasRef = useRef<HTMLCanvasElement>(null);
   const combinedCanvasRef = useRef<HTMLCanvasElement>(null);
   const [videoSize, setVideoSize] = useState<{ width: number; height: number }>();
-  
+
   const imgRef = useRef<HTMLImageElement>(null); // 이미지 참조 추가
   const [showImage, setShowImage] = useState(false); // 이미지 표시 상태
 
@@ -36,7 +36,7 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
           drawCanvasRef.current.height = videoSize!.height;
           combinedCanvasRef.current.width = videoSize!.width;
           combinedCanvasRef.current.height = videoSize!.height;
-          
+
           const faceLandmarkManager = FaceLandmarkManager.getInstance();
           faceLandmarkManager.detectLandmarks(videoRef.current, Date.now());
           const faceStatus = faceLandmarkManager.drawLandmarks(drawCanvasRef.current);
@@ -93,7 +93,7 @@ const LocalVideo: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
         // Create merged stream
         if (combinedCanvasRef.current) {
           const combinedStream = combinedCanvasRef.current.captureStream(30);
-          
+
           // Add audio tracks if any
           stream.getAudioTracks().forEach((track) => combinedStream.addTrack(track));
 
