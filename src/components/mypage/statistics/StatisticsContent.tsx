@@ -32,9 +32,10 @@ const options: ChartOptions<'bar'> = {
     title: {
       display: true,
       font: {
-        size: 24 // Font size for tick labels
+        size: 35 // Font size for tick labels
       },
       text: '오늘의 활동 시간',
+      color: '#000000',
     },
     tooltip: {
         bodyFont: {
@@ -188,6 +189,15 @@ const StatisticsContent: React.FC = () => {
   };
 
   const tooltipOption = {
+    legend: {
+      display: true,
+      labels: {
+        font: {
+          size: 35, // 범례 글꼴 크기
+        },
+        color: "#000000",
+      },
+    },
     tooltip: {
       bodyFont: {
         size: 30, // 툴팁 본문 글꼴 크기
