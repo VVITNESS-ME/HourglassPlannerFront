@@ -116,7 +116,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
         >
           &times;
         </button>
-        <h2 className="text-center text-4xl font-bold mb-4">일지 작성 도우미</h2>
+        <h2 className="text-center text-4xl font-bold mb-4">AI 일지</h2>
         <div className="text-center text-4xl font-bold mb-4">{new Date().toLocaleDateString()}</div>
         <div className="flex">
           <div className="w-[170px] h-[600px] bg-yellow-400 p-4 rounded mr-4">
