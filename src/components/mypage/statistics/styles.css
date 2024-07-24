@@ -1,0 +1,7 @@
+/* styles.css */
+
+.react-tabs__tab--selected {
+    background-color: #a9a9a9; /* 원하는 색상으로 변경 */
+    color: black; /* 글자 색상 */
+    font-weight: bold; /* 글자 굵기 */
+}

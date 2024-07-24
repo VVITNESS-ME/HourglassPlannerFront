@@ -55,7 +55,7 @@ const HourglassList: React.FC = () => {
       <div className="w-full h-full">
         <div className="p-4 box-border border bg-mypage-layout h-full rounded mypage-md">
           <div className="pl-2 pr-2 pb-2">
-            <h3 className=" font-bold text-2xl">일간 작업 목록</h3>
+            <h3 className=" font-bold text-3xl">일간 작업 목록</h3>
               <p>현재 등록된 작업이 없습니다.</p>
           </div>
         </div>
@@ -67,7 +67,7 @@ const HourglassList: React.FC = () => {
     <div className="w-full h-full">
       <div className="p-4 box-border border bg-mypage-layout h-full rounded mypage-md">
         <div className="pl-2 pr-2 pb-2">
-          <h3 className=" font-bold text-2xl">일간 작업 목록</h3>
+          <h3 className=" font-bold text-3xl">일간 작업 목록</h3>
         </div>
         <div className={styles.list}>
           {hourglasses.map((task) => (

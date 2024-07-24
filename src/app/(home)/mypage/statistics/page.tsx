@@ -13,11 +13,11 @@ const Statistics = () => {
           <div className="flex-1 w-[600px] mb-4">
             <GardenCalendar/>
           </div>
-          <div className="flex-1 w-[600px]">
+          <div className="flex-1 w-[600px] mb-4">
             <AttentionMetric/>
           </div>
         </div>
-        <div className="flex-1 w-[600px]">
+        <div className="flex-1 w-[600px] mb-4">
           <PieGraph/>
         </div>
       </div>
