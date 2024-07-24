@@ -209,12 +209,12 @@ export default function VideoChat() {
     socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
-      // console.log("Socket.IO connection established");
+      console.log("Socket.IO connection established");
       newSocket.emit("join", roomId);
     });
 
     newSocket.on("users", (userList: string[]) => {
-      // console.log("Received user list:", userList);
+      console.log("Received user list:", userList);
       setUsers(userList);
     });
 
@@ -223,12 +223,12 @@ export default function VideoChat() {
     newSocket.on("candidate", handleCandidate);
 
     newSocket.on("userJoined", (userId: string) => {
-      // console.log("User joined:", userId);
+      console.log("User joined:", userId);
       setUsers((prevUsers) => [...prevUsers, userId]);
     });
 
     newSocket.on("userLeft", (userId: string) => {
-      // console.log("User left:", userId);
+      console.log("User left:", userId);
       setUsers((prevUsers) => {
         const updatedUsers = prevUsers.filter((id) => id !== userId);
         // 자신의 제외한 통화 중인 유저가 모두 나가면 remoteVideoAdded 상태를 false로 설정
@@ -249,7 +249,7 @@ export default function VideoChat() {
     });
 
     newSocket.on("disconnect", () => {
-      // console.log("Socket.IO connection closed");
+      console.log("Socket.IO connection closed");
     });
 
     return () => {
@@ -319,7 +319,7 @@ export default function VideoChat() {
           className="flex-1 flex flex-col items-center"
         >
           <h1 className="text-xl font-bold mt-3 mb-4 flex justify-center items-center">
-            Video Chat - Room {roomId}
+            회일킴 드루와 - {roomId}
           </h1>
           <div className="local-video-container flex justify-center items-center h-full">
             <AvatarCanvas stream={localStream} onStreamReady={connectVideo} />
