@@ -134,7 +134,7 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
   };
 
   return (
-    <div className="flex flex-col border relative overflow-hidden h-[280px] bg-mypage-layout w-full rounded mypage-md">
+    <div className="flex flex-col border relative overflow-hidden h-[330px] bg-mypage-layout w-full rounded mypage-md">
       {renderHeader()}
       {renderDays()}
       {renderCells()}

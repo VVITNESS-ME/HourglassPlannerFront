@@ -58,7 +58,7 @@ const HourglassDetail: React.FC = () => {
   return (
     <div className="w-full h-full">
       <div className="p-4 box-border border bg-mypage-layout rounded mypage-md">
-        <div className=" text-2xl font-bold pb-2 pl-2 pr-2">
+        <div className=" text-4xl font-bold pb-2 pl-2 pr-2">
           <h3>작업 기록</h3>
         </div>
         {isEditing ? (
@@ -68,15 +68,13 @@ const HourglassDetail: React.FC = () => {
               onChange={(e) => setText(e.target.value)}
               className={`${styles.textarea} text-2xl bg-mypage-active-1`}
             />
-            <div className={`${styles.buttonContainer} h-12 text-xl font-semibold`}>
-              <button onClick={handleSave} className={styles.saveButton}>저장</button>
-              <button onClick={handleCancelClick} className={styles.cancelButton}>취소</button>
-            </div>
+              <button onClick={handleSave} className={`${styles.saveButton} h-14  text-4xl font-semibold`}>저장</button>
+              <button onClick={handleCancelClick} className={`${styles.cancelButton} h-14  text-4xl font-semibold`}>취소</button>
           </div>
         ) : (
           <div className=' bg-mypage-layout '>
             <p className={`${styles.textDisplay} text-2xl bg-mypage-active-1`}>{text}</p>
-            <button onClick={handleEditClick} className={`${styles.editButton} h-10 font-bold`}>수정</button>
+            <button onClick={handleEditClick} className={`${styles.editButton} h-14  text-4xl font-semibold `}>수정</button>
           </div>
         )}
       </div>

@@ -32,7 +32,7 @@ const SandTimerSecretary: React.FC = () => {
       <CardLayout title="모래시계 비서" width="w-full" height="h-full" color="bg-console-layout"> {/* 배경색 수정 */}
         <ul>
           {sortedTasks.map((task, index) => (
-            <li key={index} className="flex justify-between items-center p-3 mb-2 bg-console-active h-14 rounded whitespace-nowrap pr-4">
+            <li key={index} className="flex text-4xl justify-between items-center p-3 mb-2 bg-console-active rounded whitespace-nowrap pr-4">
               <span>{task.text}</span>
               <span className="text-red-500">{task.status}</span>
             </li>

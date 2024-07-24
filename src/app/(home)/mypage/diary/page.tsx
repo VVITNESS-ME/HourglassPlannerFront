@@ -16,15 +16,15 @@ const Diary: React.FC = () => {
           <Calendar/>
         </div>
         <div className="flex-1 w-[600px] mb-4">
-          <TilConsole/>
+          <HourglassDetail/>
         </div>
       </ div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 w-[600px] h-[380px] mb-4">
-          <HourglassList/>
+        <div className="flex-1 w-[600px] h-[550px] mb-4">
+          <TilConsole/>
         </div>
-        <div className="flex-1 w-[600px] h-[380px] mb-4">
-          <HourglassDetail/>
+        <div className="flex-1 w-[600px] h-[550px] mb-4">
+          <HourglassList/>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@
     background-color: #fff;
 }
 .list {
-    max-height: 310px;
+    max-height: 480px;
     overflow-y: auto;
     padding-right: 10px; /* Add some padding for scrollbar space */
 }
@@ -30,14 +30,14 @@
 }
 
 .category {
-    width: 100px;
-    height: 100px;
+    width: 170px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 10px;
     border-radius: 8px;
-    font-size: 18px;
+    font-size: 37px;
     font-weight: bold;
     color: #000;
 }
@@ -49,7 +49,7 @@
 
 .taskName,
 .description {
-    font-size: 20px;
+    font-size: 25px;
     color: #000000;
     white-space: nowrap;
     overflow: hidden;
@@ -67,7 +67,7 @@
 }
 
 .taskName {
-    font-size: 20px;
+    font-size: 32px;
     font-weight: bold;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .satisfaction {
-    font-size: 45px; /* 적절한 크기 조정 */
+    font-size: 60px; /* 적절한 크기 조정 */
     color: gold;
     display: flex;
     align-items: center;
