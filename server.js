@@ -84,11 +84,12 @@ app.prepare().then(() => {
         if (rooms.has(room)) {
           const users = rooms.get(room);
           users.delete(socket.id);
-          if (users.size === 0) {
-            rooms.delete(room);
-          } else {
-            socket.to(room).emit("userLeft", socket.id);
-          }
+          // if (users.size === 0) {
+          //   rooms.delete(room);
+          // } else {
+          //   socket.to(room).emit("userLeft", socket.id);
+          // }
+          socket.to(room).emit("userLeft", socket.id);
         }
       }
     });
