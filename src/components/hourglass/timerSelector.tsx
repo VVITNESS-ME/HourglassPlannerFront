@@ -36,7 +36,7 @@ const TimerSelector = ({wd}:any) => {
       </div>
       :<div className='flex flex-wrap pt-1 justify-center items-center'>
         <Button label="10" onClick={() => handleClick('10분', 10 * 60)} isActive={activeButton === '10분'} width='w-12' height='h-10'/>
-        <Button label="30" onClick={() => handleClick('30분', 30 * 60)} isActive={activeButton === '30분'} width='w-12' height='h-10' />
+        <Button label="30" onClick={() => handleClick('30분', 60 * 60)} isActive={activeButton === '30분'} width='w-12' height='h-10' />
         <Button label="1H" onClick={() => handleClick('1시간', 60 * 60)} isActive={activeButton === '1시간'} width='w-12' height='h-10' />
         <Button label="∞" onClick={() => handleClick('∞', 60*60*800)} isActive={activeButton === '∞'} width='w-12' height='h-10' />
       </div>
