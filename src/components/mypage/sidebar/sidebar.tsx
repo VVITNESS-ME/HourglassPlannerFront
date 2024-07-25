@@ -53,7 +53,9 @@ const Sidebar: React.FC = () => {
           />
         </a>
       </Link>
-      <Hourglass width={120} />
+      <div className="border-4 border-black bg-console-layout">
+        <Hourglass width={123} />
+      </div>
       <div className='hidden grow bg-transparent md:block md:h-auto md:rounded'></div>
     </div>
   );

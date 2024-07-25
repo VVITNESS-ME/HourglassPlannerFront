@@ -86,7 +86,7 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
   }
 
   return (
-    <div className={`flex flex-col items-center justify-center max-w-[600px] max-h-[800px] w-[${width}px]`}>
+    <div className={`flex flex-col items-center justify-center border max-w-[600px] max-h-[800px] w-[${width}px]`}>
       <audio ref={audioRef} autoPlay>
         <source src="../beep.mp3" type="audio/mpeg"/>
       </audio>

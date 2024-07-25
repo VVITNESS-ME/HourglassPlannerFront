@@ -68,13 +68,13 @@ const HourglassDetail: React.FC = () => {
               onChange={(e) => setText(e.target.value)}
               className={`${styles.textarea} text-2xl bg-mypage-active-1`}
             />
-              <button onClick={handleSave} className={`${styles.saveButton} h-14  text-4xl font-semibold`}>저장</button>
-              <button onClick={handleCancelClick} className={`${styles.cancelButton} h-14  text-4xl font-semibold`}>취소</button>
+              <button onClick={handleSave} className={`${styles.saveButton} h-14 border-4 border-black text-4xl font-semibold`}>저장</button>
+              <button onClick={handleCancelClick} className={`${styles.cancelButton} h-14 border-4 border-black text-4xl font-semibold`}>취소</button>
           </div>
         ) : (
           <div className=' bg-mypage-layout '>
             <p className={`${styles.textDisplay} text-2xl bg-mypage-active-1`}>{text}</p>
-            <button onClick={handleEditClick} className={`${styles.editButton} h-14  text-4xl font-semibold `}>수정</button>
+            <button onClick={handleEditClick} className={`${styles.editButton} h-14 border-4 border-black text-4xl font-semibold `}>수정</button>
           </div>
         )}
       </div>
