@@ -135,7 +135,7 @@ const TilConsole: React.FC = () => {
             저장
           </button>
           <button onClick={openModal} className="bg-[#C3EAC5] text-black font-semibold text-4xl py-2 px-4 border border-green-500 rounded ml-2">
-            일지 작성 도우미 열기
+            AI 일지
           </button>
         </div>
       ) : (
@@ -150,7 +150,7 @@ const TilConsole: React.FC = () => {
               일지 작성
             </button>
             <button onClick={openModal} className="bg-[#C3EAC5] text-black text-4xl font-semibold py-2 px-4 rounded border border-green-500 ml-2">
-              일지 작성 도우미 열기
+            AI 일지
             </button>
           </div>
         </div>
