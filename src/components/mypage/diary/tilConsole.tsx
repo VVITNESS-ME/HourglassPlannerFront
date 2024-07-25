@@ -102,7 +102,7 @@ const TilConsole: React.FC = () => {
   ));
 
   return (
-    <div className="p-4 bg-mypage-layout border rounded mypage-md w-full h-full">
+    <div className="p-4 bg-mypage-layout border-4 border-black rounded mypage-md w-full h-full">
       <input
         type="date"
         value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}

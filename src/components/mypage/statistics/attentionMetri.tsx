@@ -12,7 +12,7 @@ const AttentionMetric: React.FC = () => {
   const attentionRatio = totalTime ? ((totalTime - miaTime) / totalTime) * 100 : 0;
 
   return (
-    <div className="flex flex-col border w-full h-[253px] bg-mypage-layout mypage-md rounded p-4">
+    <div className="flex flex-col border-4 border-black w-full h-[253px] bg-mypage-layout mypage-md rounded p-4">
       <div>
         <p className="text-3xl font-semibold">집중도</p>
       </div>

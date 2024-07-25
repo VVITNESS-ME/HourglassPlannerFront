@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
   }, [pathname]);
 
   return (
-    <div className="flex flex-row justify-between space-x-2 grow md:flex-col md:space-x-0 md:space-y-2 top-20 left-0 h-[610px] bg-wallpaper rounded-sm border border-gray-300">
+    <div className="flex flex-row justify-between space-x-2 grow md:flex-col md:space-x-0 md:space-y-2 top-20 left-0 h-[610px] bg-wallpaper rounded-sm border-4 border-black ">
       <Link href="/mypage/profile" legacyBehavior passHref>
         <a>
           <MenuTab

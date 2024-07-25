@@ -45,7 +45,7 @@ const MainConsole: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-center items-center w-[450px] h-[874px] mb-4 relative bg-console-layout rounded mypage-md border">
+          <div className="flex justify-center border-4 border-black items-center w-[450px] h-[874px] mb-4 relative bg-console-layout rounded mypage-md border">
             <Hourglass width={250}/>
           </div>
         </div>
