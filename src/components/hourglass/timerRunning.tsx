@@ -24,13 +24,12 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
   const pause = useHourglassStore((state) => state.pause);
   const modalOpen = useHourglassStore((state) => state.modalOpen);
   const setTimeEnd = useHourglassStore((state) => state.setTimeEnd);
-  const stopTimer = useHourglassStore((state) => state.stopTimer);
+  const setBeep = useHourglassStore((state) => state.setBeep);
   const stopTimerWithNOAuth = useHourglassStore((state) => state.stopTimerWithNOAuth);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
   const popUpModal = useHourglassStore((state) => state.popUpModal);
   const [hideTimer, toggleTimer] = useState(true);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const last_check_time = useRef<number>(new Date().getTime());
 
@@ -38,12 +37,6 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
 
   const stopTimerAndFetchCategories = useCallback(async () => {
     const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
-    setTimeout(() => {
-      popUpModal();
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-      }
-    }, 1000);
     if (token) {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
@@ -56,6 +49,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         const data = await response.json();
         if (response.ok) {
           setUserCategories(data.data.userCategoriesWithName);
+          popUpModal();
         }
       } catch (error) {
         console.error('Failed to fetch user categories:', error);
@@ -96,6 +90,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
             incrementTimeBurst(elapsed);
             last_check_time.current = new Date().getTime();
           } else if (isRunning && now >= endTime) {
+            setBeep(true);
             setTimeEnd(new Date());
             stopTimerAndFetchCategories();
             workerRef.current?.terminate();
@@ -116,6 +111,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         incrementTimeBurst(now - last_check_time.current);
         last_check_time.current = now;
         if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
+          setBeep(true);
           clearInterval(timer);
           setTimeEnd(new Date());
           stopTimerAndFetchCategories();
@@ -146,11 +142,6 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
       <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories} />
-      {timeBurst! >= timeGoal! ? <div style={{ display: "hidden" }}>
-        <audio ref={audioRef} autoPlay>
-          <source src="../beep.mp3" type="audio/mpeg" />
-        </audio>
-      </div> : null}
     </div>
   );
   else return (
@@ -169,11 +160,6 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10' />
       </div>
       <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories} />
-      {timeBurst! >= timeGoal! ? <div style={{ display: "hidden" }}>
-        <audio ref={audioRef} autoPlay>
-          <source src="../beep.mp3" type="audio/mpeg" />
-        </audio>
-      </div> : null}
     </div>
   );
 };
