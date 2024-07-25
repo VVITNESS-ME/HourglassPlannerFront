@@ -25,6 +25,7 @@ interface TimeState {
   dailyData: DailyData[];
   taskName: string | '';
   checkHourglassInProgress: boolean;
+  beep: boolean;
   setTimeStart: (time: Date) => void;
   setTimeBurst: (burst: number) => void;
   setTimeGoal: (goal: number | null) => void;
@@ -49,6 +50,7 @@ interface TimeState {
   setTaskName: (taskName: string) => void;
   setCheckHourglassInProgress: (isChecked: boolean) => void;
   fetchHourglassInProgress: () => void;
+  setBeep: (bool: boolean) => void;
 }
 
 const saveStateToCookies = (state: Partial<TimeState>) => {
@@ -220,6 +222,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
   dailyData: [],
   taskName: '',
   checkHourglassInProgress: false,
+  beep: false,
   setTimeStart: (time: Date) => set((state) => {
     const newState = { ...state, timeStart: time };
     saveStateToCookies(newState);
@@ -578,4 +581,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
       });
     }
   },
+  setBeep: (bool: boolean) => set((state) => {
+    const newState = { ...state, beep:bool };
+    saveStateToCookies(newState);
+    return newState;
+  }),
 }));

@@ -24,13 +24,12 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
   const pause = useHourglassStore((state) => state.pause);
   const modalOpen = useHourglassStore((state) => state.modalOpen);
   const setTimeEnd = useHourglassStore((state) => state.setTimeEnd);
-  const stopTimer = useHourglassStore((state) => state.stopTimer);
+  const setBeep = useHourglassStore((state) => state.setBeep);
   const stopTimerWithNOAuth = useHourglassStore((state) => state.stopTimerWithNOAuth);
   const incrementTimeBurst = useHourglassStore((state) => state.incrementTimeBurst);
   const popUpModal = useHourglassStore((state) => state.popUpModal);
   const [hideTimer, toggleTimer] = useState(true);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const last_check_time = useRef<number>(new Date().getTime());
 
@@ -91,6 +90,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
             incrementTimeBurst(elapsed);
             last_check_time.current = new Date().getTime();
           } else if (isRunning && now >= endTime) {
+            setBeep(true);
             setTimeEnd(new Date());
             stopTimerAndFetchCategories();
             workerRef.current?.terminate();
@@ -111,6 +111,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         incrementTimeBurst(now - last_check_time.current);
         last_check_time.current = now;
         if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
+          setBeep(true);
           clearInterval(timer);
           setTimeEnd(new Date());
           stopTimerAndFetchCategories();
@@ -123,6 +124,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
     }
     return () => clearInterval(timer as NodeJS.Timeout);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
+
 
   if (wd > 250) return (
     <div className='flex flex-col w-max justify-center items-center text-lg md:text-2xl mb-4'>
@@ -140,14 +142,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} />
       </div>
       <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories} />
-      {timeBurst! >= timeGoal! ? <div style={{ display: "hidden" }}>
-        <audio ref={audioRef} autoPlay>
-          <source src="../beep.mp3" type="audio/mpeg" />
-        </audio>
-      </div> : null}
-
     </div>
-
   );
   else return (
     <div className='flex flex-col w-max justify-center items-center text-lg md:text-lg'>
@@ -165,11 +160,6 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10' />
       </div>
       <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories} />
-      {timeBurst! >= timeGoal! ? <div style={{ display: "hidden" }}>
-        <audio ref={audioRef} autoPlay>
-          <source src="../beep.mp3" type="audio/mpeg" />
-        </audio>
-      </div> : null}
     </div>
   );
 };

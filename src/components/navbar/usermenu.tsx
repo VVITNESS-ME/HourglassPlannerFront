@@ -79,11 +79,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ username }) => {
           </button>
           <span className="tooltiptext text-3xl">알림 목록</span>
         </div>
-        <div className="tooltip" onMouseOver={() => handleMouseOver('함께 공부하기')} onMouseOut={handleMouseOut}>
+        <div className="tooltip" onMouseOver={() => handleMouseOver('같이하기')} onMouseOut={handleMouseOut}>
           <Link href="/together">
             <Image className="ml-4" width={30} height={30} src="/img/together.svg" alt="together" />
           </Link>
-          <span className="tooltiptext text-3xl">함께 공부하기</span>
+          <span className="tooltiptext text-3xl">같이하기</span>
         </div>
         <div className="tooltip" onMouseOver={() => handleMouseOver('일정 관리')} onMouseOut={handleMouseOut}>
           <Link href="/console">
