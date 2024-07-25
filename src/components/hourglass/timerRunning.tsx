@@ -38,6 +38,9 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
 
   const stopTimerAndFetchCategories = useCallback(async () => {
     const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
+    setTimeout(() => {
+      popUpModal();
+    }, 1000);
     if (token) {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-category`, {
@@ -50,7 +53,6 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         const data = await response.json();
         if (response.ok) {
           setUserCategories(data.data.userCategoriesWithName);
-          popUpModal();
         }
       } catch (error) {
         console.error('Failed to fetch user categories:', error);
@@ -124,24 +126,6 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
     return () => clearInterval(timer as NodeJS.Timeout);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);
 
-  useEffect(() => {
-    if (timeBurst! >= timeGoal!) {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.play().then(() => {
-          setTimeout(() => {
-            popUpModal();
-          }, 1000);
-        }).catch(error => {
-          console.error('Error playing audio:', error);
-          // 만약 오디오 재생이 실패하면, 그래도 모달을 1초 후에 열기
-          setTimeout(() => {
-            popUpModal();
-          }, 1000);
-        });
-      }
-    }
-  }, [timeBurst, timeGoal, popUpModal]);
 
   if (wd > 250) return (
     <div className='flex flex-col w-max justify-center items-center text-lg md:text-2xl mb-4'>
