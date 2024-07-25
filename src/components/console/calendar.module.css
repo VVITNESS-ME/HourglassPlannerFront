@@ -1,0 +1,77 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  font-size: 30px;
+}
+
+.col {
+  font-size: 24px;
+  width: 14.2857%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.col-center {
+  text-align: center;
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav:hover {
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.days {
+  display: flex;
+}
+
+.body {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+  cursor: pointer;
+}
+
+.cell.disabled {
+  color: #ccc;
+}
+
+.cell.selected {
+  background-color: #f0ad4e;
+  color: black;
+}
+
+.number {
+  font-size: 35px;
+}
+
+.data-display {
+  margin-top: 20px;
+  text-align: center;
+}

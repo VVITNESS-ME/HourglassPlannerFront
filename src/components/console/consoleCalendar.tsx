@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
 import useConsoleStore from '../../../store/consoleStore';
-import styles from '../mypage/diary/calendar.module.css';
+import styles from './calendar.module.css';
 import ScheduleModal from './consoleCalendarModal';
 
 interface Schedule {
@@ -159,7 +159,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className={`${styles.calendar} p-4 w-full mx-auto bg-console-layout border rounded mypage-md h-full`}>
+    <div className={` p-4 w-full mx-auto bg-console-layout border rounded mypage-md h-full`}>
       {renderHeader()}
       {renderDays()}
       {renderCells()}

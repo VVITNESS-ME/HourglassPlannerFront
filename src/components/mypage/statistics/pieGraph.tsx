@@ -19,8 +19,9 @@ const PieGraph: React.FC = () => {
         display: true,
         labels: {
           font: {
-            size: 20, // 범례 글꼴 크기
+            size: 29, // 범례 글꼴 크기
           },
+          color: '#000000',
         },
       },
       tooltip: {
@@ -51,14 +52,14 @@ const PieGraph: React.FC = () => {
     fetchDayData(selectedDate);
   }, [selectedDate]);
   return (
-    <div className="flex flex-col items-center border w-full h-[485px] bg-mypage-layout mypage-md rounded">
+    <div className="flex flex-col items-center border w-full h-[600px] bg-mypage-layout mypage-md rounded">
       <div className="flex flex-col items-center mt-4 mb-1">
         <h2 className="text-2xl font-bold mb-1">{selectedDate?.toLocaleDateString('ko-KR')}</h2>
       </div>
       <div className="flex flex-col items-center">
-        <h3 className="text-3xl font-bold mb-2">일일 집중도 통계</h3>
-        <div className="w-80 mb-4">
-          <Pie data={pieChartData} options={options} />
+        <h3 className="text-4xl font-bold mb-2">일일 집중도 통계</h3>
+        <div className="mb-4 w-[450px]">
+          <Pie data={pieChartData} options={options}/>
         </div>
       </div>
     </div>

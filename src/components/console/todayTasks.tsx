@@ -164,7 +164,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
         </CardLayout>
       </div>
       <div className="flex justify-center mt-2">
-        <button className="text-gray-500 text-xl p-2" onClick={() => setIsTodoModalOpen(true)}>
+        <button className="text-gray-500 text-4xl " onClick={() => setIsTodoModalOpen(true)}>
           + 할 일 추가
         </button>
       </div>
@@ -204,7 +204,7 @@ const DraggableTask: React.FC<{
   return (
     <li
       ref={ref}
-      className={`flex justify-between items-center mb-2 p-3 text-2xl bg-console-active rounded-sm cursor-pointer ${
+      className={`flex justify-between items-center mb-2 p-3 text-4xl bg-console-active rounded-sm cursor-pointer ${
         selectedTask === task.taskId ? 'bg-console-active' : ''
       } ${isDragging ? 'opacity-50' : ''}`}
       onClick={() => onTaskClick(task.taskId, task.title)}

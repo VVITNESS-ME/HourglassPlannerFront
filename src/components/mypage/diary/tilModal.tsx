@@ -111,27 +111,35 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
       <LoadingModal isOpen={isLoadingModalOpen} />
       <div className="bg-yellow-300 rounded p-8 mypage-md w-[1400px] h-[800px] relative">
         <button
-          className="absolute top-4 right-4 text-black text-2xl font-bold"
+          className="absolute top-4 right-4 text-black text-8xl font-bold"
           onClick={onClose}
         >
           &times;
         </button>
-        <h2 className="text-center text-2xl font-bold mb-4">일지 작성 도우미</h2>
-        <div className="text-center text-xl font-bold mb-4">{new Date().toLocaleDateString()}</div>
+        <h2 className="text-center text-4xl font-bold mb-4">AI 일지</h2>
+        <div className="text-center text-4xl font-bold mb-4">{new Date().toLocaleDateString()}</div>
         <div className="flex">
           <div className="w-[170px] h-[600px] bg-yellow-400 p-4 rounded mr-4">
-            <h3 className="font-bold mb-2">카테고리</h3>
-            <ul>
+            <div className="flex justify-center items-center mb-2">
+              <h3 className="font-bold text-4xl">카테고리</h3>
+            </div>
+            <ul className="overflow-y-auto h-[520px] custom-scrollbar">
               {uniqueCategories.map(category => (
-                <li key={category} className="flex items-center text-xl font-bold mb-2">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={selectedCategories.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
-                  />
-                  <span>{category}</span>
-                </li>
+                <div key={category} className="flex justify-center items-center">
+                  <button
+                    className={`h-[80px] text-2xl block p-2 border-b border-b-gray-500 text-center w-full ${
+                      selectedCategories.includes(category) ? 'bg-blue-500 text-black' : 'bg-white text-black'
+                    }`}
+                    style={{
+                      backgroundColor: selectedCategories.includes(category) ? `#FACC14`: '#EEEEEE',
+                      color: selectedCategories.includes(category) ? 'black' : 'gray',
+                      fontWeight: "bold"
+                    }}
+                    onClick={() => handleCategoryChange(category)}
+                  >
+                    {category}
+                  </button>
+                </div>
               ))}
             </ul>
           </div>
@@ -140,7 +148,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
               카테고리를 선택하거나 간단한 일지를 작성해주세요.
             </p>
             <textarea
-              className="w-full p-2 border text-2xl border-gray-700 rounded mt-2 h-[440px] overflow-y-scroll"
+              className="w-full p-2 border text-3xl border-gray-700 rounded mt-2 h-[440px] overflow-y-scroll"
               placeholder="카테고리를 선택해 주세요."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -163,8 +171,8 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
               onChange={(e) => setAiTitle(e.target.value)}
             />
             <textarea
-              className="w-full p-2 text-2xl border border-gray-700 rounded mt-2 h-[440px] overflow-y-scroll"
-              placeholder="카테고리를 선택해 주세요."
+              className="w-full p-2 text-3xl border border-gray-700 rounded mt-2 h-[440px] overflow-y-scroll"
+              placeholder="TIL을 입력해 주세요."
               value={aiResult}
               onChange={(e) => setAiResult(e.target.value)}
             />

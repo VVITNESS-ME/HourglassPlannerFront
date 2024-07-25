@@ -94,6 +94,13 @@ const TilConsole: React.FC = () => {
     setIsTilContentModalOpen(false);
   };
 
+  const formattedContent = til?.content?.split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      <br />
+    </React.Fragment>
+  ));
+
   return (
     <div className="p-4 bg-mypage-layout border rounded mypage-md w-full h-full">
       <input
@@ -103,7 +110,7 @@ const TilConsole: React.FC = () => {
         className="mb-4 w-full p-2 border text-xl font-semibold bg-mypage-active-1 rounded"
       />
       {isEditing ? (
-        <div className="text-2xl mb-4">
+        <div className="text-5xl mb-4">
           <input
             type="text"
             value={newTil?.title || ''}
@@ -112,7 +119,7 @@ const TilConsole: React.FC = () => {
           />
         </div>
       ) : (
-        <div className="text-2xl mb-4" onClick={openTilContentModal}>
+        <div className="text-5xl mb-4" onClick={openTilContentModal}>
           {til?.title || '아직 작성된 TIL이 없습니다'}
         </div>
       )}
@@ -121,36 +128,37 @@ const TilConsole: React.FC = () => {
           <textarea
             value={newTil?.content || ''}
             onChange={handleContentChange}
-            className="w-full h-[220px] p-2 text-xl border rounded mb-4"
+            className="w-full h-[320px] p-2 text-3xl border rounded mb-1"
             rows={4}
           />
-          <button onClick={handleSaveButtonClick} className="bg-sandy-3 text-black py-2 px-4 rounded">
+          <button onClick={handleSaveButtonClick} className="bg-sandy-1 font-semibold text-4xl text-black py-2 px-4 rounded">
             저장
           </button>
-          <button onClick={openModal} className="bg-green-500 text-black py-2 px-4 rounded ml-2">
-            일지 작성 도우미 열기
+          <button onClick={openModal} className="bg-[#C3EAC5] text-black font-semibold text-4xl py-2 px-4 border border-green-500 rounded ml-2">
+            AI 일지
           </button>
         </div>
       ) : (
         <div>
-          <div className="overflow-scroll h-[200px]">
-            <p className="text-gray-600 text-xl mb-4 h-full"
-               onClick={openTilContentModal}>{til?.content || '아직 작성된 TIL이 없습니다'}</p>
+          <div className="overflow-scroll h-[315px]">
+            <div className="text-black text-3xl mb-4 h-full" onClick={openTilContentModal}>
+              {formattedContent || '아직 작성된 TIL이 없습니다'}
+            </div>
           </div>
           <div className="pt-4">
-            <button onClick={handleEditButtonClick} className="bg-sandy-3 text-xl font-semibold text-black py-2 px-4 rounded">
+            <button onClick={handleEditButtonClick} className="bg-sandy-1 text-4xl font-semibold text-black py-2 px-4 rounded">
               일지 작성
             </button>
-            <button onClick={openModal} className="bg-green-500 text-black text-xl font-semibold py-2 px-4 rounded ml-2">
-              일지 작성 도우미 열기
+            <button onClick={openModal} className="bg-[#C3EAC5] text-black text-4xl font-semibold py-2 px-4 rounded border border-green-500 ml-2">
+            AI 일지
             </button>
           </div>
         </div>
-          )}
-          <TilModal isOpen={isModalOpen} onClose={closeModal}/>
-          <TilContentModal isOpen={isTilContentModalOpen} onClose={closeTilContentModal} til={til}/> {/* 새로운 모달 추가 */}
-        </div>
-      );
-      };
+      )}
+      <TilModal isOpen={isModalOpen} onClose={closeModal} />
+      <TilContentModal isOpen={isTilContentModalOpen} onClose={closeTilContentModal} til={til} /> {/* 새로운 모달 추가 */}
+    </div>
+  );
+};
 
-      export default TilConsole;
+export default TilConsole;

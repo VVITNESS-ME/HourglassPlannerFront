@@ -78,21 +78,21 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, fetch
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+              <Dialog.Panel className="w-[600px] h-[330px] transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title as="h3" className="text-5xl font-medium leading-6 pb-2 text-gray-900">
                   할 일 추가
                 </Dialog.Title>
                 <div className="mt-2">
                   <input
                     type="text"
-                    className="w-full p-2 border border-gray-700 rounded mt-2"
+                    className="w-full text-4xl p-2 border border-gray-700 rounded mt-2"
                     placeholder="할 일을 입력하세요"
                     value={taskText}
                     onChange={(e) => setTaskText(e.target.value)}
                   />
                   <div className="relative mt-2">
                     <select
-                      className="w-full p-2 border border-gray-700 rounded appearance-none"
+                      className="w-full text-4xl p-2 border border-gray-700 rounded appearance-none"
                       value={selectedCategory ? selectedCategory.userCategoryId : ''}
                       onChange={(e) => {
                         const selected = userCategories.find(category => category.userCategoryId === Number(e.target.value));
@@ -116,7 +116,7 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, fetch
 
                 <div className="mt-4 flex justify-between">
                   <button
-                    className="text-gray-500 mt-2"
+                    className="text-gray-500 text-4xl mt-2"
                     onClick={onOpenCategoryModal}
                   >
                     + 카테고리 추가
@@ -127,14 +127,14 @@ const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onAddTask, fetch
                       onClick={onClose}
                       isActive={false}
                       width="w-auto"
-                      height="h-10"
+                      height="h-20"
                     />
                     <Button
                       label="추가"
                       onClick={handleAddTask}
                       isActive={true}
                       width="w-auto"
-                      height="h-10"
+                      height="h-20"
                     />
                   </div>
                 </div>

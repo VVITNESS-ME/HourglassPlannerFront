@@ -67,26 +67,26 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClose}) => 
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                <Dialog.Title as="h3" className="text-4xl font-medium leading-6 text-gray-900">
                   방 생성
                 </Dialog.Title>
                 <div className="mt-2">
                   <input
                     type="title"
-                    className="w-full p-2 border border-gray-700 rounded mt-2"
+                    className="w-full text-3xl p-2 border border-gray-700 rounded mt-2"
                     placeholder="방 제목"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                   />
                 </div>
                 <div className="flex justify-center mt-4">
-                  <Button label='공개' onClick={() => {setPassword("");setSecretRoom(false)}} isActive={!secretRoom} width='w-20' />
-                  <Button label='비공개' onClick={() => {setSecretRoom(true)}} isActive={secretRoom} width='w-20' />
+                  <Button label='공개' onClick={() => {setPassword("");setSecretRoom(false)}} isActive={!secretRoom} width='w-auto' />
+                  <Button label='비공개' onClick={() => {setSecretRoom(true)}} isActive={secretRoom} width='w-auto' />
                 </div>
                 <div className="">
                   <input
                     type="password"
-                    className="w-full p-2 border border-gray-700 rounded mt-2"
+                    className="w-full text-3xl p-2 border border-gray-700 rounded mt-2"
                     placeholder="비밀번호"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -94,7 +94,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClose}) => 
                   />
                 </div>
                 <div className="flex items-center justify-center mb-4">
-                  <div className='w-20'>제한 인원</div>
+                  <div className=' text-3xl'>제한 인원</div>
                   <Button label='1' onClick={() => {setLimit(1)}} isActive={limit===1} width='w-12' />
                   <Button label='2' onClick={() => {setLimit(2)}} isActive={limit===2} width='w-12' />
                   <Button label='3' onClick={() => {setLimit(3)}} isActive={limit===3} width='w-12' />
@@ -105,15 +105,15 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClose}) => 
                     label="취소"
                     onClick={()=>{setTitle("");setLimit(4);setPassword("");setSecretRoom(false);onClose()}}
                     isActive={false}
-                    width="w-20"
-                    height="h-10"
+                    width="w-auto"
+                    height="h-auto"
                   />
                   <Button
                     label="생성"
                     onClick={title!=''?handleCreateRoom:()=>{}}
                     isActive={true}
-                    width="w-20"
-                    height="h-10"
+                    width="w-auto"
+                    height="h-auto"
                   />
                 </div>
               </Dialog.Panel>
