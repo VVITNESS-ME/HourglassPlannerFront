@@ -40,6 +40,9 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
     const token = Cookies.get(process.env.NEXT_ACCESS_TOKEN_KEY || 'token');
     setTimeout(() => {
       popUpModal();
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+      }
     }, 1000);
     if (token) {
       try {
