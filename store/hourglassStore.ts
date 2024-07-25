@@ -518,15 +518,9 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
             if (data.data.timeBurst !== null) {
               timeDifference = data.data.timeBurst;
             } else {
-              if (data.data.timeResume !== null) {
-                const resumeTime = new Date(data.data.timeResume);
-                const nowTime = new Date();
-                timeDifference = Math.abs(nowTime.getTime() - resumeTime.getTime());
-              } else {
-                const startTime = new Date(data.data.timeStart);
-                const nowTime = new Date();
-                timeDifference = Math.abs(nowTime.getTime() - startTime.getTime());
-              }
+              const startTime = new Date(data.data.timeStart);
+              const nowTime = new Date();
+              timeDifference = Math.abs(nowTime.getTime() - startTime.getTime());
             }
             set((state) => ({
               ...state,
