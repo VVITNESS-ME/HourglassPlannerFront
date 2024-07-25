@@ -272,22 +272,21 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         }
         return state;
       });
+      const state = get();
+      const hId = await sendPauseSignalToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeGoal: state.timeGoal,
+        hId: state.hId,
+        timeBurst: state.timeBurst,
+      });
 
-      // const state = get();
-      // const hId = await sendPauseSignalToServer({
-      //   timeStart: state.timeStart?.toISOString(),
-      //   timeGoal: state.timeGoal,
-      //   hId: state.hId,
-      //   timeBurst: state.timeBurst,
-      // });
-      //
-      // if (hId) {
-      //   set((state) => {
-      //     const newState = { ...state, hId };
-      //     saveStateToCookies(newState);
-      //     return newState;
-      //   });
-      // }
+      if (hId) {
+        set((state) => {
+          const newState = { ...state, hId };
+          saveStateToCookies(newState);
+          return newState;
+        });
+      }
     }
   },
 
@@ -303,21 +302,21 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
         return state;
       });
 
-    //   const state = get();
-    //   const hId = await sendResumeSignalToServer({
-    //     timeStart: state.timeStart?.toISOString(),
-    //     timeGoal: state.timeGoal,
-    //     hId: state.hId,
-    //     timeBurst: state.timeBurst,
-    //   });
-    //
-    //   if (hId) {
-    //     set((state) => {
-    //       const newState = { ...state, hId };
-    //       saveStateToCookies(newState);
-    //       return newState;
-    //     });
-    //   }
+      const state = get();
+      const hId = await sendResumeSignalToServer({
+        timeStart: state.timeStart?.toISOString(),
+        timeGoal: state.timeGoal,
+        hId: state.hId,
+        timeBurst: state.timeBurst,
+      });
+
+      if (hId) {
+        set((state) => {
+          const newState = { ...state, hId };
+          saveStateToCookies(newState);
+          return newState;
+        });
+      }
     }
   },
 

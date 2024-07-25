@@ -34,6 +34,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const pauseRef = useRef<boolean>(pause);
 
   useEffect(() => {
     avatarManagerRef.current.setAvatarVisibility(false);
@@ -52,7 +53,10 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
         if (faceStatus == 1) {
           timeDoze++;
           if (timeDoze > 50) {
-            setPause();
+            if(!pauseRef.current){
+              setPause();
+              pauseRef.current = true;
+            }
             avatarManagerRef.current.setAvatarVisibility(true);
             if (audioRef.current) audioRef.current.play();
             timeSober = 0;
@@ -60,14 +64,20 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
         } else if (faceStatus == 3) {
           timeMia++;
           if (timeMia > 50) {
-            setPause();
+            if(!pauseRef.current){
+              setPause();
+              pauseRef.current = true;
+            }
             timeSober = 0;
           }
         } else {
           timeSober++;
           timeSober2++;
           if (timeSober > 25) {
-            setResume();
+            if(pauseRef.current){
+              setResume();
+              pauseRef.current = false;
+            }
             if (audioRef.current) {
               audioRef.current.pause();
               audioRef.current.currentTime = 0;
