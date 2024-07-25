@@ -96,7 +96,7 @@ const RoomList: React.FC = () => {
                     <EyeIcon className="h-6 w-6 mr-2" />
                     <div>
                       <div className=" text-2xl ">{paginatedRooms[index].title}</div>
-                      {paginatedRooms[index].participants !== paginatedRooms[index].limit?<div className="text-lg text-gray-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>
+                      {paginatedRooms[index].participants !== paginatedRooms[index].limit?<div className="text-lg text-gray-600">{paginatedRooms[index].participants+1}/{paginatedRooms[index].limit}</div>
                       :<div className="text-lg text-red-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>}
                     </div>
                   </div>
