@@ -86,7 +86,7 @@ const AvatarCanvas: React.FC<VideoProps> = ({ stream, onStreamReady }) => {
             timeMia = 0;
             timeSober = 0;
           }
-          if (timeSober2 > 250) {
+          if (timeSober2 > 700) {
             avatarManagerRef.current.setAvatarVisibility(false);
             timeSober2 = 0;
           }
