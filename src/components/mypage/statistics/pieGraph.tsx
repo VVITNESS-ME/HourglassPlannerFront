@@ -44,6 +44,8 @@ const PieGraph: React.FC = () => {
       {
         data: pieData.map(item => item.ratio),
         backgroundColor: pieData.map(item => item.color),
+        borderColor: '#000000', // 테두리 색상
+        borderWidth: 4,
       },
     ],
   };
