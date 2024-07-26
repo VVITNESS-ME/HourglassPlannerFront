@@ -20,11 +20,11 @@ const TilContentModal: React.FC<TilContentModalProps> = ({ isOpen, onClose, til 
   ));
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-white p-4 rounded mypage-md max-w-lg w-full">
-        <h2 className="text-2xl mb-4">{til.title}</h2>
-        <p className="text-gray-700">{formattedContent}</p>
-        <button onClick={onClose} className="mt-4 bg-red-500 text-black py-2 px-4 rounded">
+    <div className=" fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-white border-4 border-black p-4 rounded w-[700px] h-[900px]">
+        <h2 className=" border-2 border-black text-5xl mb-4">{til.title}</h2>
+        <p className=" border-2 border-black text-gray-700 h-[720px] text-3xl overflow-scroll">{formattedContent}</p>
+        <button onClick={onClose} className="mt-4 bg-red-500 text-black py-2 px-4 border-2 border-black font-bold text-2xl rounded">
           닫기
         </button>
       </div>

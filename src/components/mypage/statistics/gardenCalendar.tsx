@@ -1,3 +1,4 @@
+// components/GardenCalendar.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -33,8 +34,10 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
   const grasses = useStatisticsStore(state => state.grasses);
   const setGrasses = useStatisticsStore(state => state.setGrasses);
   const setSelectedDate = useStatisticsStore(state => state.setSelectedDate);
+  const selectedDate = useStatisticsStore(state => state.selectedDate) || new Date();
   const setRangeSelection = useStatisticsStore(state => state.setRangeSelection);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
   const fetchData = async (start: string, end: string) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/statics/garden?start=${start}&end=${end}`, {
@@ -108,7 +111,7 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
         days.push(
           <div
             key={currentDay.toString()}
-            className={`${styles.cell} ${isSameDay(currentDay, new Date()) ? styles.today : ''} ${!isSameMonth(currentDay, monthStart) ? styles.disabled : ''}`}
+            className={`${styles.cell} ${isSameDay(currentDay, new Date(selectedDate)) ? styles.today : ''} ${!isSameMonth(currentDay, monthStart) ? styles.disabled : ''}`}
             onMouseEnter={() => grass && setTooltip({ date: grass.date, timeBurst: grass.timeBurst })}
             onMouseLeave={() => setTooltip(null)}
             onClick={() => {
@@ -134,7 +137,7 @@ const GardenCalendar: React.FC<GardenCalendarProps> = ({ initialEntries = [] }) 
   };
 
   return (
-    <div className="flex flex-col border relative overflow-hidden h-[330px] bg-mypage-layout w-full rounded mypage-md">
+    <div className="flex border-4 border-black flex-col border relative overflow-hidden h-[330px] bg-mypage-layout w-full rounded mypage-md">
       {renderHeader()}
       {renderDays()}
       {renderCells()}

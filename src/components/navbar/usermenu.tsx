@@ -79,11 +79,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ username }) => {
           </button>
           <span className="tooltiptext text-3xl">알림 목록</span>
         </div>
-        <div className="tooltip" onMouseOver={() => handleMouseOver('함께 공부하기')} onMouseOut={handleMouseOut}>
+        <div className="tooltip" onMouseOver={() => handleMouseOver('같이하기')} onMouseOut={handleMouseOut}>
           <Link href="/together">
             <Image className="ml-4" width={30} height={30} src="/img/together.svg" alt="together" />
           </Link>
-          <span className="tooltiptext text-3xl">함께 공부하기</span>
+          <span className="tooltiptext text-3xl">같이하기</span>
         </div>
         <div className="tooltip" onMouseOver={() => handleMouseOver('일정 관리')} onMouseOut={handleMouseOut}>
           <Link href="/console">
@@ -96,7 +96,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ username }) => {
         </Link>
       </div>
       {tasksOn && (<div
-        className="flex flex-col absolute top-20 w-96 h-24 border rounded-sm text-balance text-4xl bg-sandy-1 items-center justify-center z-50 overflow-auto">
+        className="flex flex-col absolute top-20 w-96 h-24 border-4 border-black rounded-sm text-balance text-4xl bg-console-layout opacity-80 items-center justify-center z-50 overflow-auto">
         {tasks?.map((task, index) =>
           <div key={index} className="w-full pl-6 pr-6 flex justify-between items-center">
             <div>{task.text}</div>

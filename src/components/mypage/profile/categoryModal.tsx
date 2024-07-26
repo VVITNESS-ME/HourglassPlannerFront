@@ -53,7 +53,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCat
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle border-4 border-black shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-4xl font-medium leading-6 text-gray-900">
                   카테고리 추가
                 </Dialog.Title>
@@ -62,7 +62,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCat
                     type="text"
                     value={categoryName}
                     onChange={(e) => setCategoryName(e.target.value)}
-                    className="p-2 border border-gray-700 text-3xl rounded mb-4 w-full"
+                    className="p-2 border-4 border-black text-3xl rounded mb-4 w-full"
                     placeholder="카테고리 이름"
                   />
                   <div className="mb-4">
@@ -71,7 +71,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCat
                       {colors.map((color) => (
                         <div
                           key={color}
-                          className={`w-16 h-8 rounded cursor-pointer ${selectedColor === color ? 'ring-2 ring-black' : ''}`}
+                          className={`w-16 h-8 border-4 border-black rounded cursor-pointer ${selectedColor === color ? 'ring-2 ring-black' : ''}`}
                           style={{ backgroundColor: color }}
                           onClick={() => setSelectedColor(color)}
                         ></div>
@@ -80,13 +80,13 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCat
                   </div>
                   <div className="mt-4 flex justify-end">
                     <button
-                      className="bg-gray-300 hover:bg-gray-400 text-black font-bold text-3xl py-2 px-4 rounded mr-2"
+                      className="bg-gray-300 hover:bg-gray-400 text-black font-bold text-3xl py-2 px-4 border-4 border-black rounded mr-2"
                       onClick={onClose}
                     >
                       취소
                     </button>
                     <button
-                      className="bg-blue-500 hover:bg-blue-700 text-black font-bold text-3xl py-2 px-4 rounded"
+                      className="bg-blue-500 hover:bg-blue-700 text-black font-bold text-3xl py-2 px-4 border-4 border-black rounded"
                       onClick={handleAddCategory}
                     >
                       추가

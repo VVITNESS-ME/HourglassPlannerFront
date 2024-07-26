@@ -44,6 +44,8 @@ const PieGraph: React.FC = () => {
       {
         data: pieData.map(item => item.ratio),
         backgroundColor: pieData.map(item => item.color),
+        borderColor: '#000000', // 테두리 색상
+        borderWidth: 4,
       },
     ],
   };
@@ -52,7 +54,7 @@ const PieGraph: React.FC = () => {
     fetchDayData(selectedDate);
   }, [selectedDate]);
   return (
-    <div className="flex flex-col items-center border w-full h-[600px] bg-mypage-layout mypage-md rounded">
+    <div className="flex flex-col items-center w-full h-[600px] border-4 border-black bg-mypage-layout mypage-md rounded">
       <div className="flex flex-col items-center mt-4 mb-1">
         <h2 className="text-2xl font-bold mb-1">{selectedDate?.toLocaleDateString('ko-KR')}</h2>
       </div>

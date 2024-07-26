@@ -162,8 +162,9 @@ const StatisticsContent: React.FC = () => {
       {
         label: '활동 시간',
         data: weeklyData.map(item => item.totalBurst),
-        borderColor: '#1E90FF',
         fill: false,
+        borderColor: '#000000', // 테두리 색상
+        borderWidth: 4,
       },
     ],
   };
@@ -175,6 +176,8 @@ const StatisticsContent: React.FC = () => {
         label: '활동 시간',
         data: monthlyData.map(item => item.totalBurst),
         backgroundColor: '#1E90FF',
+        borderColor: '#000000', // 테두리 색상
+        borderWidth: 4,
       },
     ],
   };
@@ -186,6 +189,8 @@ const StatisticsContent: React.FC = () => {
       data: [activity.burst], // 배열로 감싸기
       backgroundColor: activity.color, // 각 활동의 색상
       barThickness: 100, // 막대 두께 설정
+      borderColor: '#000000', // 테두리 색상
+      borderWidth: 4,
     })),
   };
 
@@ -212,7 +217,7 @@ const StatisticsContent: React.FC = () => {
     },
   };
   return (
-    <div className="p-8 bg-mypage-layout border min-w-[400px] h-[600px] flex flex-col text-5xl items-center rounded mypage-md">
+    <div className="p-8 bg-mypage-layout border-4 border-black min-w-[400px] h-[600px] flex flex-col text-5xl items-center rounded mypage-md">
       <div className="w-full">
         <Tabs onSelect={handleTabSelect}>
           <TabList>

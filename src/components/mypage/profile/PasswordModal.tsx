@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import Button from './button'
+import Button from './button';
 
 interface PasswordModalProps {
   isOpen: boolean;
@@ -16,14 +16,34 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose }) => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (newPassword === confirmNewPassword) {
-      // 실제 비밀번호 변경 로직을 여기에 추가
-      console.log('Current Password:', currentPassword);
-      console.log('New Password:', newPassword);
-      onClose();
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile/password`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || '비밀번호 변경에 실패하였습니다.');
+        }
+
+        // 비밀번호 변경 성공
+        console.log('비밀번호가 성공적으로 변경되었습니다.');
+        onClose();
+      } catch (error) {
+        console.error('비밀번호 변경 중 오류 발생:', error);
+        alert('비밀번호 변경에 실패하였습니다.');
+      }
     } else {
-      console.log('Passwords do not match');
+      alert('새 비밀번호가 일치하지 않습니다.');
     }
   };
 
@@ -53,28 +73,28 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+              <Dialog.Panel className="w-[500px] text-3xl transform overflow-hidden rounded-sm bg-white p-6 text-left border-4 border-black align-middle shadow-xl transition-all">
+                <Dialog.Title as="h3" className="text-4xl font-medium leading-6 text-gray-900">
                   비밀번호 변경
                 </Dialog.Title>
                 <div className="mt-2">
                   <input
                     type="password"
-                    className="w-full p-2 border border-gray-700 rounded mt-2"
+                    className="w-full border-4 border-black p-2 rounded mt-2"
                     placeholder="현재 비밀번호를 입력하세요"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                   />
                   <input
                     type="password"
-                    className="w-full p-2 border border-gray-700 rounded mt-2"
+                    className="w-full border-4 border-black p-2 rounded mt-2"
                     placeholder="새 비밀번호를 입력하세요"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <input
                     type="password"
-                    className="w-full p-2 border border-gray-700 rounded mt-2"
+                    className="w-full border-4 border-black p-2 rounded mt-2"
                     placeholder="새 비밀번호 확인"
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
@@ -87,14 +107,14 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose }) => {
                     onClick={onClose}
                     isActive={false}
                     width="w-auto"
-                    height="h-10"
+                    height="h-auto"
                   />
                   <Button
                     label="변경"
                     onClick={handlePasswordChange}
                     isActive={true}
                     width="w-auto"
-                    height="h-10"
+                    height="h-auto"
                   />
                 </div>
               </Dialog.Panel>

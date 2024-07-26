@@ -61,14 +61,14 @@ const NicknameModal: React.FC<NicknameModalProps> = ({ isOpen, onClose }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+              <Dialog.Panel className="transform overflow-hidden rounded-sm bg-white p-6 text-left border-4 border-black align-middle shadow-xl transition-all">
+                <Dialog.Title as="h3" className="text-4xl font-medium leading-6 text-gray-900">
                   닉네임 변경
                 </Dialog.Title>
                 <div className="mt-2">
                   <input
                     type="text"
-                    className="w-full p-2 border border-gray-700 rounded mt-2"
+                    className="w-full p-2  border-4 border-black text-3xl rounded mt-2"
                     placeholder="새 닉네임을 입력하세요"
                     value={nickname}
                     onChange={(e) => {
@@ -89,14 +89,14 @@ const NicknameModal: React.FC<NicknameModalProps> = ({ isOpen, onClose }) => {
                     onClick={onClose}
                     isActive={false}
                     width="w-auto"
-                    height="h-10"
+                    height="h-auto"
                   />
                   <Button
                     label="변경"
                     onClick={handleNicknameChange}
                     isActive={true}
                     width="w-auto"
-                    height="h-10"
+                    height="h-auto"
                   />
                 </div>
               </Dialog.Panel>

@@ -148,7 +148,7 @@ const TodayTasks: React.FC<TodayTasksProps> = ({ tasks, setTasks, onTaskComplete
   }, [fetchTasks, fetchUserCategories]);
 
   return (
-    <div className=" border rounded bg-console-layout w-full mypage-md">
+    <div className=" border-4 border-black rounded bg-console-layout w-full mypage-md">
       <div className=" h-[360px] ">
         <CardLayout title="오늘의 할일">
           <ul>

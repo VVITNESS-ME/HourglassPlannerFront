@@ -70,12 +70,12 @@ const RoomList: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center w-full relative">
-      <div className='flex justify-end w-full max-w-3xl mt-2 mb-2 relative' >
-        <button className='w-6 h-6 relative' onClick={getRoomList}>
+      <div className='flex justify-end w-full max-w-[1040px] mt-2 mb-2 relative' >
+        <button className='w-11 h-11 relative' onClick={getRoomList}>
           <Image src="/img/videochat/cycle.png" alt="refresh" fill />
         </button>
       </div>
-      <div className="flex justify-center items-center w-full max-w-4xl">
+      <div className="flex justify-center items-center w-full">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 0}
@@ -83,11 +83,11 @@ const RoomList: React.FC = () => {
         >
           <ChevronLeftIcon className="h-10 w-10 cursor-pointer" />
         </button>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-200 p-4 rounded mypage-md w-[1400px] h-[520px] overflow-hidden relative">
+        <div className=" border-black border-4 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-200 p-4 rounded mypage-md w-full max-w-[1040px] h-full max-h-[650px] relative">
           {Array.from({ length: roomsPerPage }).map((_, index) => (
             <div
               key={index}
-              className={`flex items-center justify-between p-4 w-[380px] bg-yellow-300 rounded mypage-md cursor-pointer h-20 ${!paginatedRooms[index] ? 'invisible' : ''}`}
+              className={` border-black border-4 flex items-center justify-between p-4 w-[500px] bg-yellow-300 overflow-hidden rounded mypage-md cursor-pointer h-24 ${!paginatedRooms[index] ? 'invisible' : ''}`}
               onClick={() => paginatedRooms[index].participants !== paginatedRooms[index].limit && handleRoomClick(paginatedRooms[index])}
             >
               {paginatedRooms[index] && (
@@ -95,9 +95,9 @@ const RoomList: React.FC = () => {
                   <div className="flex items-center">
                     <EyeIcon className="h-6 w-6 mr-2" />
                     <div>
-                      <div className=" text-2xl ">{paginatedRooms[index].title}</div>
-                      {paginatedRooms[index].participants !== paginatedRooms[index].limit?<div className="text-lg text-gray-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>
-                      :<div className="text-lg text-red-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>}
+                      <div className=" text-4xl  ">{paginatedRooms[index].title}</div>
+                      {paginatedRooms[index].participants !== paginatedRooms[index].limit?<div className="text-2xl text-gray-600">{paginatedRooms[index].participants+1}/{paginatedRooms[index].limit}</div>
+                      :<div className="text-4xl text-red-600">{paginatedRooms[index].participants}/{paginatedRooms[index].limit}</div>}
                     </div>
                   </div>
                   {paginatedRooms[index].isSecretRoom && <LockClosedIcon className="h-6 w-6 text-gray-600" />}

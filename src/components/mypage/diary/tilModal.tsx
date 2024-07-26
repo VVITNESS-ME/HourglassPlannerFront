@@ -109,7 +109,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
       <LoadingModal isOpen={isLoadingModalOpen} />
-      <div className="bg-yellow-300 rounded p-8 mypage-md w-[1400px] h-[800px] relative">
+      <div className="bg-mypage-layout rounded border-4 border-black p-8 mypage-md w-[1400px] h-[820px] relative">
         <button
           className="absolute top-4 right-4 text-black text-8xl font-bold"
           onClick={onClose}
@@ -119,7 +119,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
         <h2 className="text-center text-4xl font-bold mb-4">AI 일지</h2>
         <div className="text-center text-4xl font-bold mb-4">{new Date().toLocaleDateString()}</div>
         <div className="flex">
-          <div className="w-[170px] h-[600px] bg-yellow-400 p-4 rounded mr-4">
+          <div className="w-[170px] h-[650px] border-4 border-black bg-yellow-400 p-4 rounded mr-4">
             <div className="flex justify-center items-center mb-2">
               <h3 className="font-bold text-4xl">카테고리</h3>
             </div>
@@ -127,7 +127,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
               {uniqueCategories.map(category => (
                 <div key={category} className="flex justify-center items-center">
                   <button
-                    className={`h-[80px] text-2xl block p-2 border-b border-b-gray-500 text-center w-full ${
+                    className={`h-[80px] text-2xl block border-4 border-black text-center w-full ${
                       selectedCategories.includes(category) ? 'bg-blue-500 text-black' : 'bg-white text-black'
                     }`}
                     style={{
@@ -143,7 +143,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
               ))}
             </ul>
           </div>
-          <div className="flex-1  bg-white p-4 rounded mr-4">
+          <div className="flex-1 border-4 border-black bg-white p-4 rounded mr-4">
             <p className="w-full text-2xl font-bold p-2 border border-gray-700 rounded mt-2 text-center">
               카테고리를 선택하거나 간단한 일지를 작성해주세요.
             </p>
@@ -162,7 +162,7 @@ const TilModal: React.FC<TilModalProps> = ({ isOpen, onClose }) => {
               disabledColor="bg-gray-300"
             />
           </div>
-          <div className="flex-1 bg-white p-4 rounded">
+          <div className="flex-1 border-4 border-black bg-white p-4 rounded">
             <input
               type="text"
               className="w-full p-2 text-2xl font-bold border border-gray-700 rounded mt-2"
