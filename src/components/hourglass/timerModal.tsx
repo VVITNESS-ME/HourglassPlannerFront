@@ -92,7 +92,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 modal-backdrop">
-      <div className="bg-white rounded overflow-hidden mypage-md w-[500px] h-[800px] modal-container">
+      <div className="border-4 border-black bg-white rounded overflow-hidden mypage-md w-[500px] h-auto modal-container">
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-3xl text-ui-title-text font-bold mb-4">활동을 선택하세요</div>
@@ -104,11 +104,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
             </div>
           </div>
           {(tId === null || tId === undefined) && (
-            <div className="mb-4 h-[320px] overflow-y-auto custom-scrollbar">
+            <div className="mb-2 h-[320px] border-4 border-black overflow-y-auto custom-scrollbar">
               {userCategories.map((category) => (
                 <button
                   key={category.userCategoryId}
-                  className={`h-[80px] text-5xl block p-2 border-b border-gray-700 text-left w-full ${
+                  className={`h-[80px] text-5xl block p-2 border-b-4 border-black text-left w-full ${
                     selectedActivity === category.categoryName ? 'bg-blue-500 text-black' : 'bg-white text-black'
                   }`}
                   style={{
@@ -124,7 +124,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
             </div>
           )}
           <button
-            className=" text-3xl text-gray-700 font-semibold mt-2"
+            className=" text-3xl text-gray-700 mb-2 font-semibold mt-2"
             onClick={() => setIsModalOpen(true)}
           >
             + 카테고리 추가
@@ -137,7 +137,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
           />
           <div className="mb-4">
             <textarea
-              className="w-full text-2xl p-2 border border-gray-700 rounded"
+              className="w-full text-2xl p-2 border-4 border-black rounded"
               placeholder="코멘트를 입력하세요"
               value={description}
               onChange={handleCommentChange}
@@ -163,7 +163,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, userCategories, setUserCategories
             {
               !isValidInput
                 ? <button disabled
-                          className="px-4 py-2 font-bold text-black bg-gray-500 rounded opacity-50 cursor-not-allowed">확인</button>
+                          className="px-4 py-2 font-bold text-black bg-gray-500 rounded opacity-50 cursor-not-allowed border-4 border-black ">확인</button>
                 : <Button label="확인" onClick={handleSubmit} isActive={true}/>
             }
           </div>

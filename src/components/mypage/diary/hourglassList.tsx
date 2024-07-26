@@ -53,7 +53,7 @@ const HourglassList: React.FC = () => {
   if (!hourglasses || hourglasses.length === 0) {
     return (
       <div className="w-full h-full">
-        <div className="p-4 box-border border bg-mypage-layout h-full rounded mypage-md">
+        <div className="p-4 box-border border-4 border-black bg-mypage-layout h-full rounded mypage-md">
           <div className="pl-2 pr-2 pb-2">
             <h3 className=" font-bold text-3xl">일간 작업 목록</h3>
               <p>현재 등록된 작업이 없습니다.</p>
@@ -65,7 +65,7 @@ const HourglassList: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="p-4 box-border border bg-mypage-layout h-full rounded mypage-md">
+      <div className="p-4 box-border border-4 border-black bg-mypage-layout h-full rounded mypage-md">
         <div className="pl-2 pr-2 pb-2">
           <h3 className=" font-bold text-3xl">일간 작업 목록</h3>
         </div>
@@ -73,7 +73,7 @@ const HourglassList: React.FC = () => {
           {hourglasses.map((task) => (
             <div
               key={task.hid}
-              className={`${styles.task} bg-mypage-active-1 border border-black ${selectedHourglass && selectedHourglass.hid === task.hid ? styles.selected : ''}`}
+              className={`${styles.task} bg-mypage-active-1 border-4 border-black ${selectedHourglass && selectedHourglass.hid === task.hid ? styles.selected : ''}`}
               onClick={() => handleTaskClick(task)}
             >
               <div className={styles.category} style={{backgroundColor: task.color}}>{task.categoryName}</div>

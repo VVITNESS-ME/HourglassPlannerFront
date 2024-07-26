@@ -131,10 +131,8 @@ const Profile: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="flex-1 w-[600px] mb-4">
+        <div className="flex-1 w-full mb-4">
           <TitleList />
-        </div>
-        <div className="flex-1 w-[600px] mb-4">
         </div>
       </div>
     </div>

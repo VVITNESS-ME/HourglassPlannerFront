@@ -78,9 +78,9 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, setTasks, onTask
   drop(ref);
 
   return (
-    <div className="w-full h-full border rounded mypage-md">
-      <CardLayout title="해낸 일">
-        <ul ref={ref} className={`min-h-[200px] ${isOver ? 'bg-other-100' : ''}`}>
+    <div className="w-full h-full border-4 border-black rounded mypage-md">
+      <CardLayout title="해낸 일" height="500px">
+        <ul ref={ref} className={`h-[332px] ${isOver ? 'bg-other-100' : ''}`}>
           {tasks.map((task, index) => (
             <li key={index} className="flex justify-between text-4xl bg-console-active h-14 rounded-sm pd items-center p-3 mb-2 whitespace-nowrap pr-4">
               <span>{task.title}</span>
