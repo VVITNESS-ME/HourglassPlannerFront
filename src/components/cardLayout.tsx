@@ -13,7 +13,7 @@ interface CardLayoutProps {
 const CardLayout: React.FC<CardLayoutProps> = ({ title, children, width = 'w-full', height = 'h-full', color ='bg-console-layout'}) => {
   return (
     <div className={`p-4 ${width} ${height} ${color} rounded`}>
-      <h2 className="text-4xl text-ui-title-text mb-2">{title}</h2>
+      <h2 className="text-4xl font-bold text-ui-title-text mb-2">{title}</h2>
       <div className={`overflow-auto ${height} pr-2`}>  {/* 오른쪽 패딩 추가 */}
         {children}
       </div>
