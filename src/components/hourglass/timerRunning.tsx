@@ -32,6 +32,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
   const workerRef = useRef<Worker | null>(null);
   const last_check_time = useRef<number>(new Date().getTime());
+  const beforePause = useRef<boolean>(false);
 
   const hideToggle = () => { toggleTimer(!hideTimer); };
 
@@ -108,7 +109,12 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
     if (isRunning && !pause) {
       timer = setInterval(() => {
         const now = new Date().getTime();
-        incrementTimeBurst(now - last_check_time.current);
+        if(!beforePause.current){
+          incrementTimeBurst(now - last_check_time.current);
+        }else {
+          incrementTimeBurst(1000);
+          beforePause.current = false;
+        }
         last_check_time.current = now;
         if (timeGoal !== null && timeBurst !== null && timeBurst >= timeGoal) {
           setBeep(true);
@@ -117,10 +123,12 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
           stopTimerAndFetchCategories();
         }
       }, 1000);
-    } else if (pause && workerRef.current) {
+    } else if (isRunning && pause && workerRef.current) {
       workerRef.current.postMessage({ action: 'stop' });
-    } else if (!isRunning && workerRef.current) {
+      beforePause.current = true;
+    } else if (isRunning && !pause && workerRef.current) {
       workerRef.current.postMessage({ action: 'resume' });
+      last_check_time.current = new Date().getTime();
     }
     return () => clearInterval(timer as NodeJS.Timeout);
   }, [stopTimerAndFetchCategories, isRunning, pause, timeBurst, timeGoal, setTimeEnd, incrementTimeBurst]);

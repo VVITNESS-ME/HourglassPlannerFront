@@ -62,13 +62,15 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
       {
         data: [Math.floor(burst/60), Math.floor(paused/60)],
         backgroundColor: ["#6ecc7e", "red"],
+        borderColor: '#000000',
+        borderWidth: 4,
       },
     ],
   };
   
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-70">
-      <div className="bg-white z-50 rounded overflow-hidden mypage-md w-[600px]">
+      <div className="bg-white border-4 border-black z-50 rounded overflow-hidden mypage-md w-[600px]">
         <div className="p-6">
           <div className='flex w-full justify-between'>
             <div className="text-4xl font-bold mb-4">Hourglass Data Summary</div>
@@ -100,7 +102,7 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
             </div>
           </div>
           <button
-            className="mt-4 px-4 py-2 bg-sandy-2 text-black text-3xl font-bold rounded hover:bg-sandy-3 w-full"
+            className="mt-4 px-4 py-2 bg-sandy-2 border-4 border-black text-black text-3xl font-bold rounded hover:bg-sandy-3 w-full"
             onClick={onClose}
           >
             확인
