@@ -88,7 +88,7 @@ const Hourglass: React.FC<Props> = ({ width = 300 }) => {
   return (
     <div className={`flex flex-col items-center justify-center max-w-[600px] max-h-[800px] w-[${width}px]`}>
       <audio ref={audioRef}>
-        <source src="/beep.mp3" type="audio/mpeg" />
+        <source src="/beep2.mp3" type="audio/mpeg" />
       </audio>
       <h2 className="min-h-[40px] text-3xl font-semibold text-[#333333]">{taskName}</h2>
       <HourglassAni wd={width * 5 / 6} />
