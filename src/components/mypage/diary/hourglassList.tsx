@@ -73,7 +73,7 @@ const HourglassList: React.FC = () => {
           {hourglasses.map((task) => (
             <div
               key={task.hid}
-              className={`${styles.task} bg-mypage-active-1 border border-black ${selectedHourglass && selectedHourglass.hid === task.hid ? styles.selected : ''}`}
+              className={`${styles.task} bg-mypage-active-1 border-4 border-black ${selectedHourglass && selectedHourglass.hid === task.hid ? styles.selected : ''}`}
               onClick={() => handleTaskClick(task)}
             >
               <div className={styles.category} style={{backgroundColor: task.color}}>{task.categoryName}</div>

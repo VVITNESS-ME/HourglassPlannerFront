@@ -141,7 +141,7 @@ const TilConsole: React.FC = () => {
       ) : (
         <div>
           <div className="overflow-scroll h-[315px]">
-            <div className="text-black border-2 border-black text-3xl mb-2 h-full" onClick={openTilContentModal}>
+            <div className="text-black text-3xl mb-2 h-full" onClick={openTilContentModal}>
               {formattedContent || '아직 작성된 TIL이 없습니다'}
             </div>
           </div>
