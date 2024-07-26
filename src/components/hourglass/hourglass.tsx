@@ -29,6 +29,10 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
   // 모바일 버전일 경우 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
+    if(audioRef.current){
+      audioRef.current?.pause();
+      audioRef.current.currentTime = 0;
+    }
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768); // 모바일 뷰포트 너비 기준 설정
     };
@@ -40,18 +44,7 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  useEffect(() => {
-    if(audioRef.current){
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-  }, []);
-  useEffect(() => {
-    if(beep){
-      audioRef.current?.play();
-      setBeep(false);
-    }
-  }, [beep]);
+
 
   useEffect(() => {
     const beforeCondition = Cookies.get('timerState');
@@ -86,7 +79,7 @@ const Hourglass: React.FC<Props> = ({width=300}) => {
   }
 
   return (
-    <div className={`flex flex-col items-center justify-center border max-w-[600px] max-h-[800px] w-[${width}px]`}>
+    <div className={`flex flex-col items-center justify-center max-w-[600px] max-h-[800px] w-[${width}px]`}>
       <audio ref={audioRef} autoPlay>
         <source src="../beep.mp3" type="audio/mpeg"/>
       </audio>

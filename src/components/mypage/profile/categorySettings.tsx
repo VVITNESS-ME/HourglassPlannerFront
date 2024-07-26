@@ -38,11 +38,11 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
   };
 
   return (
-    <div className="border mypage-md rounded text-2xl">
-      <CardLayout title="카테고리 설정" width="flex-1 w-full" height="h-[370px]" color="bg-mypage-layout">
-        <ul className="p-2 h-[265px] overflow-y-auto">
+    <div className="border-4 border-black mypage-md rounded text-2xl">
+      <CardLayout title="카테고리 설정" width="flex-1 w-full" height="h-[410px]" color="bg-mypage-layout">
+        <ul className="p-2 h-[295px] overflow-y-auto">
           {categories.map((category, index) => (
-            <li key={index} className="relative p-2 mb-2 text-black rounded flex justify-between items-center group" style={{ backgroundColor: category.color }}>
+            <li key={index} className="relative p-2 mb-2 text-black rounded flex justify-between border-2 border-black items-center group" style={{ backgroundColor: category.color }}>
               {category.categoryName}
               <button
                 className="absolute right-2 top-2 p-1 text-black rounded bg-transparent opacity-0 group-hover:opacity-100 transition-opacity"

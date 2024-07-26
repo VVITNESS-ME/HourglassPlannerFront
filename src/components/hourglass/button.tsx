@@ -21,14 +21,14 @@ const Button: React.FC<ButtonProps> = ({
   isActive,
   disabled,
   width = 'w-24',
-  height = 'h-12',
+  height = 'h-auto',
   activeColor = 'bg-sandy-3',
   inactiveColor = 'bg-sandy-1',
   disabledColor = 'bg-gray-400',
 }) => {
   return (
     <button
-      className={`${width} ${height} p-1 m-1 text-2xl text-black font-semibold rounded ${
+      className={`border-4 border-black ${width} ${height} items-center justify-center p-1 m-1 text-2xl text-black font-semibold border-4 border-black rounded ${
         disabled ? disabledColor : isActive ? activeColor : inactiveColor
       } ${!disabled && !isActive ? 'hover:bg-sandy-2' : ''}`}
       onClick={onClick}

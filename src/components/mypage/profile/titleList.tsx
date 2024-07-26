@@ -16,18 +16,18 @@ const TitleList: React.FC = () => {
   };
 
   return (
-    <div className="border mypage-md rounded">
-      <CardLayout title="칭호" width="flex-1 w-full" height="h-auto" color="bg-mypage-layout">
-        <ul className="p-2 max-h-80 overflow-y-auto">
+    <div className="border-4 border-black mypage-md rounded">
+      <CardLayout title="칭호" width="flex-1 w-full" height="h-[450px]" color="bg-mypage-layout">
+        <ul className="p-2 h-[290px]  overflow-y-auto">
           {achievedTitles.map((title, index) => (
             <li
               key={index}
-              className={`p-2 mb-2 text-black rounded flex items-center cursor-pointer group ${selectedTitle === index ? 'ring-4 ring-yellow-500' : ''}`}
+              className={`p-2 border-4 border-black mb-2 text-3xl text-black rounded flex items-center cursor-pointer group ${selectedTitle === index ? 'ring-4 ring-yellow-500' : ''}`}
               style={{ backgroundColor: title.titleColor }}
               onClick={() => setSelectedTitle(index)}
             >
               <div className="flex w-full items-center space-x-2 ">
-                <strong className="flex-none w-[140px]">{title.name}</strong>
+                <strong className="flex-none w-[300px]">{title.name}</strong>
                 <span className="flex-grow truncate">{title.achieveCondition}</span>
               </div>
             </li>

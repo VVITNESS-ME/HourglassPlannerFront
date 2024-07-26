@@ -1,21 +1,44 @@
 // components/SignOutModal.tsx
 'use client';
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import Button from './button'; 
+import Button from './button';
+import useAuthStore from "../../../../store/(auth)/authStore";
 
 interface SignOutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSignOut: () => void;
+  onSignOut: () => void; // Add onSignOut to props
 }
 
 const SignOutModal: React.FC<SignOutModalProps> = ({ isOpen, onClose, onSignOut }) => {
+  const { logout } = useAuthStore();
+
+  const signout = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile/delete`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "탈퇴에 실패하였습니다.");
+      }
+      // Successful sign out
+      onSignOut();
+    } catch (error) {
+      alert("회원 탈퇴에 실패하였습니다.");
+    }
+  };
+
   const handleSignOut = () => {
     console.log('User signed out');
-    onSignOut();
+    signout();
+    logout();
     onClose();
   };
 
@@ -45,12 +68,12 @@ const SignOutModal: React.FC<SignOutModalProps> = ({ isOpen, onClose, onSignOut 
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-sm bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+              <Dialog.Panel className="transform overflow-hidden rounded-sm border-4 border-black bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title as="h3" className="text-4xl font-medium leading-6 text-gray-900">
                   탈퇴하기
                 </Dialog.Title>
-                <div className="mt-2">
-                  <p>정말로 탈퇴하시겠습니까? 탈퇴 후 모든 기록은 되돌릴 수 없습니다.</p>
+                <div className="text-3xl mt-2">
+                  <p>정말로 탈퇴하시겠습니까? <br/> 탈퇴 후 모든 기록은 되돌릴 수 없습니다.</p>
                 </div>
 
                 <div className="mt-4 flex justify-end">
@@ -59,7 +82,7 @@ const SignOutModal: React.FC<SignOutModalProps> = ({ isOpen, onClose, onSignOut 
                     onClick={handleSignOut}
                     isActive={true}
                     width="w-auto"
-                    height="h-10"
+                    height="h-auto"
                     activeColor="bg-red-500"
                     inactiveColor="bg-red-300"
                   />
@@ -68,7 +91,7 @@ const SignOutModal: React.FC<SignOutModalProps> = ({ isOpen, onClose, onSignOut 
                     onClick={onClose}
                     isActive={false}
                     width="w-auto"
-                    height="h-10"
+                    height="h-auto"
                   />
                 </div>
               </Dialog.Panel>
@@ -78,6 +101,6 @@ const SignOutModal: React.FC<SignOutModalProps> = ({ isOpen, onClose, onSignOut 
       </Dialog>
     </Transition>
   );
-}
+};
 
 export default SignOutModal;

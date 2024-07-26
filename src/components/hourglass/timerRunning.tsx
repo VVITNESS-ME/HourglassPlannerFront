@@ -157,7 +157,7 @@ const TimerRunning: React.FC<Props> = ({ wd }) => {
         </div>
       </div>
       <div>
-        <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-10' />
+        <Button label="종료" onClick={stopTimerAndFetchCategories} isActive={false} width='w-16' height='h-auto' />
       </div>
       <Modal isOpen={modalOpen} userCategories={userCategories} setUserCategories={setUserCategories} />
     </div>
