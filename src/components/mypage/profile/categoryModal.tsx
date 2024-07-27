@@ -15,7 +15,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onAddCat
 
   const colors = [
     '#EAC7D1', '#EBD5C4', '#D6E9B9', '#CCBDE6', '#ABCFD1',
-    '#CFC9A7', '#B4EBB9', '#D1C0B7', '#B4EBB9', '#AED1C1',
+    '#CFC9A7', '#B4EBB9', '#D1C0B7', '#BAEAC2', '#AED1C1',
   ];
 
   const handleAddCategory = async () => {
