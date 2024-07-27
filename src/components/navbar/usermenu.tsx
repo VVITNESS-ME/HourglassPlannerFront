@@ -96,7 +96,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ username }) => {
         </Link>
       </div>
       {tasksOn && (<div
-        className="flex flex-col absolute top-20 w-96 h-24 border-4 border-black rounded-sm text-balance text-4xl bg-console-layout opacity-80 items-center justify-center z-50 overflow-auto">
+        className="flex flex-col absolute top-20 w-96 h-auto border-4 border-black rounded-sm text-balance text-4xl bg-console-layout opacity-80 items-center justify-center z-50 overflow-auto">
         {tasks?.map((task, index) =>
           <div key={index} className="w-full pl-6 pr-6 flex justify-between items-center">
             <div>{task.text}</div>

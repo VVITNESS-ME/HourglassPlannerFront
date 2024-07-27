@@ -393,7 +393,7 @@ export const useHourglassStore = create<TimeState>((set, get) => ({
     }
   },
   incrementTimeBurst: (burst) => set((state) => {
-    const newTimeBurst = state.timeBurst !== null ? state.timeBurst + burst * 60 : 60000;
+    const newTimeBurst = state.timeBurst !== null ? state.timeBurst + burst : 1000;
     const newState = { ...state, timeBurst: newTimeBurst };
     saveStateToCookies(newState);
     get().checkAndStopTimer();

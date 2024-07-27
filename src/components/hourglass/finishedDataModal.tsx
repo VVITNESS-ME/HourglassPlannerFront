@@ -50,17 +50,17 @@ const FinishedDataModal: React.FC<FinishedDataModalProps> = ({ isOpen, onClose }
   if (!start || !end || !burst1000|| !categoryName) return null;
   else {
   const burst = burst1000/1000;
-  const total = (end.getTime()-start.getTime())*6/100;
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.floor((total % 3600) / 60);
-  const netHours = Math.floor(burst / 3600);
-  const netMinutes = Math.floor((burst % 3600) / 60);
+  const total = (end.getTime()-start.getTime())/1000;
+  const hours = Math.floor(total / 60);
+  const minutes = Math.floor((total % 60) / 60);
+  const netHours = Math.floor(burst / 60);
+  const netMinutes = Math.floor((burst % 60) / 60);
   const paused = total-burst;
   const pieChartData = {
     labels: [categoryName?categoryName:"순 활동시간", "졸음/자리비움"],
     datasets: [
       {
-        data: [Math.floor(burst/60), Math.floor(paused/60)],
+        data: [(burst/60).toFixed(2), (paused/60).toFixed(1)],
         backgroundColor: ["#6ecc7e", "red"],
         borderColor: '#000000',
         borderWidth: 4,
