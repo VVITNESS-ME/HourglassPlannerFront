@@ -25,7 +25,8 @@ const HourglassAni = ({wd}:any) => {
     maskR: {
       width: '100%',
       height: '100%',
-      clipPath: `path("M0,0 C 0 ${wd*0.72}, ${wd*0.46} ${wd*0.6}, ${wd*0.3} ${wd*0.8} H${wd*0.7} C ${wd*0.7} ${wd*0.6}, ${wd} ${wd*0.72}, ${wd} 0 L 0 0")`,
+      // clipPath: `path("M0,0 C 0 ${wd*1.02*0.72}, ${wd*1.02*0.46} ${wd*1.02*0.62}, ${wd*1.02*0.46} ${wd*1.02*0.8} H${wd*1.02*0.54} C ${wd*1.02*0.54} ${wd*1.02*0.62}, ${wd*1.02} ${wd*1.02*0.72}, ${wd*1.02} 0 L 0 0")`,
+      clipPath: `path("M0,0 C 0 ${wd*1.02*0.7}, ${wd*1.02*0.45} ${wd*1.02*0.6}, ${wd*1.02*0.45} ${wd*1.02*0.8} H${wd*1.02*0.55} C ${wd*1.02*0.55} ${wd*1.02*0.6}, ${wd*1.02} ${wd*1.02*0.7}, ${wd*1.02} 0 L 0 0")`,
       position: 'absolute' as 'absolute',
       backgroungColor: 'transparent'
     },

@@ -15,8 +15,8 @@
   .waterfall-container {
     position: absolute;
     top: 46%;
-    left: 43%;
-    width: 14%;
+    left: calc(45% * 1.0);
+    width: 10%;
     height: 60%;
     overflow: hidden;
     /* background-color: #F2CD88; */
@@ -24,48 +24,41 @@
   
   .waterfall {
     position: absolute;
-    top: 50%;
-    left: 0%;
-    width: 50%;
-    height: 50%;
-    /* background-color: rgb(172, 134, 57); */
-    background-color: red;
-    animation: waterfall 0.37s linear infinite;
+    top: 52%;
+    left: 5%;
+    width: 8%;
+    height: 47%;
+    background-color: rgb(172, 134, 57);
+    /* background-color: rgb(111, 76, 11); */
+    animation: waterfall 0.33s linear infinite;
   }
   
   .waterfall:nth-child(2) {
-    left: 14%;
-    background-color: orange;
-    animation-delay: 0.1s;
+    left: 16%;
+    animation-delay: 0.05s;
   }
   
   .waterfall:nth-child(3) {
-    left: 28%;
-    background-color: yellow;
+    left: 32%;
     animation-delay: -0.42s;
   }
   
   .waterfall:nth-child(4) {
-    left: 42%;
-    background-color: green;
-
-    animation-delay: 0.12s;
+    left: 41%;
+    animation-delay: -0.22s;
   }
   
   .waterfall:nth-child(5) {
-    left: 56%;
-    background-color: blue;
-    animation-delay: -0.5s;
+    left: 52%;
+    animation-delay: -1.3s;
   }
 
   .waterfall:nth-child(6) {
-    left: 70%;
-    background-color: navy;
-    animation-delay: 1s;
+    left: 68%;
+    animation-delay: -0.8s;
   }
 
   .waterfall:nth-child(7) {
-    left: 84%;
-    background-color: purple;
-    animation-delay: 0s;
+    left: 80%;
+    animation-delay: 0.03s;
   }
